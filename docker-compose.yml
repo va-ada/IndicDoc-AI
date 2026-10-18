@@ -1,0 +1,28 @@
+# IndicDoc AI: Streamlit app on :8501 and the REST API on :8000, from one image.
+#   docker compose up --build
+services:
+  app:
+    build: .
+    image: indicdoc-ai:latest
+    ports:
+      - "${INDICDOC_APP_PORT:-8501}:8501"
+    restart: unless-stopped
+
+  api:
+    image: indicdoc-ai:latest
+    depends_on:
+      - app
+    command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "${INDICDOC_API_PORT:-8000}:8000"
+    environment:
+      # Websites allowed to call the API from a browser (comma-separated)
+      INDICDOC_CORS_ORIGINS: "http://localhost:5173"
+      INDICDOC_MAX_UPLOAD_MB: "20"
+      INDICDOC_MAX_MEGAPIXELS: "40"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+    restart: unless-stopped

@@ -1,95 +1,41 @@
 # Evaluation
 
-## Evaluation Protocol
+## Protocol
 
-### Metrics Used
+- **Test set:** 682 pages from IndicDLP's official test split (10513 boxes, all 12 languages,
+  all 12 domains). Never used for training or for choosing checkpoints (that is what the 342 validation
+  pages are for).
+- **Detections:** every detection with confidence >= 0.001 is kept for mAP (up to 300 per page; dense newspaper pages
+  exceed COCO's default of 100).
+- **Tool:** `ml/evaluation/coco_eval.py`, built on pycocotools (the reference COCO implementation).
 
-| Metric | Description | Formula |
-|--------|-------------|---------|
-| **IoU** | Intersection over Union between predicted and ground truth boxes | IoU = Area(Intersection) / Area(Union) |
-| **Precision** | Ratio of true positive detections to all positive detections | TP / (TP + FP) |
-| **Recall** | Ratio of true positive detections to all ground truth objects | TP / (TP + FN) |
-| **F1-Score** | Harmonic mean of Precision and Recall | 2 * (P * R) / (P + R) |
-| **mAP@50** | Mean Average Precision at IoU >= 0.50 | Mean of per-class AP@50 |
-| **mAP@50:95** | Mean AP averaged over IoU thresholds from 0.50 to 0.95 | Mean over thresholds and classes |
-| **Inference Time** | Average prediction time per image | Total time / N images |
+## Metrics
 
-### Evaluation Procedure
+| Metric | Meaning |
+|---|---|
+| IoU | Overlap of a predicted and a true box, divided by the area they cover together (1 = identical) |
+| mAP@50 | Area under the precision-recall curve (COCO 101-point interpolation) at IoU >= 0.50, averaged over labels |
+| mAP@75 | Same at IoU >= 0.75 (needs tight boxes) |
+| mAP@50:95 | Average of mAP over IoU 0.50, 0.55, ..., 0.95 |
+| Precision / Recall / F1 | At one operating point: confidence >= 0.5, same-label match at IoU >= 0.5, greedy by score |
+| Recommended confidence | The threshold (0.05 to 0.95 in steps of 0.05) with the best F1 on the **validation** pages; test P/R/F1 are also reported at it. The app and API use it by default |
+| Average IoU | Mean IoU of the correctly matched boxes |
+| Confusion matrix | Label-agnostic matching at IoU >= 0.5: true label vs predicted label, plus missed and spurious boxes |
+| Per-language mAP@50 | mAP restricted to each language's test pages |
+| Inference time | Seconds per page, one page at a time, first page excluded as warm-up |
 
-1. **Model inference** on the test set with confidence threshold = 0.5
-2. **NMS** (Non-Maximum Suppression) to remove overlapping detections
-3. **IoU matching** between predictions and ground truth (IoU >= 0.50)
-4. **Per-class** precision, recall, and AP computation
-5. **Aggregate** metrics across all 42 classes
+## Is the evaluator right?
 
-### Current Results (Sample Data)
+1. **Hand-worked unit tests** (`tests/test_coco_eval.py`): perfect detections give mAP 1.0; no detections give 0;
+   one wrong label gives exactly 2 TP / 1 FP / 1 FN and the expected confusion-matrix cell; boxes 60% too wide
+   (IoU 0.625) pass at IoU 0.5 and fail at 0.75; per-language splits are separated correctly.
+2. **Independent cross-check of the maths:** Ultralytics' own matching and AP code, run on exactly the detections this
+   project scores, gives mAP@50 0.2576 against this project's
+   0.2587 (mAP@50:95 0.1634 vs
+   0.1646).
+3. **Why Ultralytics' validator reports more** (0.2787): its validation NMS is multi-label
+   (`multi_label=True` in `ultralytics/models/yolo/detect/val.py`), so one box can also be kept under its second-best
+   label, which adds recall. Normal prediction keeps one label per box. That is what users of the app and API get, so
+   it is what this project reports.
 
-| Metric | Faster R-CNN (Baseline) | YOLOv8 (Proposed) |
-|--------|------------------------|-------------------|
-| Precision | 0.0 | Not trained yet |
-| Recall | 0.0 | Not trained yet |
-| F1-Score | 0.0 | Not trained yet |
-| mAP@50 | 0.0 | Not trained yet |
-| mAP@50:95 | 0.0 | Not trained yet |
-| Inference Time | 1.61s/image (CPU) | Not trained yet |
-| Model Size (MB) | ~160 | ~22 |
-
-> **Note**: Zero metrics are expected on 30 synthetic images with 42 classes. The model saw fewer than 1 image per class. This demonstrates pipeline correctness. Train on the full IndicDLP dataset for production results.
-
-### Per-Language Evaluation Framework
-
-| Language | Precision | Recall | F1 |
-|----------|-----------|--------|-----|
-| Assamese | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Bengali | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| English | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Gujarati | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Hindi | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Kannada | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Malayalam | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Marathi | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Odia | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Punjabi | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Tamil | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-| Telugu | Not evaluated yet | Not evaluated yet | Not evaluated yet |
-
-> Per-language evaluation requires language metadata in the annotations or filename conventions.
-
-## Error Analysis
-
-### Types of Errors Observed
-
-1. **Missed Detections (False Negatives)**: 17 objects missed on the sample validation set
-   - Primary cause: insufficient training data per class
-   - Small document elements are hardest to detect
-   - Low-contrast elements may be missed
-
-2. **False Detections (False Positives)**: 0 on sample data
-   - On real data, expected sources: background noise, decorative elements
-
-3. **Misclassifications**: Expected on full dataset
-   - Similar classes: Header vs Title, Running Header vs Header
-   - Context-dependent elements (e.g., Column vs Paragraph)
-
-4. **Localization Errors**: Expected on full dataset
-   - Imprecise bounding boxes for irregular text blocks
-   - Merged detection of adjacent elements
-
-### Factors Affecting Performance
-
-- Document scan quality (resolution, noise, contrast)
-- Script complexity (Latin scripts tend to be easier)
-- Layout density (crowded pages with many small elements)
-- Element size (very small or very large elements)
-- Class frequency (rare classes have lower performance)
-- Document domain (newspapers vs forms vs research papers)
-
-### Visualizations
-
-- Training loss curves: `outputs/plots/training_loss.png`
-- Precision-recall curve: `outputs/plots/precision_recall.png`
-- Confusion matrix: `outputs/plots/confusion_matrix.png`
-- Class distribution: `outputs/plots/class_distribution.png`
-- Model comparison: `outputs/plots/model_comparison.png`
-- Prediction examples: `outputs/predictions/prediction_*.png`
-- Error analysis: `outputs/predictions/errors/error_analysis.png`
+Results: [RESULTS.md](RESULTS.md).

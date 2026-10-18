@@ -9,12 +9,20 @@ __pycache__
 venv/
 env/
 data/raw/
-outputs/models/*.pth
-outputs/models/*.pt
+# Ship only the trained checkpoints the app loads; skip the cached COCO-pretrained starting weights
+outputs/models/*
+!outputs/models/baseline_frcnn_best.pth
+!outputs/models/yolov8_best.pt
+!outputs/models/indicdlp_authors/
+!outputs/models/tessdata/
 outputs/yolo_runs/
+outputs/sample_run/
 mlruns/
 .pytest_cache
 .agents/
 .gemini/
 *.log
 node_modules/
+frontend/
+docs/report/*.html
+docs/report/loss_curves.png

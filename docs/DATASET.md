@@ -1,103 +1,118 @@
-# Dataset Documentation
+# Dataset
 
 ## IndicDLP (Indic Document Layout Parsing)
 
-### Overview
-
 | Property | Details |
 |---|---|
-| **Name** | IndicDLP |
-| **Source** | [AIKosh](https://aikosh.indiaai.gov.in/home) / [HuggingFace](https://huggingface.co/datasets/IndicDLP/IndicDLP-dataset) |
-| **Origin** | AI4Bharat / IIT research collaboration |
-| **Task** | Document Layout Parsing (Object Detection) |
-| **Total Images** | 119,806 |
-| **Annotation Format** | COCO-style JSON |
-| **Number of Classes** | 42 physical and logical layout classes |
+| Paper | Nath, Kukkala, Khapra, Sarvadevabhatla. "IndicDLP: A Foundational Dataset for Multi-lingual and Multi-domain Document Layout Parsing." ICDAR 2025 (Springer LNCS, pp. 23-39) |
+| Download | [huggingface.co/datasets/ai4bharat/indicdlp](https://huggingface.co/datasets/ai4bharat/indicdlp) (gated: accept the terms with a Hugging Face account) |
+| Also listed on | [AIKosh](https://aikosh.indiaai.gov.in/home), the IndiaAI dataset platform |
+| Pages | 119,806 (README of the Hugging Face dataset) |
+| Format | Parquet shards: PNG image, boxes `[x, y, width, height]` in pixels, class ids 0..41 |
+| Size | train 73.3 GB (163 shards), validation 8.9 GB (23), test 8.7 GB (23) |
+| Licence | MIT, as stated on the Hugging Face dataset page |
 
 ### Languages (12)
+Assamese, Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Odia, Punjabi, Tamil, Telugu.
+The language is encoded in each file name: `<domain>_<language>_<id>_<n>.png`, e.g. `ar_as_001025_0.png`
+is an Acts & Rules page in Assamese.
 
-| # | Language | Script |
-|---|----------|--------|
-| 1 | Assamese | Assamese (Eastern Nagari) |
-| 2 | Bengali | Bengali |
-| 3 | English | Latin |
-| 4 | Gujarati | Gujarati |
-| 5 | Hindi | Devanagari |
-| 6 | Kannada | Kannada |
-| 7 | Malayalam | Malayalam |
-| 8 | Marathi | Devanagari |
-| 9 | Odia | Odia |
-| 10 | Punjabi | Gurmukhi |
-| 11 | Tamil | Tamil |
-| 12 | Telugu | Telugu |
+### Domains (12)
+| Code | Domain | Code | Domain |
+|---|---|---|---|
+| ar | Acts & rules | np | Newspapers |
+| br | Brochures | nt | Notices |
+| fm | Forms | nv | Novels |
+| mg | Magazines | qp | Question papers |
+| mn | Manuals | rp | Research papers |
+| sy | Syllabi | tb | Textbooks |
 
-### Document Domains (12)
+### The 42 layout labels
+In class-id order, from the authors' [`data/indic.yaml`](https://github.com/AI4Bharat/IndicDLP/blob/main/data/indic.yaml)
+(this is the order used in `ml/config.py`):
 
-1. Novels
-2. Textbooks
-3. Magazines
-4. Acts & Rules
-5. Research Papers
-6. Manuals
-7. Brochures
-8. Syllabi
-9. Question Papers
-10. Notices
-11. Forms
-12. Newspapers
+| id | label | id | label | id | label |
+|---|---|---|---|---|---|
+| 0 | advertisement | 14 | header | 28 | sub-headline |
+| 1 | answer | 15 | headline | 29 | sub-ordered-list |
+| 2 | author | 16 | index | 30 | sub-section-title |
+| 3 | chapter-title | 17 | jumpline | 31 | subsub-ordered-list |
+| 4 | contact-info | 18 | options | 32 | subsub-section-title |
+| 5 | dateline | 19 | ordered-list | 33 | sub-unordered-list |
+| 6 | figure | 20 | page-number | 34 | subsub-headline |
+| 7 | figure-caption | 21 | paragraph | 35 | subsub-unordered-list |
+| 8 | first-level-question | 22 | placeholder-text | 36 | table |
+| 9 | flag | 23 | quote | 37 | table-caption |
+| 10 | folio | 24 | reference | 38 | table-of-contents |
+| 11 | footer | 25 | second-level-question | 39 | third-level-question |
+| 12 | footnote | 26 | section-title | 40 | unordered-list |
+| 13 | formula | 27 | sidebar | 41 | website-link |
 
-### Classes (42)
+## Subset used in this project
 
-The dataset annotates 42 physical and logical document layout classes:
+Built with `python scripts/prepare_indicdlp.py` (details and the selection method in `docs/METHODOLOGY.md`).
+Output goes to `data/raw/indicdlp/{train,val,test}/` (images + COCO `annotations.json`), which is
+git-ignored.
 
-Paragraph, Image, Table, Header, Footer, Title, Caption, Page Number, Footnote, List, Figure, Equation, Logo, Stamp, Signature, Handwriting, Chart, Map, Separator, Advertisement, Watermark, Background, Margin Note, Column, Section Header, Sub Header, Abstract, Author, Affiliation, Date, Reference, Acknowledgment, Appendix, Table of Contents, Index, Glossary, Bibliography, Preface, Dedication, Colophon, Running Header, Running Footer
+Pages and boxes (after cleaning; the converter's log recorded how many boxes were clipped or dropped):
 
-### Annotation Format
+| Split | Pages | Boxes | Boxes per page |
+|---|---|---|---|
+| train | 2293 | 33667 | 14.7 |
+| val | 342 | 5815 | 17.0 |
+| test | 682 | 10513 | 15.4 |
 
-Annotations follow the COCO Object Detection format:
+Cleaning: 165 of 33,832 training boxes (0.5%), 49 of 5,864 validation boxes and 25 of 10,538 test boxes were
+dropped as degenerate (under 1 px after clipping to the page); 97 / 15 / 32 were clipped to the page edge.
+15 training pages have no labelled elements and are kept as background examples.
 
-```json
-{
-  "images": [...],
-  "annotations": [
-    {
-      "id": 1,
-      "image_id": 1,
-      "category_id": 0,
-      "bbox": [x, y, width, height],
-      "area": ...,
-      "iscrowd": 0
-    }
-  ],
-  "categories": [
-    {"id": 0, "name": "Paragraph", "supercategory": "document"}
-  ]
-}
-```
+By language:
 
-### Dataset Access
+| Language | Train pages | Val pages | Test pages |
+|---|---|---|---|
+| Assamese | 129 | 30 | 60 |
+| Bengali | 200 | 30 | 60 |
+| English | 188 | 30 | 60 |
+| Gujarati | 200 | 30 | 60 |
+| Hindi | 200 | 21 | 22 |
+| Kannada | 200 | 21 | 60 |
+| Malayalam | 200 | 30 | 60 |
+| Marathi | 200 | 30 | 60 |
+| Odia | 200 | 30 | 60 |
+| Punjabi | 188 | 30 | 60 |
+| Tamil | 200 | 30 | 60 |
+| Telugu | 188 | 30 | 60 |
+| **Total** | **2293** | **342** | **682** |
 
-- **AIKosh**: [aikosh.indiaai.gov.in](https://aikosh.indiaai.gov.in/home)
-- **HuggingFace**: [IndicDLP/IndicDLP-dataset](https://huggingface.co/datasets/IndicDLP/IndicDLP-dataset)
+By domain:
 
-### License
+| Domain | Train | Val | Test |
+|---|---|---|---|
+| acts & rules | 230 | 30 | 68 |
+| brochures | 200 | 24 | 66 |
+| forms | 125 | 28 | 46 |
+| magazines | 244 | 39 | 79 |
+| manuals | 242 | 26 | 58 |
+| newspapers | 118 | 26 | 36 |
+| notices | 112 | 17 | 36 |
+| novels | 248 | 39 | 69 |
+| question papers | 142 | 13 | 40 |
+| research papers | 229 | 31 | 68 |
+| syllabi | 161 | 24 | 54 |
+| textbooks | 242 | 45 | 62 |
 
-Please refer to the [HuggingFace dataset page](https://huggingface.co/datasets/IndicDLP/IndicDLP-dataset) for the specific license terms.
+Label balance (training boxes): the five most common are `paragraph` 10510 (31.2%), `figure` 1914 (5.7%), `folio` 1848 (5.5%), `page-number` 1840 (5.5%), `section-title` 1771 (5.3%). Rare labels (under 20 training boxes):
+`index` 6, `sub-unordered-list` 13. Labels absent from the training subset: `subsub-unordered-list`.
 
-### Suitability
 
-This dataset is excellent for:
-- Document layout detection/parsing with deep learning
-- Multilingual document understanding research
-- Transfer learning from COCO-pretrained object detection models
-- Evaluation across diverse Indian scripts and document types
+## Sample pages in the app
 
-### Sample Data
+`app/assets/samples/` holds six real IndicDLP test pages (Hindi, Tamil, Bengali, English, Telugu, Marathi;
+different domains), redistributed under the dataset's MIT licence, so the app can be tried straight away.
+Sources are listed in `app/assets/samples/README.md`.
 
-For development and testing, we provide a synthetic sample dataset generator:
+## Synthetic sample data
 
-```bash
-python -m ml.datasets.create_sample_data
-```
-
-This creates 30 synthetic document images with random bounding box annotations in `data/processed/sample/`. This is strictly for pipeline testing and not for model performance evaluation.
+`data/processed/sample/` holds 30 synthetic pages (white pages with random rectangles), generated by
+`python -m ml.datasets.create_sample_data`. They exist only so the tests and the demo notebooks can run
+without the real dataset. They contain no document content, and no result in this project comes from them.

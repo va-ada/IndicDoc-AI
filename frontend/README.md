@@ -1,16 +1,34 @@
-# React + Vite
+# IndicDoc AI - React frontend (experimental, not deployed)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A prototype web dashboard on top of the FastAPI backend (`backend/main.py`). It currently has one page,
+which shows the baseline model's saved metrics from `GET /metrics`. The Analyze, Model Insights and
+Evaluation links are placeholders.
 
-Currently, two official plugins are available:
+**It is not part of the deployment.** The product is the Streamlit app (`app/streamlit_app.py`) plus the
+REST API, both in the Docker image (see the main README). The Docker build skips this folder.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Run it locally
 
-## React Compiler
+```bash
+# 1. Start the API, allowing this dev server's origin
+INDICDOC_CORS_ORIGINS=http://localhost:5173 uvicorn backend.main:app --port 8000
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# 2. Start the dev server
+cd frontend
+npm install
+npm run dev          # http://localhost:5173
+```
 
-## Expanding the Oxlint configuration
+If the API runs on another address, set it in `frontend/.env.local`:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+```
+VITE_API_URL=http://localhost:8010
+```
+
+## Checks
+
+```bash
+npm test             # unit tests (Node's built-in test runner)
+npm run lint
+npm run build
+```

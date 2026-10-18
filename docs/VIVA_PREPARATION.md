@@ -1,63 +1,107 @@
 # Viva Preparation Guide
 
-This document contains concise, technically accurate answers to expected viva questions for the IndicDoc AI project.
+Short, accurate answers to likely viva questions. Every claim here matches the code and the measured
+results in `docs/RESULTS.md`.
 
 **1. What problem does IndicDoc AI solve?**
-It automates the extraction and understanding of complex document layouts (tables, paragraphs, headers, etc.) in multilingual Indian documents, transforming unstructured images into structured, machine-readable formats.
+Given a photo or scan of a document page in one of 12 Indian languages, it finds every structural element
+(paragraph, table, figure, header, page number, question, list, ...) and labels it with one of 42 layout
+classes. This is the step before OCR and digitisation: you first need to know where the table or the
+footnote is.
 
-**2. Why was this problem selected?**
-India has massive archives of physical documents across diverse languages and scripts. Manual digitization is slow and error-prone, and standard OCR fails to capture structural hierarchy (like tables and columns).
+**2. Why this problem?**
+India has huge archives of documents in many scripts. Most layout tools are trained on English documents
+and fail on Indic scripts and layouts (newspapers with jumplines, question papers with nested questions).
 
-**3. Why AIKosh?**
-AIKosh (IndicDLP) is the largest and most comprehensive dataset for Indian document layout parsing, offering 119K images across 12 languages and 42 layout classes, making it the academic standard for this specific problem.
+**3. Which dataset, and where is it from?**
+IndicDLP (ICDAR 2025, AI4Bharat / IIT Madras / IIIT Hyderabad): 119,806 annotated pages, 12 languages,
+12 document domains, 42 labels. It is listed on AIKosh and downloaded from Hugging Face. We trained on a
+language-balanced subset (about 200 pages per language) because the full 91 GB is beyond a laptop.
 
-**4. Why Deep Learning?**
-Traditional rule-based or heuristic layout analysis methods fail on complex, degraded, or variable layouts. Deep Learning (specifically object detection) learns robust hierarchical features capable of generalizing across varied document domains and scripts.
+**4. Why deep learning?**
+Rule-based layout analysis (whitespace, lines) breaks on varied, noisy and multi-column layouts. A CNN
+detector learns visual patterns (text density, font size, position) that generalise across scripts.
 
-**5. Why this architecture?**
-We use Faster R-CNN (Baseline) because its Region Proposal Network (RPN) is highly accurate for precise bounding box localization. YOLOv8 (Proposed) is used because it provides real-time inference speeds and handles multi-scale features effectively via CSPDarknet.
+**5. Why these two models?**
+Faster R-CNN is the classic two-stage detector and a strong, well-understood baseline. YOLOv8 is a
+modern single-stage detector: about a quarter of the parameters (11.2M vs 41.5M) and faster inference.
+The comparison asks whether the lighter, faster model loses accuracy on document layouts.
 
-**6. What is the input?**
-A scanned document image (resized and normalized to 640x640 pixels, as a 3-channel RGB tensor).
+**6. What is the input and the output?**
+Input: one page image (or a PDF page rendered at 150 dpi). Output: a list of boxes, each with a label and
+a confidence score.
 
-**7. What is the output?**
-A set of predicted bounding boxes, each with a specific class label (e.g., Table, Paragraph) and a confidence score.
+**7. What is transfer learning here?**
+Both models start from COCO-pretrained weights (80 everyday-object classes). We replace the
+classification head with a 42-class one and fine-tune the whole network. Pretrained edge and texture
+features make training converge with a few thousand pages instead of hundreds of thousands.
 
-**8. Why use transfer learning?**
-Training from scratch requires millions of images. By initializing with COCO pre-trained weights, the model already understands basic visual features (edges, textures, shapes), significantly reducing training time and preventing overfitting on our dataset.
+**8. What preprocessing is done?**
+Resize so the longest side is 640 px, keeping the aspect ratio (so training and inference see pages the
+same shape), and scale pixels to [0, 1]. Faster R-CNN normalises with ImageNet statistics inside the model.
+Augmentation: colour jitter and blur for Faster R-CNN; mosaic, HSV and translate/scale for YOLO. No
+horizontal flips, because a mirrored page is not a realistic document.
 
-**9. What preprocessing is performed?**
-Images are resized (640x640), converted to PyTorch tensors (scaling pixel values to [0,1]), and optionally normalized. We also apply data augmentation (horizontal flips, random crops, brightness adjustments) during training to improve robustness.
+**9. What loss functions are used?**
+Faster R-CNN: RPN objectness (binary cross-entropy) + RPN box regression (smooth L1) + classifier
+cross-entropy + box regression (smooth L1). YOLOv8: classification BCE + CIoU box loss + distribution
+focal loss (DFL).
 
-**10. What loss function is used?**
-Faster R-CNN uses a multi-task loss: Cross-Entropy Loss for classification (what is the object?) and Smooth L1 Loss for bounding box regression (where is the object?).
+**10. Which optimizer?**
+Faster R-CNN: SGD with momentum 0.9, learning rate 0.005, weight decay 5e-4 and a cosine schedule.
+YOLOv8: the Ultralytics trainer picks the optimizer and learning rate automatically.
 
-**11. What optimizer is used?**
-Stochastic Gradient Descent (SGD) with momentum (0.9) and weight decay (0.0005) is used for the baseline model, which helps navigate the loss landscape efficiently while preventing overfitting.
+**11. What is IoU?**
+Intersection over Union: the overlap area of the predicted and true box divided by the area of their union.
+1 is a perfect match. A prediction counts as correct at IoU >= 0.5.
 
-**12. What metrics are used?**
-We use Intersection over Union (IoU) to measure box overlap, Precision, Recall, F1-Score, and Mean Average Precision (mAP) at various IoU thresholds (like mAP@50).
+**12. What is mAP?**
+For each class, sort predictions by confidence and trace the precision-recall curve. AP is the area under
+it (COCO's 101-point interpolation). mAP is the mean over classes. mAP@50 uses IoU 0.5; mAP@50:95 averages
+over IoU 0.50 to 0.95 and rewards tight boxes. We compute it with pycocotools, the reference COCO
+implementation.
 
-**13. What is IoU?**
-Intersection over Union. It is the area of overlap between the predicted bounding box and the ground truth box, divided by the area of their union. It measures localization accuracy.
+**13. Precision vs recall?**
+Precision: of the boxes the model drew, how many were right. Recall: of the true elements on the page, how
+many the model found. We report both at confidence >= 0.5.
 
-**14. What is mAP?**
-Mean Average Precision. It is the area under the Precision-Recall curve, averaged across all classes. It provides a single metric to evaluate both classification and localization performance.
+**14. How was the evaluation kept honest?**
+Test pages come from IndicDLP's official test split, which no model saw during training or checkpoint
+selection. The evaluator is unit-tested on hand-worked examples, and its mAP matches Ultralytics' own AP
+code run on the same detections. (Ultralytics' full validator reports a little more because its validation NMS
+keeps several labels per box; the app returns one label per box, so that is what we report.)
 
-**15. What is the difference between Precision and Recall?**
-Precision measures how many of the detected objects are correct (True Positives / All Detections). Recall measures how many of the actual ground truth objects were successfully detected (True Positives / All Ground Truths).
+**15. What are the results?**
+See `docs/RESULTS.md`: mAP@50, mAP@50:95, P/R/F1, per-class AP, per-language mAP and inference time for both
+models on the same test pages.
 
-**16. How does the baseline differ from the proposed model?**
-Faster R-CNN (baseline) is a two-stage detector, making it highly accurate but slower. YOLOv8 (proposed) is a single-stage detector, trading a small amount of accuracy for significantly faster inference speeds, making it better for real-time applications.
+**16. Major limitations?**
+Subset-scale training on a laptop (the paper's full-data models reach about 0.73 mAP@50), rare labels with
+little data, no OCR, PDFs are analysed one page at a time. See `docs/LIMITATIONS.md`.
 
-**17. What are the major limitations?**
-The current training is limited by hardware (CPU-only), requiring us to demonstrate the pipeline on a sample dataset rather than the full 119K IndicDLP dataset. Additionally, it currently performs layout detection without integrated OCR text extraction.
+**17. How is it deployed?**
+One Docker image with both trained models: a Streamlit web app on port 8501 and a REST API (`POST /analyze`)
+on port 8000, started together with `docker compose up --build`.
 
-**18. What are the future improvements?**
-Training on the full dataset using cloud GPUs, integrating OCR (like PaddleOCR) to extract the actual text within the detected bounding boxes, and exploring multimodal architectures like LayoutLMv3.
+**18. Future work?**
+Train on the full dataset on a cloud GPU, start from document-specialised weights (DocLayout-YOLO), add OCR
+per region, multi-page processing and reading-order reconstruction.
 
-**19. How does the project relate to SDG 9?**
-It aligns with UN Sustainable Development Goal 9 (Industry, Innovation and Infrastructure) by building intelligent digital infrastructure that democratizes access to information across diverse Indian languages.
+**19. SDG relevance?**
+SDG 9 (Industry, Innovation and Infrastructure): a building block for digitising government, legal and
+educational documents in Indian languages.
 
-**20. Why is the project genuinely Deep Learning-based?**
-It is not an API wrapper or a prompt-engineering demo. It involves downloading raw data, building a PyTorch `Dataset` loader, configuring a complex neural network architecture (Faster R-CNN), defining a training loop, computing loss via backpropagation, and extracting hierarchical features using deep convolutional layers.
+**20. Why does the app use a model you did not train?**
+The IndicDLP authors published DocLayout-YOLO trained on the full dataset (about 40x our training data, 100 epochs).
+We evaluated it with exactly the same test pages and code as our own two models: it scores about three times higher.
+Using the best available model for the product, while reporting our own models honestly as the comparison, is
+standard practice. Our contribution is the pipeline, the evaluation, the OCR stage and the deployable system.
+
+**21. How does the OCR work, and how do you pick the language?**
+Tesseract reads the whole page once and reports each word with its position; each word is placed in the detected box
+that contains it, and boxes are put in reading order. To pick the language, one text block is read with each script's
+model and the most confident reading wins (88% right on test pages; Tesseract's own detector got 58%).
+
+**22. Why is this genuinely deep learning and not an API wrapper?**
+We build the dataset pipeline, fine-tune two CNN detectors with backpropagation on real annotated pages,
+and evaluate them with standard detection metrics on held-out data. No external AI API is called.

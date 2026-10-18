@@ -1,0 +1,9 @@
+{
+  "ultralytics_ap_on_our_detections_map50": 0.25764651054102167,
+  "ultralytics_ap_on_our_detections_map50_95": 0.16343531700604672,
+  "ultralytics_map50": 0.27873016850917987,
+  "ultralytics_map50_95": 0.17724635027284164,
+  "ours_map50": 0.2587134586567383,
+  "ours_map50_95": 0.16456189218057155,
+  "note": "Same YOLOv8 checkpoint and test pages. ultralytics_ap_on_our_detections_* = Ultralytics AP code on the detections scripts/evaluate.py scored (checks the maths). ultralytics_map* = Ultralytics validator, whose multi-label NMS differs from normal one-label-per-box prediction."
+}

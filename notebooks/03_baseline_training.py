@@ -26,9 +26,12 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, str(Path('.').resolve()))
 from ml.config import (
-    PROCESSED_DATA_DIR, MODEL_DIR, METRICS_DIR, PLOTS_DIR,
+    SAMPLE_RUN_DIR, PROCESSED_DATA_DIR, MODEL_DIR, METRICS_DIR, PLOTS_DIR,
     NUM_CLASSES, CLASS_NAMES, BATCH_SIZE, SEED, IMG_SIZE, LEARNING_RATE
 )
+
+# Demo notebook on synthetic sample data: keep its outputs away from real results
+MODEL_DIR, METRICS_DIR, PLOTS_DIR, PREDICTION_DIR = (SAMPLE_RUN_DIR / d for d in ('models', 'metrics', 'plots', 'predictions'))
 from ml.datasets.coco_dataset import COCODataset, collate_fn
 from ml.models.baseline_frcnn import get_baseline_model
 from ml.evaluation.metrics import save_metrics_report

@@ -1,271 +1,167 @@
 # IndicDoc AI
 
-**Deep Learning-Based Multilingual Indian Document Layout Understanding**
+**Deep-learning layout detection for multilingual Indian documents.**
 
-[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://python.org)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-red)](https://pytorch.org)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-ff4b4b)](https://streamlit.io)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-27%20passing-brightgreen)](#testing)
+Give it a photo, scan or PDF page in any of 12 Indian languages. It draws a box around every structural
+element (paragraphs, headings, tables, figures, page numbers, lists, questions...), labels each one with one of
+the 42 layout classes of the IndicDLP dataset, and then **reads the text** of every box (OCR), returning the page as
+an organised Markdown/JSON document.
 
-> A deep learning system for detecting and classifying document layout elements in multilingual Indian documents. Built using the IndicDLP dataset from AIKosh.
+Three layout models are compared on the same real IndicDLP test pages:
+- **DocLayout-YOLO (IndicDLP authors)**: trained by the dataset's authors on the full dataset, downloaded from their
+  public release (Zenodo, CC-BY 4.0). Best by far; the app's default.
+- **YOLOv8s (proposed)** and **Faster R-CNN (baseline)**: trained in this project on a language-balanced subset.
 
----
+Text is read with Tesseract (12 Indian languages), with the page's script detected automatically.
+The product is a Streamlit web app plus a REST API, shipped as one Docker image that works offline.
 
-## Overview
+## Results
 
-IndicDoc AI is a deep learning-based system for **Document Layout Parsing (DLP)** — detecting and classifying structural elements (paragraphs, tables, headers, figures, etc.) in scanned document images. The system targets **multilingual Indian documents** across 12 languages and 12 document domains.
+Measured by `scripts/evaluate.py` on held-out IndicDLP test pages that neither model saw during training:
 
-The project implements and compares two object detection architectures:
-1. **Baseline**: Faster R-CNN with ResNet-50 FPN backbone
-2. **Proposed**: YOLOv8s fine-tuned for document layout detection
+<!-- RESULTS:START -->
+| Metric | DocLayout-YOLO (authors) | YOLOv8s (ours) | Faster R-CNN (ours) |
+|---|---|---|---|
+| mAP@50 | 0.759 | 0.259 | 0.148 |
+| mAP@50:95 | 0.575 | 0.165 | 0.079 |
+| mAP@75 | 0.633 | 0.172 | 0.075 |
+| Precision (conf >= 0.5) | 0.891 | 0.806 | 0.546 |
+| Recall (conf >= 0.5) | 0.708 | 0.362 | 0.409 |
+| F1 (conf >= 0.5) | 0.789 | 0.500 | 0.468 |
+| Average IoU (correct boxes) | 0.899 | 0.885 | 0.821 |
+| Inference time (s/page) | 0.150 | 0.024 | 0.202 |
+| Recommended confidence (best F1 on validation pages) | 0.35 | 0.25 | 0.45 |
+| Precision at recommended confidence | 0.848 | 0.603 | 0.510 |
+| Recall at recommended confidence | 0.775 | 0.508 | 0.435 |
+| F1 at recommended confidence | 0.810 | 0.551 | 0.469 |
+| "Find every part" confidence (lowest with precision >= 0.70 on validation) | 0.15 | 0.25 | 0.45 |
+| Precision, find every part | 0.742 | 0.603 | 0.510 |
+| Recall, find every part | 0.851 | 0.508 | 0.435 |
+| Model size (MB) | 161.5 | 22.5 | 166.6 |
+| Parameters (M) | 20.0 | 11.2 | 41.5 |
 
-Both models are evaluated on the **IndicDLP dataset** sourced from **AIKosh** (India's national AI dataset platform).
+Test set: 682 pages, 12 languages. DocLayout-YOLO: trained by the IndicDLP authors on the full dataset. YOLOv8s and Faster R-CNN: trained here on 2293 pages (language-balanced subset) on an Apple M1 Pro.
+<!-- RESULTS:END -->
 
-## Dataset
+Full results, per-class and per-language tables are in [docs/RESULTS.md](docs/RESULTS.md). There is also
+a plain-language project report: [docs/report/IndicDoc_AI_Project_Report.pdf](docs/report/IndicDoc_AI_Project_Report.pdf).
 
-**IndicDLP (Indic Document Layout Parsing)**
-
-| Property | Details |
-|---|---|
-| Source | [AIKosh](https://aikosh.indiaai.gov.in/home) / [HuggingFace](https://huggingface.co/datasets/IndicDLP/IndicDLP-dataset) |
-| Images | 119,806 |
-| Languages | 12 (Assamese, Bengali, English, Gujarati, Hindi, Kannada, Malayalam, Marathi, Odia, Punjabi, Tamil, Telugu) |
-| Domains | 12 (Novels, Textbooks, Magazines, Acts & Rules, Research Papers, Manuals, Brochures, Syllabi, Question Papers, Notices, Forms, Newspapers) |
-| Annotations | COCO-style JSON |
-| Classes | 42 physical and logical layout classes |
-
-See [docs/DATASET.md](docs/DATASET.md) for detailed documentation.
-
-## Architecture
-
-### Baseline: Faster R-CNN
-- **Backbone**: ResNet-50 with Feature Pyramid Network (FPN)
-- **Pretrained**: COCO weights (torchvision)
-- **Head**: FastRCNNPredictor for 43 classes (42 + background)
-- **Optimizer**: SGD (lr=0.005, momentum=0.9)
-- **Parameters**: ~41.8M | **Size**: ~160 MB
-
-### Proposed: YOLOv8s
-- **Backbone**: CSPDarknet
-- **Pretrained**: COCO weights (ultralytics)
-- **Training**: Fine-tuned for 42 document layout classes
-- **Parameters**: ~11.2M | **Size**: ~22 MB
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture documentation.
-
-## Installation
-
-### Prerequisites
-- Python 3.10+
-- pip
-
-### Setup
+## Quick start (Docker)
 
 ```bash
-# Clone the repository
-git clone https://github.com/Prashantj44/IndicDoc-AI.git
-cd IndicDoc-AI
+docker compose up --build -d
+```
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate     # Windows
-# source venv/bin/activate  # Linux/Mac
+- Web app: http://localhost:8501
+- REST API: http://localhost:8000 (docs at http://localhost:8000/docs)
 
-# Install dependencies
+```bash
+curl -F file=@page.png "http://localhost:8000/analyze"                    # layout (DocLayout-YOLO)
+curl -F file=@page.png "http://localhost:8000/analyze?ocr=true"           # layout + text, language auto-detected
+curl -F file=@page.png "http://localhost:8000/analyze?ocr=true&ocr_lang=hin+eng"
+```
+
+Configuration, health checks and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## Local setup
+
+```bash
+python3.11 -m venv venv
+source venv/bin/activate              # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+python scripts/download_models.py     # authors' DocLayout-YOLO + Tesseract language models (~300 MB, once)
+brew install tesseract                # or: apt install tesseract-ocr (the OCR engine itself)
+
+streamlit run app/streamlit_app.py    # web app
+uvicorn backend.main:app --port 8000  # REST API
+python -m pytest tests/               # test suite
 ```
 
-### Generate Sample Data
-```bash
-python -m ml.datasets.create_sample_data
-```
+## Reproduce the results
 
-## Usage
+1. **Get the data.** Accept the terms of [ai4bharat/indicdlp](https://huggingface.co/datasets/ai4bharat/indicdlp)
+   on Hugging Face and log in (`huggingface-cli login`, or put a read token in `~/.cache/huggingface/token`).
+   Then build the language-balanced subset (reads only the parquet row groups it needs):
 
-### Training (Sample Data)
-```bash
-# Run the complete training + evaluation pipeline
-python scripts/run_sample_training.py
-```
+   ```bash
+   python scripts/prepare_indicdlp.py     # -> data/raw/indicdlp/{train,val,test}
+   ```
 
-### Training (Custom Data)
-```bash
-# Train Baseline (Faster R-CNN)
-python -m ml.training.train_baseline \
-    --train_ann data/processed/sample/annotations.json \
-    --train_img data/processed/sample/images \
-    --val_ann data/processed/sample/annotations.json \
-    --val_img data/processed/sample/images
+2. **Train.** Both scripts use the GPU if there is one (CUDA, or Apple Silicon via MPS):
 
-# Train Proposed (YOLOv8)
-python -m ml.training.train_yolo \
-    --train_ann data/processed/sample/annotations.json \
-    --train_img data/processed/sample/images \
-    --val_ann data/processed/sample/annotations.json \
-    --val_img data/processed/sample/images \
-    --convert_annotations
-```
+   ```bash
+   D=data/raw/indicdlp
+   python -m ml.training.train_yolo --train_ann $D/train/annotations.json --train_img $D/train/images \
+       --val_ann $D/val/annotations.json --val_img $D/val/images --convert_annotations --batch 8 --hours 1
+   python -m ml.training.train_baseline --train_ann $D/train/annotations.json --train_img $D/train/images \
+       --val_ann $D/val/annotations.json --val_img $D/val/images --batch_size 4 --epochs 20 --max_minutes 110
+   ```
 
-### Inference
-```python
-from ml.inference.predict import load_model, predict_single
-import torch
+3. **Evaluate** on the test pages (writes `outputs/metrics`, `outputs/plots`, `outputs/predictions`):
 
-device = torch.device('cpu')
-model = load_model('outputs/models/baseline_frcnn_best.pth', 'fasterrcnn', device)
-results = predict_single(model, 'path/to/document.jpg', 'fasterrcnn', device)
-print(results)
-```
+   ```bash
+   V="--val_ann $D/val/annotations.json --val_img $D/val/images"   # validation pages pick each model's threshold
+   python scripts/evaluate.py --model_type doclayout --name authors --ann $D/test/annotations.json --img_dir $D/test/images $V
+   python scripts/evaluate.py --model_type yolov8 --name proposed --ann $D/test/annotations.json --img_dir $D/test/images $V
+   python scripts/evaluate.py --model_type fasterrcnn --name baseline --ann $D/test/annotations.json --img_dir $D/test/images $V
+   python scripts/evaluate_ocr.py     # script detection, OCR coverage and speed
+   ```
 
-### Demo Application
-```bash
-streamlit run app/streamlit_app.py
-```
+4. **Report:** `python scripts/build_report.py`
 
-### Docker
-```bash
-docker build -t indicdoc-ai .
-docker run -p 8501:8501 indicdoc-ai
-```
+No real data? `python scripts/run_sample_training.py` runs the whole pipeline on 30 synthetic pages
+(outputs go to `outputs/sample_run/`; the numbers are meaningless, it only checks the plumbing).
 
-### Run Tests
-```bash
-python -m pytest tests/ -v
-```
-
-## Project Structure
+## Project structure
 
 ```
-IndicDoc-AI/
-├── app/                       # Streamlit application
-│   ├── assets/                # Logo and branding
-│   └── streamlit_app.py       # Main application (Indic-inspired UI)
-├── data/                      # Dataset directory
-│   ├── raw/                   # Raw IndicDLP data
-│   └── processed/sample/      # Synthetic sample data
-├── ml/                        # Core ML package
-│   ├── config.py              # Project configuration
-│   ├── datasets/              # Dataset loading & sample generation
-│   ├── preprocessing/         # Image preprocessing & augmentation
-│   ├── models/                # Model definitions (FRCNN + YOLOv8)
-│   ├── training/              # Training scripts
-│   ├── evaluation/            # Metrics & visualization
-│   └── inference/             # Inference pipeline
-├── outputs/                   # Training outputs
-│   ├── models/                # Saved model weights
-│   ├── predictions/           # Prediction images & error analysis
-│   ├── metrics/               # Evaluation metrics (JSON)
-│   └── plots/                 # Training curves & charts
-├── docs/                      # Documentation
-│   ├── DATASET.md
-│   ├── ARCHITECTURE.md
-│   ├── METHODOLOGY.md
-│   ├── EVALUATION.md
-│   ├── RESULTS.md
-│   ├── LIMITATIONS.md
-│   ├── ACADEMIC_REPORT.md
-│   └── PROGRESS.md
-├── tests/                     # Test suite (27 tests)
-├── scripts/                   # Utility scripts
-│   └── run_sample_training.py # Complete training + evaluation pipeline
-├── notebooks/                 # Analysis notebooks (Python scripts)
-├── Dockerfile                 # Docker configuration
-├── requirements.txt
-├── .gitignore
-└── README.md
+app/streamlit_app.py        Streamlit web app (the product UI)
+app/assets/samples/         six real IndicDLP test pages to try the app with
+backend/main.py             FastAPI REST API
+ml/
+  config.py                 paths, the 42 IndicDLP labels, defaults, get_device()
+  datasets/                 COCO dataset loader, synthetic sample generator
+  preprocessing/            transforms, deskew/CLAHE, PDF page rendering
+  models/                   Faster R-CNN and YOLOv8 builders, COCO->YOLO converter
+  training/                 train_baseline.py, train_yolo.py
+  evaluation/coco_eval.py   COCO mAP (pycocotools), P/R/F1, confusion matrix, per-language
+  inference/predict.py      load a checkpoint (Faster R-CNN, YOLOv8, DocLayout-YOLO), predict
+  ocr/                      Tesseract OCR of detected regions, script detection, reading order, Markdown
+scripts/
+  prepare_indicdlp.py       build the IndicDLP subset from Hugging Face
+  download_models.py        fetch the authors' DocLayout-YOLO and the Tesseract language models
+  evaluate_ocr.py           measure script detection, OCR coverage and speed
+  evaluate.py               evaluate a checkpoint, write metrics + plots
+  build_report.py           PDF project report + docs/RESULTS.md
+  run_sample_training.py    pipeline smoke run on synthetic pages
+outputs/                    trained models, metrics, plots, example predictions
+docs/                       dataset, architecture, methodology, evaluation, results, deployment, audit
+tests/                      pytest suite
+notebooks/                  demo scripts on the synthetic sample (write to outputs/sample_run/)
+frontend/                   React dashboard prototype (experimental, not deployed)
+Dockerfile, docker-compose.yml
 ```
 
-## Evaluation
+## Documentation
 
-### Training Results (Sample Data — 30 images, 5 epochs)
+| Document | Contents |
+|---|---|
+| [docs/DATASET.md](docs/DATASET.md) | IndicDLP, the 42 labels, the subset used |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Pipeline, models, code layout, deployment architecture |
+| [docs/METHODOLOGY.md](docs/METHODOLOGY.md) | Data selection, preprocessing, training, evaluation protocol |
+| [docs/EVALUATION.md](docs/EVALUATION.md) | Metric definitions and evaluator validation |
+| [docs/RESULTS.md](docs/RESULTS.md) | All measured results |
+| [docs/LIMITATIONS.md](docs/LIMITATIONS.md) | What the system does not do, and caveats |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Running and configuring the Docker deployment |
+| [docs/FINAL_AUDIT.md](docs/FINAL_AUDIT.md) | Bugs found and fixed in the end-to-end audit |
+| [docs/VIVA_PREPARATION.md](docs/VIVA_PREPARATION.md) | Short answers to likely viva questions |
 
-| Epoch | Train Loss | Val Loss |
-|-------|-----------|---------|
-| 1 | 5.2296 | 3.7781 |
-| 2 | 3.1862 | 2.5012 |
-| 3 | 2.3658 | 2.2356 |
-| 4 | 2.1096 | 2.2160 |
-| 5 | 2.0522 | 2.1855 |
+## Dataset and references
 
-### Model Comparison
+- O. Nath, S. Kukkala, M. Khapra, R. K. Sarvadevabhatla. *IndicDLP: A Foundational Dataset for Multi-lingual
+  and Multi-domain Document Layout Parsing.* ICDAR 2025.
+- Z. Zhao et al. *DocLayout-YOLO.* arXiv:2410.12628, 2024. R. Smith. *An Overview of the Tesseract OCR Engine.* ICDAR 2007.
+- S. Ren et al. *Faster R-CNN.* NeurIPS 2015. G. Jocher et al. *Ultralytics YOLOv8.* 2023.
+  T.-Y. Lin et al. *Microsoft COCO.* ECCV 2014.
 
-| Metric | Faster R-CNN (Baseline) | YOLOv8 (Proposed) |
-|--------|------------------------|-------------------|
-| Precision | 0.0* | Not trained yet |
-| Recall | 0.0* | Not trained yet |
-| F1-Score | 0.0* | Not trained yet |
-| mAP@50 | 0.0* | Not trained yet |
-| Inference Time | 1.61s/image (CPU) | Not trained yet |
-| Model Size | ~160 MB | ~22 MB |
-
-> *Zero metrics are expected on 30 synthetic images with 42 classes. The model has fewer than 1 image per class. This demonstrates pipeline correctness. See [docs/RESULTS.md](docs/RESULTS.md) for details.
-
-### Testing
-
-```
-27 passed in 26.25s
-```
-
-All tests pass:
-- Configuration, preprocessing, transforms
-- Dataset loading, sample data creation
-- Metrics (IoU, AP, confusion matrix)
-- Model creation and forward pass
-- Visualization functions
-- COCO-to-YOLO conversion
-- End-to-end pipeline
-
-## Demo Application
-
-The Streamlit application features an **Indic-inspired design system**:
-- Deep Indigo + Antique Gold + Warm Ivory color palette
-- 5 tabs: Dashboard, Analyze, Model Insights, Evaluation, About
-- Real-time document layout detection with bounding box visualization
-- Model comparison dashboard with charts
-- Download annotated results
-- Demo mode when no trained model is available
-
-```bash
-streamlit run app/streamlit_app.py
-```
-
-## SDG Alignment
-
-**SDG 9: Industry, Innovation and Infrastructure**
-- Enables AI-based document digitization for Indian government, educational, and legal documents
-- Supports multilingual information processing across 12 Indian languages
-- Contributes to intelligent document infrastructure
-
-## Limitations
-
-1. Training demonstrated on synthetic sample data (full dataset requires GPU)
-2. Transfer learning from COCO (not trained from scratch)
-3. OCR not integrated (layout detection only)
-4. Per-language evaluation pending full dataset
-
-See [docs/LIMITATIONS.md](docs/LIMITATIONS.md) for full details.
-
-## Future Scope
-
-1. Training on the full IndicDLP dataset (119K images) with GPU
-2. Integration with OCR engines (PaddleOCR/Tesseract) for text extraction
-3. LayoutLMv3 for joint layout + text understanding
-4. Document structure hierarchy reconstruction
-5. ONNX/TFLite conversion for mobile deployment
-6. Per-language performance analysis
-
-## References
-
-1. IndicDLP Dataset — AIKosh / AI4Bharat
-2. Ren, S., et al. "Faster R-CNN: Towards Real-Time Object Detection with Region Proposal Networks." NeurIPS 2015.
-3. Jocher, G., et al. "Ultralytics YOLOv8." 2023.
-4. Lin, T.Y., et al. "Microsoft COCO: Common Objects in Context." ECCV 2014.
-5. He, K., et al. "Deep Residual Learning for Image Recognition." CVPR 2016.
-6. AIKosh — IndiaAI Mission, MeitY, Government of India.
-
----
-
-**B.E. Artificial Intelligence & Machine Learning — Deep Learning Mini-Project**
-
-*SDG 9: Industry, Innovation and Infrastructure*
+*B.E. Artificial Intelligence & Machine Learning, Deep Learning mini-project. SDG 9: Industry, Innovation and Infrastructure.*

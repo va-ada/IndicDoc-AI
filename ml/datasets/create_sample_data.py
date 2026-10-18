@@ -6,14 +6,15 @@ from PIL import Image, ImageDraw
 
 import sys
 sys.path.append(str(Path(__file__).parent.parent.parent))
-from ml.config import PROCESSED_DATA_DIR, CLASS_NAMES
+from ml.config import PROCESSED_DATA_DIR, CLASS_NAMES, SEED
 
-def create_sample_dataset(num_images: int = 30):
+def create_sample_dataset(num_images: int = 30, output_dir: Path = PROCESSED_DATA_DIR / 'sample', seed: int = SEED):
     """
     Creates a small synthetic sample dataset for testing the pipeline.
     This is strictly for testing code and NOT for real training.
     """
-    output_dir = PROCESSED_DATA_DIR / 'sample'
+    rng = random.Random(seed)  # seeded so the committed sample data can be regenerated exactly
+    output_dir = Path(output_dir)
     img_dir = output_dir / 'images'
     
     img_dir.mkdir(parents=True, exist_ok=True)
@@ -47,17 +48,17 @@ def create_sample_dataset(num_images: int = 30):
         })
         
         # Draw some random bounding boxes
-        num_boxes = random.randint(3, 10)
+        num_boxes = rng.randint(3, 10)
         for _ in range(num_boxes):
-            cat_id = random.randint(0, len(CLASS_NAMES) - 1)
+            cat_id = rng.randint(0, len(CLASS_NAMES) - 1)
             
-            x = random.randint(50, width - 200)
-            y = random.randint(50, height - 200)
-            w = random.randint(50, 150)
-            h = random.randint(20, 100)
+            x = rng.randint(50, width - 200)
+            y = rng.randint(50, height - 200)
+            w = rng.randint(50, 150)
+            h = rng.randint(20, 100)
             
             # Draw box on image
-            color = (random.randint(0,200), random.randint(0,200), random.randint(0,200))
+            color = (rng.randint(0,200), rng.randint(0,200), rng.randint(0,200))
             draw.rectangle([x, y, x + w, y + h], outline=color, width=2)
             
             coco_data["annotations"].append({

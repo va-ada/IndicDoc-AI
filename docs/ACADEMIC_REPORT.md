@@ -2,7 +2,7 @@
 
 ## 1. Abstract
 
-IndicDoc AI addresses the challenge of automated document layout understanding for multilingual Indian documents. We develop a deep learning-based system that detects and classifies 42 types of document structural elements (paragraphs, tables, headers, figures, etc.) in scanned document images across 12 Indian languages. Using the IndicDLP dataset from AIKosh — containing 119,806 annotated document images — we implement and compare two object detection architectures: Faster R-CNN with ResNet-50 FPN (baseline) and YOLOv8 (proposed model). Both models leverage transfer learning from COCO-pretrained weights. The system includes a complete pipeline from data preprocessing and augmentation through model training, evaluation, and an interactive Streamlit-based demo application. This work contributes to SDG 9 (Industry, Innovation and Infrastructure) by advancing AI-based document digitization infrastructure for Indian languages.
+IndicDoc AI addresses the challenge of automated document layout understanding for multilingual Indian documents. We develop a deep learning-based system that detects and classifies 42 types of document structural elements (paragraphs, tables, headers, figures, etc.) in scanned document images across 12 Indian languages. Using a language-balanced subset of the IndicDLP dataset (AIKosh / Hugging Face; 119,806 annotated pages in total), we implement and compare two object detection architectures: Faster R-CNN with ResNet-50 FPN (baseline) and YOLOv8 (proposed model). Both models leverage transfer learning from COCO-pretrained weights. The system includes a complete pipeline from data preprocessing and augmentation through model training, evaluation, and an interactive Streamlit-based demo application. This work contributes to SDG 9 (Industry, Innovation and Infrastructure) by advancing AI-based document digitization infrastructure for Indian languages.
 
 ## 2. Introduction
 
@@ -49,11 +49,14 @@ Given a scanned document image in any of 12 Indian languages, automatically dete
 
 ## 7. Data Preprocessing
 
-1. **Resizing**: All images resized to 640×640 pixels
-2. **Normalization**: ImageNet mean/std normalization (mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-3. **Contrast Enhancement**: CLAHE (Contrast Limited Adaptive Histogram Equalization) for low-quality scans
-4. **Deskewing**: Automatic rotation correction for tilted scans
-5. **Augmentation** (training only): Horizontal flip (p=0.5), Color jitter (brightness, contrast, saturation, hue), Random crop with minimum visibility constraints
+1. **Subset construction**: a language-balanced subset of IndicDLP (about 200 training, 30 validation and 60 test
+   pages per language) built from the official splits by `scripts/prepare_indicdlp.py`; boxes clipped to the page,
+   degenerate boxes dropped (details in `docs/DATASET.md`)
+2. **Resizing**: longest side to 640 px with the aspect ratio kept (Faster R-CNN); 640 px letterbox (YOLOv8)
+3. **Normalisation**: pixels scaled to [0, 1]; Faster R-CNN applies ImageNet mean/std inside the model
+4. **Augmentation** (training only): colour jitter and Gaussian blur (Faster R-CNN); mosaic, HSV and
+   translate/scale (YOLOv8). Horizontal flips are disabled because mirrored text is not a realistic page
+5. **Optional page cleaning** (not used in training): CLAHE contrast enhancement and deskewing
 
 ## 8. Methodology
 
@@ -86,14 +89,14 @@ The methodology follows a standard object detection pipeline:
 
 | Parameter | Faster R-CNN | YOLOv8s |
 |-----------|-------------|---------|
-| Optimizer | AdamW | SGD (ultralytics) |
-| Learning Rate | 0.001 | Auto |
-| Batch Size | 4 | 4 |
-| Epochs | 10 | 10 |
-| Image Size | 640×640 | 640×640 |
-| Mixed Precision | Yes (CUDA) | Yes |
-| Scheduler | CosineAnnealing | Ultralytics default |
-| Random Seed | 42 | 42 |
+| Optimizer | SGD (momentum 0.9, weight decay 5e-4) | Chosen by Ultralytics (AdamW for this run length) |
+| Learning rate | 0.005, cosine schedule | Chosen by Ultralytics, with warm-up |
+| Batch size | 4 | 8 |
+| Epochs | As many as fit a 110-minute budget (see `docs/RESULTS.md`) | As many as fit a 1-hour budget |
+| Input size | 640 px longest side | 640 px |
+| Hardware | Apple M1 Pro GPU (PyTorch MPS) | Apple M1 Pro GPU (PyTorch MPS) |
+| Checkpoint selection | Lowest validation loss | Best validation fitness |
+| Random seed | 42 | 42 |
 
 ## 11. Evaluation Metrics
 
@@ -107,8 +110,10 @@ The methodology follows a standard object detection pipeline:
 
 ## 12. Results
 
-> Results will be populated after training on the IndicDLP dataset.
-> No metrics are fabricated. All values will be actual measured results.
+All results are measured on held-out IndicDLP test pages and are listed in full in `docs/RESULTS.md`
+(generated from `outputs/metrics/` by `scripts/build_report.py`): overall mAP@50, mAP@50:95, precision, recall,
+F1 and IoU for both models, AP per label, mAP per language, inference time, and training curves. The evaluator is
+validated by hand-worked unit tests and cross-checked against Ultralytics' own AP code on the same detections (`docs/EVALUATION.md`).
 
 ## 13. Baseline Comparison
 

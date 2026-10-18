@@ -2,93 +2,125 @@
 
 ## 1. Problem Formulation
 
-Document Layout Parsing (DLP) is formulated as an **object detection** problem:
-- **Input**: Scanned document image (RGB)
-- **Output**: Bounding boxes + class labels + confidence scores for each detected document element
-- **Classes**: 42 physical and logical layout elements
+Document Layout Parsing is treated as **object detection**:
+- **Input**: an image of one document page (scanned or digital-born), in any of 12 languages
+- **Output**: a list of (bounding box, layout label, confidence score), one per element on the page
+- **Labels**: the 42 IndicDLP region labels, from generic ones (`paragraph`, `table`, `figure`, `header`)
+  to domain-specific ones (`jumpline` in newspapers, `first-level-question` in question papers)
 
-## 2. Data Pipeline
+## 2. Data
 
-### 2.1 Data Loading
-- Parse COCO-format JSON annotations
-- Custom PyTorch `Dataset` class (`COCODataset`)
-- Load images using PIL, convert to RGB
-- Map annotations to image IDs
+### 2.1 Source
+IndicDLP (Nath et al., ICDAR 2025), downloaded from `huggingface.co/datasets/ai4bharat/indicdlp`
+(gated: the account must accept the dataset terms). It is distributed as parquet shards (train 73 GB,
+validation 9 GB, test 9 GB). Each row holds one PNG page, its boxes as `[x, y, width, height]` in pixels,
+and integer class ids 0..41. Class names come from the authors' `data/indic.yaml`.
 
-### 2.2 Preprocessing
-| Step | Method | Purpose |
+### 2.2 Subset used here
+Training on all ~120K pages is not feasible on a laptop, so `scripts/prepare_indicdlp.py` builds a
+**language-balanced subset**:
+
+| Split | Pages per language | Source split |
 |---|---|---|
-| Resize | Bilinear interpolation to 640x640 | Standard input size |
-| Normalization | Scale to [0, 1] / ImageNet stats | Model compatibility |
-| CLAHE | Contrast Limited Adaptive Histogram Equalization | Enhance document readability |
-| Deskewing | MinAreaRect angle estimation + affine transform | Correct document rotation |
+| Train | up to 200 | official train |
+| Validation | up to 30 | official validation |
+| Test | up to 60 | official test |
 
-### 2.3 Data Augmentation (Training Only)
-| Augmentation | Parameter | Purpose |
+Actual subset (some row groups held fewer pages of a language than the cap):
+
+| Language | Train pages | Val pages | Test pages |
+|---|---|---|---|
+| Assamese | 129 | 30 | 60 |
+| Bengali | 200 | 30 | 60 |
+| English | 188 | 30 | 60 |
+| Gujarati | 200 | 30 | 60 |
+| Hindi | 200 | 21 | 22 |
+| Kannada | 200 | 21 | 60 |
+| Malayalam | 200 | 30 | 60 |
+| Marathi | 200 | 30 | 60 |
+| Odia | 200 | 30 | 60 |
+| Punjabi | 188 | 30 | 60 |
+| Tamil | 200 | 30 | 60 |
+| Telugu | 188 | 30 | 60 |
+| **Total** | **2293** | **342** | **682** |
+
+How the pages are chosen:
+- The shards are sorted by language, and a shard can straddle two languages. So every parquet row group
+  (~100 pages) is labelled by the languages of its own pages, read from the file names
+  (`<domain>_<language>_<id>_<n>.png`).
+- For each language, row groups are picked from as many different shards as possible (more variety of
+  documents), with a fixed random seed so the subset can be rebuilt exactly.
+- Only the parquet row groups that are needed are downloaded (HTTP range requests), a few GB instead of 91.
+- Train, validation and test pages come from the official splits, so they never overlap.
+
+### 2.3 Cleaning
+Each box is clipped to the page. Boxes left under 1 px wide or tall after clipping are dropped, and an
+unknown class id stops the conversion with an error. Counts are reported in the data summary
+(`docs/DATASET.md`).
+
+## 3. Preprocessing and Augmentation
+
+| Step | Where | Why |
 |---|---|---|
-| Horizontal Flip | p=0.5 | Spatial invariance |
-| Color Jitter | brightness=0.2, contrast=0.2, saturation=0.2 | Color robustness |
-| Random Crop | min_visibility=0.2 | Spatial diversity |
+| Resize longest side to 640 px, keep aspect ratio | Faster R-CNN data pipeline | Same page shape in training and at inference |
+| Letterbox to 640 px | YOLOv8 (ultralytics) | Standard YOLO input |
+| Scale pixels to [0, 1] | Faster R-CNN data pipeline | The model applies ImageNet normalisation itself |
+| Colour jitter, Gaussian blur | Faster R-CNN training | Different scan quality, paper colour, focus |
+| Mosaic, HSV, translate/scale | YOLOv8 training | Ultralytics defaults |
+| No horizontal flips | Both | A mirrored page is not a realistic document |
 
-### 2.4 Train/Val/Test Split
-- Training: 70%
-- Validation: 15%
-- Testing: 15%
-- Reproducible split with seed=42
+`ml/preprocessing/preprocess.py` also provides deskewing (minimum-area rectangle of the ink pixels,
+accurate to about 0.1 degrees on tilted real pages) and CLAHE contrast enhancement for poor scans. They are
+optional page-cleaning tools and are not part of the training pipeline.
 
-## 3. Modeling Strategy
+## 4. Models and Training
 
-### 3.1 Two-Model Comparison
-| | Baseline | Proposed |
+Both detectors start from COCO-pretrained weights and get a new 42-class head (transfer learning).
+Details are in `docs/ARCHITECTURE.md`.
+
+| | Faster R-CNN (baseline) | YOLOv8s (proposed) |
 |---|---|---|
-| Model | Faster R-CNN | YOLOv8s |
-| Backbone | ResNet-50 + FPN | CSPDarknet |
-| Type | Two-stage | Single-stage |
-| Pretrained | COCO (torchvision) | COCO (ultralytics) |
+| Script | `ml/training/train_baseline.py` | `ml/training/train_yolo.py` |
+| Hardware | Apple M1 Pro GPU (PyTorch MPS) | Apple M1 Pro GPU (PyTorch MPS) |
+| Epochs | As many as fit a 140-minute budget (measured after epoch 1) | As many as fit a 1-hour budget (Ultralytics `time=1.0`) |
+| Batch size | 4 | 8 |
+| Optimizer | SGD (lr 0.005, momentum 0.9, wd 5e-4), cosine schedule | Ultralytics automatic choice |
+| Checkpoint kept | Lowest validation loss | Best validation fitness (mAP-based) |
+| Seed | 42 | 42 |
 
-### 3.2 Transfer Learning
-1. Load COCO-pretrained weights (80 classes)
-2. Replace detection head for 42 IndicDLP classes (+1 background for Faster R-CNN)
-3. Fine-tune all layers
+The actual epoch counts and wall-clock times are recorded in `docs/RESULTS.md`.
 
-### 3.3 Training Protocol
-- **Optimizer**: SGD (Faster R-CNN) / SGD auto (YOLOv8)
-- **Learning Rate**: 0.005 with step decay
-- **Gradient Clipping**: max_norm=10.0
-- **Mixed Precision**: Enabled when CUDA available
-- **Early Stopping**: Monitor validation loss
+## 5. Evaluation Protocol
 
-## 4. Evaluation Protocol
+All numbers come from `scripts/evaluate.py` on the held-out **test** pages, which neither model saw during
+training or model selection.
 
-### 4.1 Metrics
-| Metric | Description |
+| Metric | Definition |
 |---|---|
-| **IoU** | Intersection over Union between predicted and ground truth boxes |
-| **Precision** | TP / (TP + FP) |
-| **Recall** | TP / (TP + FN) |
-| **F1-Score** | 2 * P * R / (P + R) |
-| **mAP@50** | Mean Average Precision at IoU >= 0.50 |
-| **mAP@50:95** | Mean AP over IoU thresholds 0.50 to 0.95 (step 0.05) |
-| **Inference Time** | Average prediction time per image |
+| **mAP@50** | COCO-style mean Average Precision at IoU >= 0.50, averaged over the classes present (pycocotools) |
+| **mAP@50:95** | The same, averaged over IoU thresholds 0.50, 0.55, ..., 0.95: rewards tight boxes |
+| **Precision / Recall / F1** | At one operating point: confidence >= 0.5, matched to same-label truth at IoU >= 0.5 |
+| **Average IoU** | Mean overlap of the correctly matched boxes |
+| **Per-class AP@50** | Which layout elements are easy or hard |
+| **Per-language mAP@50** | mAP computed separately on each language's test pages |
+| **Confusion matrix** | Which labels get mixed up, plus missed elements and false alarms |
+| **Inference time** | Seconds per page on the evaluation device |
 
-### 4.2 Evaluation Procedure
-1. Model inference on test set (confidence threshold = 0.5)
-2. Non-Maximum Suppression (NMS) for overlapping detections
-3. IoU matching between predictions and ground truth (threshold = 0.5)
-4. Per-class precision, recall, and AP computation
-5. Aggregate metrics across all classes
+Up to 300 detections per page are scored (COCO's default of 100 is too low for dense newspaper pages).
+The evaluator is tested against hand-worked examples (`tests/test_coco_eval.py`). Its mAP is also
+cross-checked against Ultralytics' own AP code on the same YOLO detections (`docs/EVALUATION.md`).
 
-## 5. Error Analysis
+## 6. Third model and OCR
 
-Systematic analysis of model failures:
-- **Missed detections**: Small elements, low-contrast regions
-- **False positives**: Background regions, decorative elements
-- **Misclassifications**: Similar classes (Header vs. Title)
-- **Localization errors**: Imprecise bounding boxes, merged elements
+- **DocLayout-YOLO (IndicDLP authors)** is downloaded (`scripts/download_models.py`), not trained here, and evaluated on
+  the same test pages with the same code; its recommended threshold is chosen on the same validation pages.
+- **OCR** (`scripts/evaluate_ocr.py`): with the deployed layout model, 10 test pages per language. Measured: whether
+  the detected script matches the page's language, the share of OCR words falling inside detected regions, and seconds
+  per page. Character accuracy cannot be measured because IndicDLP has no transcriptions.
 
-## 6. Reproducibility
+## 7. Reproducibility
 
-- Fixed random seed (42) across all experiments
-- Deterministic data splits
-- Configuration stored in `ml/config.py`
-- Training logs saved in `outputs/metrics/`
+- Fixed seed (42) for data selection, splits and training
+- Subset construction is deterministic (`scripts/prepare_indicdlp.py`)
+- Exact package versions are pinned in `requirements.txt`
+- Training histories, metrics and plots are written to `outputs/`

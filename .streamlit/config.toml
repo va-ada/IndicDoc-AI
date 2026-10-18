@@ -1,0 +1,14 @@
+# The app's custom styling (ivory / indigo / gold) is designed for a light theme. Without this, Streamlit
+# follows the visitor's OS dark mode and light text ends up on the ivory background.
+[theme]
+base = "light"
+primaryColor = "#C89B3C"
+backgroundColor = "#FBF8F1"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1E2A5A"
+
+[server]
+maxUploadSize = 20
+
+[browser]
+gatherUsageStats = false

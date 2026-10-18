@@ -25,7 +25,10 @@ from PIL import Image
 
 # Setup
 sys.path.insert(0, str(Path('.').resolve()))
-from ml.config import PROCESSED_DATA_DIR, CLASS_NAMES, PLOTS_DIR
+from ml.config import SAMPLE_RUN_DIR, PROCESSED_DATA_DIR, CLASS_NAMES, PLOTS_DIR
+
+# Demo notebook on synthetic sample data: keep its outputs away from real results
+MODEL_DIR, METRICS_DIR, PLOTS_DIR, PREDICTION_DIR = (SAMPLE_RUN_DIR / d for d in ('models', 'metrics', 'plots', 'predictions'))
 
 PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 

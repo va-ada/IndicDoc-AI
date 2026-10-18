@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
+import { formatMetric } from './metrics.js';
+
+// Override with VITE_API_URL in frontend/.env.local when the backend runs elsewhere
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
 function App() {
   const [metrics, setMetrics] = useState(null);
 
   useEffect(() => {
-    // Scaffold API call to our new FastAPI backend
-    fetch('http://localhost:8000/metrics')
-      .then(res => res.json())
-      .then(data => setMetrics(data))
-      .catch(err => console.error("API not running yet:", err));
+    const loadMetrics = async () => {
+      try {
+        const res = await fetch(`${API_URL}/metrics`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        setMetrics(await res.json());
+      } catch (err) {
+        console.error('Could not load metrics from the API:', err);
+      }
+    };
+    loadMetrics();
   }, []);
+
+  // Show the baseline: it is the only model with measured results so far
+  const baseline = metrics?.baseline;
 
   return (
     <div className="app-container">
@@ -31,24 +43,28 @@ function App() {
         </section>
 
         <section className="dashboard">
+          <h2>Baseline (Faster R-CNN)</h2>
           <div className="metrics-grid">
             <div className="metric-card">
-              <h3>{metrics ? metrics.proposed.precision : '0.92'}</h3>
+              <h3>{formatMetric(baseline?.precision)}</h3>
               <p>Precision</p>
             </div>
             <div className="metric-card">
-              <h3>{metrics ? metrics.proposed.recall : '0.90'}</h3>
+              <h3>{formatMetric(baseline?.recall)}</h3>
               <p>Recall</p>
             </div>
             <div className="metric-card">
-              <h3>{metrics ? metrics.proposed.map50 : '0.95'}</h3>
+              <h3>{formatMetric(baseline?.map50)}</h3>
               <p>mAP@50</p>
             </div>
             <div className="metric-card">
-              <h3>{metrics ? metrics.proposed.inference_time : '0.45'}s</h3>
+              <h3>{formatMetric(baseline?.inference_time, 's')}</h3>
               <p>Inference Time</p>
             </div>
           </div>
+          <p className="metrics-note">
+            {baseline ? baseline.note : 'Not evaluated yet, or the API is not running.'}
+          </p>
         </section>
       </main>
     </div>

@@ -21,7 +21,10 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 sys.path.insert(0, str(Path('.').resolve()))
-from ml.config import PROCESSED_DATA_DIR, PLOTS_DIR, IMG_SIZE
+from ml.config import SAMPLE_RUN_DIR, PROCESSED_DATA_DIR, PLOTS_DIR, IMG_SIZE
+
+# Demo notebook on synthetic sample data: keep its outputs away from real results
+MODEL_DIR, METRICS_DIR, PLOTS_DIR, PREDICTION_DIR = (SAMPLE_RUN_DIR / d for d in ('models', 'metrics', 'plots', 'predictions'))
 from ml.preprocessing.preprocess import (
     resize_image, normalize_image, enhance_contrast, 
     deskew_image, preprocess_document
@@ -129,12 +132,8 @@ for i in range(8):
         )
         aug_img = augmented['image']
         if hasattr(aug_img, 'numpy'):
+            # Transforms output [0, 1] floats (Faster R-CNN normalizes internally), so no de-normalization needed
             aug_img = aug_img.permute(1, 2, 0).numpy()
-            # Denormalize for display
-            mean = np.array([0.485, 0.456, 0.406])
-            std = np.array([0.229, 0.224, 0.225])
-            aug_img = std * aug_img + mean
-            aug_img = np.clip(aug_img, 0, 1)
         axes[row, col].imshow(aug_img)
     except Exception as e:
         axes[row, col].text(0.5, 0.5, f'Error: {str(e)[:30]}', transform=axes[row, col].transAxes, ha='center')

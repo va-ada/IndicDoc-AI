@@ -6,17 +6,22 @@ try:
 except ImportError:
     YOLO = None
 
-def get_proposed_model(model_size: str = 'n'):
+def get_proposed_model(model_size: str = 'n', weights_dir: str = None):
     """
     Initialize YOLOv8 model for fine-tuning.
     Args:
         model_size (str): 'n', 's', 'm', 'l', or 'x' for YOLOv8 model sizes.
+        weights_dir (str, optional): Folder to download/cache the COCO-pretrained weights in.
+            Without it, ultralytics downloads into the current working directory.
     """
     if YOLO is None:
         raise ImportError("ultralytics is not installed. Run: pip install ultralytics")
-    
+
     # Load a pretrained YOLOv8 model
     model_name = f'yolov8{model_size}.pt'
+    if weights_dir:
+        Path(weights_dir).mkdir(parents=True, exist_ok=True)
+        model_name = str(Path(weights_dir) / model_name)
     model = YOLO(model_name)
     return model
 
@@ -32,7 +37,11 @@ def coco_to_yolo(coco_json_path: str, output_dir: str):
     
     # Mapping image id to file
     img_dict = {img['id']: img for img in coco['images']}
-    
+
+    # Collect every label line first, then write each file once with 'w',
+    # so re-running the conversion overwrites instead of appending duplicates
+    lines_per_file = {}
+
     for ann in coco['annotations']:
         img_id = ann['image_id']
         cat_id = ann['category_id'] # Note: YOLO classes are 0-indexed. Adjust if necessary.
@@ -51,7 +60,9 @@ def coco_to_yolo(coco_json_path: str, output_dir: str):
         norm_h = h / img_h
         
         txt_filename = Path(img_info['file_name']).stem + '.txt'
-        txt_path = output_dir / txt_filename
-        
-        with open(txt_path, 'a', encoding='utf-8') as txt_f:
-            txt_f.write(f"{cat_id} {x_center} {y_center} {norm_w} {norm_h}\n")
+        lines_per_file.setdefault(txt_filename, []).append(
+            f"{cat_id} {x_center} {y_center} {norm_w} {norm_h}\n")
+
+    for txt_filename, lines in lines_per_file.items():
+        with open(output_dir / txt_filename, 'w', encoding='utf-8') as txt_f:
+            txt_f.writelines(lines)

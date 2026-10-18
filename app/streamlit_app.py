@@ -16,6 +16,7 @@ from pathlib import Path
 from PIL import Image
 import io
 import base64
+import hashlib
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -71,15 +72,21 @@ INDIC_CSS = """
     padding-top: 1rem !important;
     padding-bottom: 2rem !important;
 }
-/* Hide default stHeader to make it look cleaner */
+/* Keep Streamlit's header (it holds the button that reopens a collapsed sidebar), but make it
+   transparent and hide only the Deploy button and the main menu */
 header[data-testid="stHeader"] {
-    display: none !important;
+    background: transparent !important;
 }
-[data-testid="stToolbar"] {
-    display: none !important;
-}
+[data-testid="stAppDeployButton"],
+[data-testid="stMainMenu"],
 #MainMenu {
     display: none !important;
+}
+[data-testid="stExpandSidebarButton"] {
+    color: var(--primary) !important;
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
 }
 footer {
     display: none !important;
@@ -298,6 +305,11 @@ footer {
 [data-testid="stSidebar"] * {
     color: #F8FAFC !important;
 }
+/* Light text needs a dark field: the light theme would otherwise give the model dropdown a white box */
+[data-testid="stSidebar"] [data-testid="stSelectbox"] [role="group"] {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
 [data-testid="stSidebar"] .stSelectbox label, 
 [data-testid="stSidebar"] .stSlider label {
     font-family: 'Inter', sans-serif;
@@ -374,18 +386,12 @@ st.markdown(INDIC_CSS, unsafe_allow_html=True)
 #  CONSTANTS & UTILITIES
 # ══════════════════════════════════════════════════════════════
 
-DEFAULT_CLASSES = [
-    'Paragraph', 'Image', 'Table', 'Header', 'Footer',
-    'Title', 'Caption', 'Page Number', 'Footnote', 'List',
-    'Figure', 'Equation', 'Logo', 'Stamp', 'Signature',
-    'Handwriting', 'Chart', 'Map', 'Separator', 'Advertisement',
-    'Watermark', 'Background', 'Margin Note', 'Column',
-    'Section Header', 'Sub Header', 'Abstract', 'Author',
-    'Affiliation', 'Date', 'Reference', 'Acknowledgment',
-    'Appendix', 'Table of Contents', 'Index', 'Glossary',
-    'Bibliography', 'Preface', 'Dedication', 'Colophon',
-    'Running Header', 'Running Footer'
-]
+from ml.config import (CLASS_NAMES as DEFAULT_CLASSES, AUTHORS_CHECKPOINT, BASELINE_CHECKPOINT, PROPOSED_CHECKPOINT,
+                       get_device, METRICS_DIR, PLOTS_DIR, PREDICTION_DIR)
+from ml.ocr import OCR_LANGUAGES, extract_document, tesseract_available
+from ml.inference.predict import demo_inference, disable_runtime_installs
+
+disable_runtime_installs()  # serving must never pip-install packages
 
 # Color palette for detection boxes
 def get_class_colors(n):
@@ -446,6 +452,70 @@ def load_metrics(metrics_dir):
     return metrics
 
 
+MODEL_TYPES = {"DocLayout-YOLO (IndicDLP authors)": "doclayout", "YOLOv8 (Proposed)": "yolov8",
+               "Faster R-CNN (Baseline)": "fasterrcnn"}
+METRICS_NAMES = {"doclayout": "authors_metrics", "yolov8": "proposed_metrics", "fasterrcnn": "baseline_metrics"}
+# Inference keeps every box down to this score; the sidebar slider then filters live, without re-running the model
+INFERENCE_FLOOR = 0.05
+
+
+@st.cache_resource(show_spinner="Loading model...")
+def get_model(model_type):
+    """Load a trained checkpoint once per server process, not on every click."""
+    from ml.inference.predict import load_model
+    device = get_device()
+    path = {"doclayout": AUTHORS_CHECKPOINT, "yolov8": PROPOSED_CHECKPOINT, "fasterrcnn": BASELINE_CHECKPOINT}[model_type]
+    model = load_model(str(path), model_type, device)
+    disable_runtime_installs()  # again, now that ultralytics may have been imported
+    return model, device
+
+
+# Evaluated models, best first: (metrics file prefix, display name)
+EVALUATED_MODELS = [("authors", "DocLayout-YOLO (IndicDLP authors)"), ("proposed", "YOLOv8s (ours)"),
+                    ("baseline", "Faster R-CNN (ours)")]
+
+
+def fmt(value, digits=3):
+    """Metric for display: fixed decimals for numbers, N/A when missing."""
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return f"{value:.{digits}f}"
+    return "N/A"
+
+
+def dataset_label(m):
+    if not m.get("num_images"):
+        return "Not evaluated yet"
+    return f"{m.get('dataset', 'Unknown dataset')} ({m['num_images']} pages)"
+
+
+def show_training_history():
+    """Per-epoch loss curves written by the two training scripts."""
+    import pandas as pd
+    baseline_file = METRICS_DIR / "baseline_training_history.json"
+    proposed_file = METRICS_DIR / "proposed_training_history.csv"
+    if not baseline_file.exists() and not proposed_file.exists():
+        st.info("Loss curves will appear after training.")
+        return
+    hc1, hc2 = st.columns(2)
+    with hc1:
+        if baseline_file.exists():
+            h = json.loads(baseline_file.read_text())
+            df = pd.DataFrame({"Train loss": h["train_losses"], "Val loss": h["val_losses"]},
+                              index=range(1, len(h["train_losses"]) + 1))
+            st.markdown("**Faster R-CNN** &mdash; loss per epoch")
+            st.line_chart(df)
+    with hc2:
+        if proposed_file.exists():
+            r = pd.read_csv(proposed_file)
+            r.columns = [c.strip() for c in r.columns]
+            parts = ["box_loss", "cls_loss", "dfl_loss"]
+            df = pd.DataFrame({"Train loss": r[[f"train/{p}" for p in parts]].sum(axis=1).values,
+                               "Val loss": r[[f"val/{p}" for p in parts]].sum(axis=1).values},
+                              index=r["epoch"].values)
+            st.markdown("**YOLOv8** &mdash; loss per epoch (box + class + DFL)")
+            st.line_chart(df)
+
+
 def run_inference_frcnn(image, model, device, conf_threshold):
     import torch
     from torchvision import transforms as T
@@ -460,57 +530,46 @@ def run_inference_frcnn(image, model, device, conf_threshold):
     else:
         image_resized = image
 
+    from ml.inference.predict import predict_single
+
     transform = T.Compose([T.ToTensor()])
-    img_tensor = transform(cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB)).to(device)
+    img_tensor = transform(cv2.cvtColor(image_resized, cv2.COLOR_BGR2RGB))
     start = time.time()
-    with torch.no_grad():
-        predictions = model([img_tensor])
+    # predict_single shifts Faster R-CNN labels back to 0-indexed class ids
+    pred = predict_single(model, img_tensor, 'fasterrcnn', device)
     inference_time = time.time() - start
-    pred = predictions[0]
     mask = pred['scores'] >= conf_threshold
-    
-    boxes = pred['boxes'][mask].cpu().numpy()
-    
+
+    boxes = pred['boxes'][mask]
+
     # Scale boxes back if we resized
     if max(h, w) > max_dim:
         boxes = boxes / scale
-        
+
     return {
         'boxes': boxes,
-        'labels': pred['labels'][mask].cpu().numpy(),
-        'scores': pred['scores'][mask].cpu().numpy(),
+        'labels': pred['labels'][mask],
+        'scores': pred['scores'][mask],
         'inference_time': inference_time
     }
 
 
-def run_inference_yolo(image, model, conf_threshold):
+def run_inference_yolo(image, model, conf_threshold, model_type="yolov8", device="cpu"):
+    """YOLOv8 or DocLayout-YOLO on a BGR image; labels are 0-indexed class ids."""
+    from ml.inference.predict import predict_single
     start = time.time()
-    results = model(image, conf=conf_threshold, verbose=False)
-    inference_time = time.time() - start
-    result = results[0]
-    boxes = result.boxes.xyxy.cpu().numpy() if len(result.boxes) > 0 else np.array([])
-    labels = result.boxes.cls.cpu().numpy() if len(result.boxes) > 0 else np.array([])
-    scores = result.boxes.conf.cpu().numpy() if len(result.boxes) > 0 else np.array([])
-    return {'boxes': boxes, 'labels': labels, 'scores': scores, 'inference_time': inference_time}
+    out = predict_single(model, Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)), model_type, device,
+                         conf=conf_threshold)
+    out['inference_time'] = time.time() - start
+    return out
 
 
-def demo_inference(image):
-    h, w = image.shape[:2]
-    np.random.seed(42)
-    n = np.random.randint(4, 9)
-    boxes, labels, scores = [], [], []
-    for _ in range(n):
-        bw = np.random.randint(w//6, w//2)
-        bh = np.random.randint(h//8, h//3)
-        x1 = np.random.randint(0, max(1, w-bw))
-        y1 = np.random.randint(0, max(1, h-bh))
-        boxes.append([x1, y1, x1+bw, y1+bh])
-        labels.append(np.random.randint(0, min(10, len(DEFAULT_CLASSES))))
-        scores.append(round(np.random.uniform(0.55, 0.97), 2))
-    return {
-        'boxes': np.array(boxes), 'labels': np.array(labels),
-        'scores': np.array(scores), 'inference_time': 0.0, 'is_demo': True
-    }
+def filter_results(results, conf_threshold):
+    """The boxes at or above the slider's threshold, with duplicates (same box, several labels) removed."""
+    from ml.inference.predict import dedupe_boxes
+    keep = np.asarray(results["scores"]) >= conf_threshold
+    return dedupe_boxes({**results, "boxes": np.asarray(results["boxes"])[keep],
+                         "labels": np.asarray(results["labels"])[keep], "scores": np.asarray(results["scores"])[keep]})
 
 
 def metric_card_html(value, label, icon=""):
@@ -543,22 +602,38 @@ with st.sidebar:
     # Logo
     logo_path = Path(__file__).parent / "assets" / "logo.jpg"
     if logo_path.exists():
-        st.image(str(logo_path), use_container_width=True)
+        st.image(str(logo_path), width="stretch")
     else:
         st.markdown('<div style="text-align:center; font-size:1.5rem; font-weight:700; color:#C89B3C; margin:1rem 0;">IndicDoc AI</div>', unsafe_allow_html=True)
 
     st.markdown("---")
 
+    # Offer only the models that have a trained checkpoint; demo mode only when there is none
+    available = {"DocLayout-YOLO (IndicDLP authors)": AUTHORS_CHECKPOINT, "YOLOv8 (Proposed)": PROPOSED_CHECKPOINT,
+                 "Faster R-CNN (Baseline)": BASELINE_CHECKPOINT}
+    model_options = [name for name, path in available.items() if path.exists()] or ["Demo (No Model)"]
     model_choice = st.selectbox(
         "MODEL",
-        ["Demo (No Model)", "Faster R-CNN (Baseline)", "YOLOv8 (Proposed)"],
+        model_options,
         index=0,
         help="Select the model for inference"
     )
 
+    detection_mode = st.radio(
+        "DETECTION MODE", ["Find every part", "Balanced"],
+        help="Find every part: the lowest threshold that kept at least 70% of boxes correct on validation pages "
+             "(finds more, some boxes wrong). Balanced: the threshold with the best F1.")
+    # Thresholds chosen on the validation pages by scripts/evaluate.py
+    metrics_name = METRICS_NAMES.get(MODEL_TYPES.get(model_choice), "baseline_metrics")
+    model_metrics = load_metrics(METRICS_DIR).get(metrics_name, {})
+    recommended = model_metrics.get("recommended_conf", 0.5)
+    if detection_mode == "Find every part":
+        recommended = model_metrics.get("high_recall_conf", recommended)
     conf_threshold = st.slider(
         "CONFIDENCE THRESHOLD",
-        min_value=0.1, max_value=0.95, value=0.5, step=0.05,
+        min_value=0.05, max_value=0.95, value=float(min(0.95, max(0.05, recommended))), step=0.05,
+        key=f"conf_{model_choice}_{detection_mode}",  # each model and mode starts from its own value
+        help="Boxes below this confidence are hidden; move it to show more or fewer parts instantly.",
     )
 
     st.markdown("---")
@@ -603,9 +678,10 @@ st.markdown("""
 # ══════════════════════════════════════════════════════════════
 #  NAVIGATION TABS
 # ══════════════════════════════════════════════════════════════
-tab_dash, tab_analyze, tab_insights, tab_eval, tab_about = st.tabs([
-    "Dashboard",
+# Analyze first: the app opens on the upload screen
+tab_analyze, tab_dash, tab_insights, tab_eval, tab_about = st.tabs([
     "Analyze",
+    "Dashboard",
     "Model Insights",
     "Evaluation",
     "About",
@@ -616,81 +692,54 @@ tab_dash, tab_analyze, tab_insights, tab_eval, tab_about = st.tabs([
 #  TAB 1: DASHBOARD
 # ══════════════════════════════════════════════════════════════
 with tab_dash:
-    # Metric row
-    metrics_dir = PROJECT_ROOT / "outputs" / "metrics"
-    saved_metrics = load_metrics(metrics_dir)
+    # Metric row: the default (best) model
+    saved_metrics = load_metrics(METRICS_DIR)
     baseline_m = saved_metrics.get("baseline_metrics", {})
     proposed_m = saved_metrics.get("proposed_metrics", {})
+    authors_m = saved_metrics.get("authors_metrics", {})
+    primary_name, primary_m = next(((label, saved_metrics[f"{n}_metrics"]) for n, label in EVALUATED_MODELS
+                                    if saved_metrics.get(f"{n}_metrics")), ("", {}))
+    if primary_m:
+        st.caption(f"{primary_name} on {dataset_label(primary_m)}")
 
     c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
-        st.markdown(metric_card_html(
-            baseline_m.get("total_predictions", "N/A"), "Total Predictions"), unsafe_allow_html=True)
+        st.markdown(metric_card_html(fmt(primary_m.get('map50')), "mAP@50"), unsafe_allow_html=True)
     with c2:
         st.markdown(metric_card_html(
-            f"{baseline_m.get('precision', 'N/A')}", "Precision"), unsafe_allow_html=True)
+            fmt(primary_m.get('at_recommended_conf', {}).get('precision')), "Precision"), unsafe_allow_html=True)
     with c3:
         st.markdown(metric_card_html(
-            f"{baseline_m.get('recall', 'N/A')}", "Recall"), unsafe_allow_html=True)
+            fmt(primary_m.get('at_recommended_conf', {}).get('recall')), "Recall"), unsafe_allow_html=True)
     with c4:
         st.markdown(metric_card_html(
-            f"{baseline_m.get('f1', 'N/A')}", "F1-Score"), unsafe_allow_html=True)
+            fmt(primary_m.get('at_recommended_conf', {}).get('f1')), "F1-Score"), unsafe_allow_html=True)
     with c5:
         st.markdown(metric_card_html(
-            f"{baseline_m.get('inference_time', 'N/A')}s", "Inference Time"), unsafe_allow_html=True)
+            f"{fmt(primary_m.get('inference_time'))}s", "Time per Page"), unsafe_allow_html=True)
+    if primary_m.get("recommended_conf") is not None:
+        st.caption(f"Precision, recall and F1 at the model's recommended confidence ({primary_m['recommended_conf']}), "
+                   "chosen on validation pages.")
 
     st.markdown("")
+    st.markdown('<div class="section-title">Models</div>', unsafe_allow_html=True)
+    headers = ["Property", "DocLayout-YOLO (IndicDLP authors)", "YOLOv8s (ours)", "Faster R-CNN (ours)"]
+    rows = [
+        ["Trained by", "IndicDLP authors, full training set (~96K pages)", "This project, 2,293 pages", "This project, 2,293 pages"],
+        ["Architecture", "DocLayout-YOLO (YOLOv10-based)", "YOLOv8s (CSPDarknet)", "ResNet-50 + FPN, two-stage"],
+        ["Evaluated on", dataset_label(authors_m), dataset_label(proposed_m), dataset_label(baseline_m)],
+        ["mAP@50", fmt(authors_m.get("map50")), fmt(proposed_m.get("map50")), fmt(baseline_m.get("map50"))],
+        ["Input size", "1024 px", "640 px", "640 px (longest side)"],
+        ["Available here", "Yes" if AUTHORS_CHECKPOINT.exists() else "No",
+         "Yes" if PROPOSED_CHECKPOINT.exists() else "No", "Yes" if BASELINE_CHECKPOINT.exists() else "No"],
+    ]
+    st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
 
-    col_left, col_right = st.columns([3, 2])
-
-    with col_left:
-        st.markdown('<div class="section-title">Model Status</div>', unsafe_allow_html=True)
-
-        headers = ["Property", "Baseline (Faster R-CNN)", "Proposed (YOLOv8)"]
-        rows = [
-            ["Current Model", "Faster R-CNN", "YOLOv8s"],
-            ["Architecture", "ResNet-50 + FPN", "CSPDarknet"],
-            ["Dataset", "IndicDLP (Sample)", "IndicDLP (Sample)"],
-            ["Classes", "42 classes + background", "42 classes"],
-            ["Image Size", "640 x 640", "640 x 640"],
-            ["Status", 
-             "Trained" if (PROJECT_ROOT / "outputs" / "models" / "baseline_frcnn_best.pth").exists() else "Not trained",
-             "Trained" if (PROJECT_ROOT / "outputs" / "models" / "yolov8_best.pt").exists() else "Not trained"]
-        ]
-        st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
-
-    with col_right:
-        st.markdown('<div class="section-title">Latest Evaluation</div>', unsafe_allow_html=True)
-
-        if baseline_m:
-            headers = ["Metric", "Value"]
-            rows = [
-                ["Precision", baseline_m.get("precision", "N/A")],
-                ["Recall", baseline_m.get("recall", "N/A")],
-                ["F1", baseline_m.get("f1", "N/A")],
-                ["mAP@50", baseline_m.get("map50", "N/A")],
-                ["Avg IoU", baseline_m.get("avg_iou", "N/A")]
-            ]
-            st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
-            if baseline_m.get("note"):
-                st.caption(baseline_m["note"])
-        else:
-            st.info("No evaluation metrics available yet. Run training first.")
-
-    # Show training plots if available
-    plots_dir = PROJECT_ROOT / "outputs" / "plots"
-    loss_plot = plots_dir / "training_loss.png"
-    comp_plot = plots_dir / "model_comparison.png"
-
-    if loss_plot.exists() or comp_plot.exists():
-        st.markdown('<div class="section-title">Training Overview</div>', unsafe_allow_html=True)
-        pc1, pc2 = st.columns(2)
-        with pc1:
-            if loss_plot.exists():
-                st.image(str(loss_plot), caption="Training & Validation Loss", use_container_width=True)
-        with pc2:
-            if comp_plot.exists():
-                st.image(str(comp_plot), caption="Model Performance Comparison", use_container_width=True)
+    st.markdown('<div class="section-title">Training Overview</div>', unsafe_allow_html=True)
+    show_training_history()
+    comp_plot = PLOTS_DIR / "model_comparison.png"
+    if comp_plot.exists():
+        st.image(str(comp_plot), caption="Model Performance Comparison (same test pages)", width="stretch")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -707,55 +756,60 @@ with tab_analyze:
             help="Upload a document image or PDF for layout analysis"
         )
 
-        sample_dir = PROJECT_ROOT / "data" / "processed" / "sample" / "images"
+        # Real IndicDLP test pages (MIT licence) ship with the app; the synthetic pages are only a fallback
+        sample_dir = PROJECT_ROOT / "app" / "assets" / "samples"
+        if not any(sample_dir.glob("*.png")):
+            sample_dir = PROJECT_ROOT / "data" / "processed" / "sample" / "images"
         sample_images = sorted(list(sample_dir.glob("*.png")) + list(sample_dir.glob("*.jpg"))) if sample_dir.exists() else []
 
         if sample_images:
-            use_sample = st.checkbox("Use a sample image")
+            use_sample = st.checkbox("Use a sample page (real IndicDLP test pages)")
             if use_sample:
                 sample_choice = st.selectbox("Sample", [s.name for s in sample_images[:10]])
                 uploaded_file = sample_dir / sample_choice
 
         if uploaded_file is not None:
+            from ml.preprocessing.preprocess import decode_image, pdf_page_count, render_pdf_page
             if isinstance(uploaded_file, Path):
                 file_ext = uploaded_file.suffix.lower()
-                if file_ext == '.pdf':
-                    import fitz
-                    doc = fitz.open(str(uploaded_file))
-                    pix = doc[0].get_pixmap()
-                    img_data = pix.tobytes("png")
-                    file_bytes = np.frombuffer(img_data, np.uint8)
-                    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-                else:
-                    image = cv2.imread(str(uploaded_file))
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                file_data = uploaded_file.read_bytes()
             else:
                 file_ext = Path(uploaded_file.name).suffix.lower()
-                file_data = uploaded_file.read()
-                if file_ext == '.pdf':
-                    import fitz
-                    doc = fitz.open(stream=file_data, filetype="pdf")
-                    pix = doc[0].get_pixmap()
-                    img_data = pix.tobytes("png")
-                    file_bytes = np.frombuffer(img_data, np.uint8)
-                    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-                else:
-                    file_bytes = np.frombuffer(file_data, np.uint8)
-                    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-                image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                file_data = uploaded_file.getvalue()
+            page_no = 1
+            if file_ext == '.pdf':
+                try:
+                    n_pages = pdf_page_count(file_data)
+                    page_no = st.number_input(f"Page (1-{n_pages})", min_value=1, max_value=n_pages, value=1) if n_pages > 1 else 1
+                    image = render_pdf_page(file_data, page_index=page_no - 1)
+                except Exception:
+                    st.error("Could not read this PDF.")
+                    st.stop()
+            else:
+                try:
+                    image = decode_image(file_data)
+                except ValueError as e:
+                    st.error(f"Could not use this file: {e}.")
+                    st.stop()
+            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            # Results belong to one page: identify it by content (and PDF page) so they never carry over
+            page_key = f"{hashlib.sha1(file_data).hexdigest()}:{page_no}"
 
             h, w = image.shape[:2]
             st.markdown(f"**Dimensions:** {w} x {h} px")
-            run_btn = st.button("Analyze Document", type="primary", use_container_width=True)
-            reset_btn = st.button("Reset", use_container_width=True)
+            run_btn = st.button("Analyze Document", type="primary", width="stretch")
+            reset_btn = st.button("Reset", width="stretch")
         else:
             run_btn = False
             reset_btn = False
 
         st.markdown('<div class="section-title" style="margin-top: 2rem;">Analysis Results</div>', unsafe_allow_html=True)
-        results = st.session_state.get("last_results")
+        results = None
+        if uploaded_file is not None and st.session_state.get("last_results_key") == page_key:
+            results = st.session_state.get("last_results")
 
-        if results and uploaded_file is not None:
+        if results:
+            results = filter_results(results, conf_threshold)
             n_det = len(results.get("boxes", []))
             avg_conf = float(np.mean(results["scores"])) if n_det > 0 else 0.0
             inf_time = results.get("inference_time", 0)
@@ -780,7 +834,7 @@ with tab_analyze:
                 )
                 _, buf = cv2.imencode('.png', annotated_bgr)
                 st.markdown("<br>", unsafe_allow_html=True)
-                st.download_button("Download Image", data=buf.tobytes(), file_name="indicdoc_result.png", mime="image/png", use_container_width=True)
+                st.download_button("Download Image", data=buf.tobytes(), file_name="indicdoc_result.png", mime="image/png", width="stretch")
         else:
             st.markdown("""
             <div style="color:var(--text-muted); font-size:0.9rem;">
@@ -792,64 +846,87 @@ with tab_analyze:
         st.markdown('<div class="section-title">Document Viewer</div>', unsafe_allow_html=True)
 
         if uploaded_file is not None:
-            view_mode = st.radio("View", ["Original", "Prediction", "Comparison"], horizontal=True, label_visibility="collapsed")
+            view_mode = st.radio("View", ["Original", "Prediction", "Comparison"], index=1, horizontal=True, label_visibility="collapsed")
+            has_results = st.session_state.get("last_results_key") == page_key
 
-            if run_btn or st.session_state.get("last_results") is not None:
+            if run_btn or has_results:
                 # Run inference
                 if run_btn:
                     with st.spinner("Analyzing document..."):
-                        if model_choice == "Faster R-CNN (Baseline)":
-                            mp = PROJECT_ROOT / "outputs" / "models" / "baseline_frcnn_best.pth"
-                            if mp.exists():
-                                try:
-                                    import torch
-                                    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-                                    from ml.models.baseline_frcnn import get_baseline_model
-                                    model = get_baseline_model(len(DEFAULT_CLASSES) + 1, pretrained=False)
-                                    model.load_state_dict(torch.load(str(mp), map_location=device, weights_only=True))
-                                    model.to(device)
-                                    results = run_inference_frcnn(image, model, device, conf_threshold)
-                                except Exception as e:
-                                    st.warning(f"Model loading failed: {e}")
-                                    results = demo_inference(image)
-                            else:
-                                results = demo_inference(image)
-                        elif model_choice == "YOLOv8 (Proposed)":
-                            mp = PROJECT_ROOT / "outputs" / "models" / "yolov8_best.pt"
-                            if mp.exists():
-                                try:
-                                    from ultralytics import YOLO
-                                    model = YOLO(str(mp))
-                                    results = run_inference_yolo(image, model, conf_threshold)
-                                except Exception as e:
-                                    st.warning(f"Model loading failed: {e}")
-                                    results = demo_inference(image)
-                            else:
-                                results = demo_inference(image)
-                        else:
+                        model_type = MODEL_TYPES.get(model_choice)
+                        if model_type is None:
                             results = demo_inference(image)
+                        else:
+                            try:
+                                model, device = get_model(model_type)
+                                if model_type == "fasterrcnn":
+                                    results = run_inference_frcnn(image, model, device, INFERENCE_FLOOR)
+                                else:
+                                    results = run_inference_yolo(image, model, INFERENCE_FLOOR, model_type, device)
+                            except Exception as e:
+                                st.warning(f"Model loading failed: {e}")
+                                results = demo_inference(image)
 
                     st.session_state["last_results"] = results
+                    st.session_state["last_results_key"] = page_key
+                    # The left results panel was drawn before this inference ran; rerun so it shows the new results
+                    st.rerun()
 
                 results = st.session_state.get("last_results")
                 if results:
                     if results.get("is_demo"):
                         st.markdown('<div class="demo-banner"><b>Demo Mode</b> &mdash; Showing synthetic detections. Train a model for real predictions.</div>', unsafe_allow_html=True)
 
-                    annotated = draw_detections(image_rgb.copy(), results["boxes"], results["labels"], results["scores"], DEFAULT_CLASSES, conf_threshold)
+                    shown = filter_results(results, conf_threshold)
+                    annotated = draw_detections(image_rgb.copy(), shown["boxes"], shown["labels"], shown["scores"], DEFAULT_CLASSES, conf_threshold)
 
                     if view_mode == "Original":
-                        st.image(image_rgb, caption="Original Document", use_container_width=True)
+                        st.image(image_rgb, caption="Original Document", width="stretch")
                     elif view_mode == "Prediction":
-                        st.image(annotated, caption="Detected Layout Elements", use_container_width=True)
+                        st.image(annotated, caption="Detected Layout Elements", width="stretch")
                     else:
                         c_l, c_r = st.columns(2)
                         with c_l:
-                            st.image(image_rgb, caption="Original", use_container_width=True)
+                            st.image(image_rgb, caption="Original", width="stretch")
                         with c_r:
-                            st.image(annotated, caption="Prediction", use_container_width=True)
+                            st.image(annotated, caption="Prediction", width="stretch")
+
+                    # ── Text extraction (OCR) of the detected regions ──
+                    st.markdown('<div class="section-title">Extracted Text</div>', unsafe_allow_html=True)
+                    if not tesseract_available():
+                        st.info("Text extraction needs Tesseract and its language models (python scripts/download_models.py).")
+                    else:
+                        lang_choice = st.selectbox("Text language", ["Auto-detect"] + list(OCR_LANGUAGES),
+                                                   help="Auto-detect reads one text block with each script's model and keeps the most confident.")
+                        if st.button("Read text (OCR)", width="stretch"):
+                            code = OCR_LANGUAGES.get(lang_choice)
+                            languages = "auto" if code is None else (code if code == "eng" else f"{code}+eng")
+                            with st.spinner("Reading text..."):
+                                st.session_state["ocr_result"] = extract_document(
+                                    image_rgb, filter_results(results, conf_threshold), languages)
+                                st.session_state["ocr_key"] = (page_key, conf_threshold, lang_choice)
+                        doc = st.session_state.get("ocr_result")
+                        if doc and st.session_state.get("ocr_key", (None,))[0] == page_key:
+                            detected = f"detected script: {doc['script']}, " if doc.get("script") else ""
+                            st.caption(f"Machine-read text ({detected}Tesseract languages: {doc['languages']}). "
+                                       "It may contain errors; please review before use.")
+                            t_doc, t_regions = st.tabs(["Document", "By region"])
+                            with t_doc:
+                                st.markdown(doc["markdown"])
+                            with t_regions:
+                                import pandas as pd
+                                st.dataframe(pd.DataFrame([{"#": i + 1, "label": r["label"], "confidence": r["score"],
+                                                            "text": r["text"]} for i, r in enumerate(doc["regions"])]),
+                                             hide_index=True, width="stretch")
+                            d1, d2 = st.columns(2)
+                            with d1:
+                                st.download_button("Download Markdown", data=doc["markdown"].encode("utf-8"),
+                                                   file_name="indicdoc_text.md", mime="text/markdown", width="stretch")
+                            with d2:
+                                st.download_button("Download JSON", data=json.dumps(doc, ensure_ascii=False, indent=2).encode("utf-8"),
+                                                   file_name="indicdoc_text.json", mime="application/json", width="stretch")
             else:
-                st.image(image_rgb, caption="Original Document", use_container_width=True)
+                st.image(image_rgb, caption="Original Document", width="stretch")
         else:
             st.markdown("""
             <div class="empty-state">
@@ -861,6 +938,7 @@ with tab_analyze:
 
     if reset_btn:
         st.session_state.pop("last_results", None)
+        st.session_state.pop("last_results_key", None)
         st.rerun()
 
 
@@ -868,32 +946,24 @@ with tab_analyze:
 #  TAB 3: MODEL INSIGHTS
 # ══════════════════════════════════════════════════════════════
 with tab_insights:
-    st.markdown('<div class="section-title">Baseline vs Proposed Model</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-title">Model Comparison (same test pages)</div>', unsafe_allow_html=True)
 
-    metrics_dir = PROJECT_ROOT / "outputs" / "metrics"
-    saved = load_metrics(metrics_dir)
-    bm = saved.get("baseline_metrics", {})
-    pm = saved.get("proposed_metrics", {})
-
-    if bm or pm:
-        headers = ["Metric", "Faster R-CNN (Baseline)", "YOLOv8 (Proposed)"]
-        rows = [
-            ["Precision", bm.get("precision", "N/A"), pm.get("precision", "N/A")],
-            ["Recall", bm.get("recall", "N/A"), pm.get("recall", "N/A")],
-            ["F1-Score", bm.get("f1", "N/A"), pm.get("f1", "N/A")],
-            ["mAP@50", bm.get("map50", "N/A"), pm.get("map50", "N/A")],
-            ["mAP@50:95", bm.get("map50_95", "N/A"), pm.get("map50_95", "N/A")],
-            ["Inference Time (s)", bm.get("inference_time", "N/A"), pm.get("inference_time", "N/A")],
-            ["Model Size (MB)", bm.get("model_size_mb", "N/A"), pm.get("model_size_mb", "N/A")]
-        ]
+    saved = load_metrics(METRICS_DIR)
+    present = [(n, label, saved[f"{n}_metrics"]) for n, label in EVALUATED_MODELS if saved.get(f"{n}_metrics")]
+    if present:
+        headers = ["Metric"] + [label for _, label, _ in present]
+        spec = [("mAP@50", "map50", 3), ("mAP@50:95", "map50_95", 3), ("Precision (conf >= 0.5)", "precision", 3),
+                ("Recall (conf >= 0.5)", "recall", 3), ("F1 (conf >= 0.5)", "f1", 3), ("Avg IoU", "avg_iou", 3),
+                ("Recommended confidence", "recommended_conf", 2), ("Inference Time (s/page)", "inference_time", 3),
+                ("Model Size (MB)", "model_size_mb", 1)]
+        rows = [[name] + [fmt(m.get(key), d) for _, _, m in present] for name, key, d in spec]
+        rows.append(["F1 at recommended confidence"] + [fmt(m.get("at_recommended_conf", {}).get("f1")) for _, _, m in present])
         st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
-
-        if bm.get("note"):
-            st.caption(f"Baseline: {bm['note']}")
-        if pm.get("note"):
-            st.caption(f"Proposed: {pm['note']}")
+        for _, label, m in present:
+            if m.get("note"):
+                st.caption(f"{label}: {m['note']}")
     else:
-        st.info("No evaluation metrics available yet. Train both models to see comparison.")
+        st.info("No evaluation metrics available yet.")
 
     # Architecture cards
     st.markdown('<div class="section-title">Architecture Details</div>', unsafe_allow_html=True)
@@ -907,9 +977,9 @@ with tab_insights:
         <tr><td><b>Type</b></td><td>Two-stage detector</td></tr>
         <tr><td><b>Pretrained</b></td><td>COCO (torchvision)</td></tr>
         <tr><td><b>Parameters</b></td><td>~41.8M</td></tr>
-        <tr><td><b>Optimizer</b></td><td>SGD (lr=0.005, momentum=0.9)</td></tr>
-        <tr><td><b>Scheduler</b></td><td>StepLR (step=3, gamma=0.1)</td></tr>
-        <tr><td><b>Augmentation</b></td><td>HFlip, ColorJitter, Normalize</td></tr>
+        <tr><td><b>Optimizer</b></td><td>SGD (lr=0.005, momentum=0.9, weight decay 5e-4)</td></tr>
+        <tr><td><b>Scheduler</b></td><td>Cosine annealing</td></tr>
+        <tr><td><b>Augmentation</b></td><td>Colour jitter, Gaussian blur (no flips)</td></tr>
     </table>
 </div>
 """, unsafe_allow_html=True)
@@ -922,40 +992,35 @@ with tab_insights:
         <tr><td><b>Type</b></td><td>Single-stage detector</td></tr>
         <tr><td><b>Pretrained</b></td><td>COCO (ultralytics)</td></tr>
         <tr><td><b>Parameters</b></td><td>~11.2M</td></tr>
-        <tr><td><b>Optimizer</b></td><td>SGD (ultralytics auto)</td></tr>
-        <tr><td><b>Scheduler</b></td><td>Cosine annealing</td></tr>
-        <tr><td><b>Augmentation</b></td><td>Mosaic, MixUp, HSV, Flip</td></tr>
+        <tr><td><b>Optimizer</b></td><td>Chosen automatically by ultralytics</td></tr>
+        <tr><td><b>Scheduler</b></td><td>Linear decay with warm-up (ultralytics default)</td></tr>
+        <tr><td><b>Augmentation</b></td><td>Mosaic, HSV, translate/scale (no flips)</td></tr>
     </table>
 </div>
 """, unsafe_allow_html=True)
 
     # Training curves & visualizations
-    plots_dir = PROJECT_ROOT / "outputs" / "plots"
     st.markdown('<div class="section-title">Training Curves</div>', unsafe_allow_html=True)
+    show_training_history()
 
+    st.markdown('<div class="section-title">Precision-Recall Curves</div>', unsafe_allow_html=True)
     tc1, tc2 = st.columns(2)
-    with tc1:
-        lp = plots_dir / "training_loss.png"
-        if lp.exists():
-            st.image(str(lp), caption="Training & Validation Loss", use_container_width=True)
-        else:
-            st.info("Training loss plot will appear after training.")
-    with tc2:
-        pr = plots_dir / "precision_recall.png"
-        if pr.exists():
-            st.image(str(pr), caption="Precision-Recall Curve", use_container_width=True)
-        else:
-            st.info("PR curve will appear after evaluation.")
+    for col, name, label in ((tc1, "baseline", "Faster R-CNN"), (tc2, "proposed", "YOLOv8")):
+        with col:
+            pr = PLOTS_DIR / f"{name}_pr_curve.png"
+            if pr.exists():
+                st.image(str(pr), caption=f"{label}: precision-recall at IoU 0.50", width="stretch")
+            else:
+                st.info(f"{label}: PR curve will appear after evaluation.")
 
     # Sample predictions
-    pred_dir = PROJECT_ROOT / "outputs" / "predictions"
-    pred_images = sorted(list(pred_dir.glob("prediction_*.png"))) if pred_dir.exists() else []
+    pred_images = sorted(PREDICTION_DIR.glob("*_prediction_*.png")) if PREDICTION_DIR.exists() else []
     if pred_images:
         st.markdown('<div class="section-title">Sample Predictions</div>', unsafe_allow_html=True)
         pc = st.columns(min(3, len(pred_images)))
         for i, pi in enumerate(pred_images[:6]):
             with pc[i % len(pc)]:
-                st.image(str(pi), caption=pi.stem.replace("_", " ").title(), use_container_width=True)
+                st.image(str(pi), caption=pi.stem.replace("_", " ").title(), width="stretch")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -964,54 +1029,64 @@ with tab_insights:
 with tab_eval:
     st.markdown('<div class="section-title">Evaluation Dashboard</div>', unsafe_allow_html=True)
 
-    metrics_dir = PROJECT_ROOT / "outputs" / "metrics"
-    saved = load_metrics(metrics_dir)
-    bm = saved.get("baseline_metrics", {})
+    saved = load_metrics(METRICS_DIR)
+    present = [(n, label, saved[f"{n}_metrics"]) for n, label in EVALUATED_MODELS if saved.get(f"{n}_metrics")]
 
-    if bm:
+    for n, label, m in present:
+        st.markdown(f"**{label}**")
         ec1, ec2, ec3, ec4, ec5, ec6 = st.columns(6)
-        with ec1: st.markdown(metric_card_html(f"{bm.get('precision', 'N/A')}", "Precision"), unsafe_allow_html=True)
-        with ec2: st.markdown(metric_card_html(f"{bm.get('recall', 'N/A')}", "Recall"), unsafe_allow_html=True)
-        with ec3: st.markdown(metric_card_html(f"{bm.get('f1', 'N/A')}", "F1-Score"), unsafe_allow_html=True)
-        with ec4: st.markdown(metric_card_html(f"{bm.get('map50', 'N/A')}", "mAP@50"), unsafe_allow_html=True)
-        with ec5: st.markdown(metric_card_html(f"{bm.get('avg_iou', 'N/A')}", "Avg IoU"), unsafe_allow_html=True)
-        with ec6: st.markdown(metric_card_html(f"{bm.get('inference_time', 'N/A')}s", "Latency"), unsafe_allow_html=True)
+        with ec1: st.markdown(metric_card_html(fmt(m.get('map50')), "mAP@50"), unsafe_allow_html=True)
+        with ec2: st.markdown(metric_card_html(fmt(m.get('map50_95')), "mAP@50:95"), unsafe_allow_html=True)
+        with ec3: st.markdown(metric_card_html(fmt(m.get('at_recommended_conf', {}).get('precision')), "Precision"), unsafe_allow_html=True)
+        with ec4: st.markdown(metric_card_html(fmt(m.get('at_recommended_conf', {}).get('recall')), "Recall"), unsafe_allow_html=True)
+        with ec5: st.markdown(metric_card_html(fmt(m.get('at_recommended_conf', {}).get('f1')), "F1-Score"), unsafe_allow_html=True)
+        with ec6: st.markdown(metric_card_html(f"{fmt(m.get('inference_time'))}s", "Latency"), unsafe_allow_html=True)
+    if present:
+        st.caption("Precision, recall and F1 at each model's recommended confidence (best F1 on validation pages).")
     else:
         st.info("No evaluation metrics available yet.")
 
-    plots_dir = PROJECT_ROOT / "outputs" / "plots"
-
-    # Charts row
-    ev1, ev2 = st.columns(2)
-    with ev1:
-        bm_plot = plots_dir / "baseline_metrics.png"
-        if bm_plot.exists():
-            st.image(str(bm_plot), caption="Baseline Metrics", use_container_width=True)
-    with ev2:
-        cm_plot = plots_dir / "confusion_matrix.png"
-        if cm_plot.exists():
-            st.image(str(cm_plot), caption="Confusion Matrix (Top 10 Classes)", use_container_width=True)
+    # Per-class AP and confusion matrices, one row per model
+    for name, label in EVALUATED_MODELS:
+        ap_plot, cm_plot = PLOTS_DIR / f"{name}_per_class_ap.png", PLOTS_DIR / f"{name}_confusion_matrix.png"
+        if ap_plot.exists() or cm_plot.exists():
+            st.markdown(f'<div class="section-title">{label}: Per-Class Results</div>', unsafe_allow_html=True)
+            ev1, ev2 = st.columns(2)
+            with ev1:
+                if ap_plot.exists():
+                    st.image(str(ap_plot), caption=f"{label}: AP@50 per class", width="stretch")
+            with ev2:
+                if cm_plot.exists():
+                    st.image(str(cm_plot), caption=f"{label}: confusion matrix (12 most frequent classes)", width="stretch")
 
     # Class distribution
-    cd_plot = plots_dir / "class_distribution.png"
+    cd_plot = PLOTS_DIR / "class_distribution.png"
     if cd_plot.exists():
         st.markdown('<div class="section-title">Class Distribution</div>', unsafe_allow_html=True)
-        st.image(str(cd_plot), caption="Class Distribution (Sample Data)", use_container_width=True)
+        st.image(str(cd_plot), caption="Class distribution of the evaluation pages", width="stretch")
 
     # Error analysis
-    err_dir = PROJECT_ROOT / "outputs" / "predictions" / "errors"
-    err_images = list(err_dir.glob("*.png")) if err_dir.exists() else []
+    err_dir = PREDICTION_DIR / "errors"
+    err_images = sorted(err_dir.glob("*.png")) if err_dir.exists() else []
     if err_images:
         st.markdown('<div class="section-title">Error Analysis</div>', unsafe_allow_html=True)
         for ei in err_images:
-            st.image(str(ei), caption=ei.stem.replace("_", " ").title(), use_container_width=True)
+            st.image(str(ei), caption=ei.stem.replace("_", " ").title(), width="stretch")
 
     # Per-language table
     st.markdown('<div class="section-title">Per-Language Evaluation</div>', unsafe_allow_html=True)
-    headers = ["Language", "Precision", "Recall", "F1"]
-    rows = [[lang, "N/A", "N/A", "N/A"] for lang in languages]
-    st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
-    st.caption("Per-language evaluation requires language metadata in the annotations. Results will be populated when evaluated on the full IndicDLP dataset with language labels.")
+    groups = [(label, m.get("per_group") or {}) for _, label, m in present]
+    languages = sorted({lang for _, g in groups for lang in g})
+    if languages:
+        headers = ["Language", "Test pages"] + [f"{label} mAP@50" for label, _ in groups]
+        rows = []
+        for lang in languages:
+            pages = next(g[lang]["images"] for _, g in groups if lang in g)
+            rows.append([lang.title(), pages] + [fmt((g.get(lang) or {}).get("map50")) for _, g in groups])
+        st.markdown(generate_html_table(headers, rows), unsafe_allow_html=True)
+        st.caption("mAP@50 computed separately on each language's test pages. Languages with few pages give less reliable numbers.")
+    else:
+        st.info("Per-language results will appear after evaluation.")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1036,7 +1111,7 @@ with tab_about:
 
     <h4>Methodology</h4>
     <ol>
-        <li><b>Dataset:</b> IndicDLP from AIKosh &mdash; 119,806 images, 12 languages, 42 classes</li>
+        <li><b>Dataset:</b> IndicDLP (AIKosh / Hugging Face) &mdash; 119,806 pages, 12 languages, 42 classes. The models here were trained on a language-balanced subset of it (see the Evaluation tab for the test-set size)</li>
         <li><b>Baseline:</b> Faster R-CNN with ResNet-50 FPN backbone</li>
         <li><b>Proposed:</b> YOLOv8s fine-tuned for document layout detection</li>
         <li><b>Evaluation:</b> mAP, Precision, Recall, F1-Score, IoU</li>
@@ -1058,7 +1133,7 @@ with tab_about:
 <div class="about-card">
     <h4>Technology Stack</h4>
     <ul>
-        <li>Python 3.13</li>
+        <li>Python 3.11</li>
         <li>PyTorch + torchvision</li>
         <li>Ultralytics YOLOv8</li>
         <li>OpenCV</li>

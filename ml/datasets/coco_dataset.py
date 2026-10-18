@@ -13,15 +13,17 @@ class COCODataset(Dataset):
     PyTorch Dataset for COCO-format annotated images.
     """
     
-    def __init__(self, annotation_file: str, img_dir: str, transforms=None):
+    def __init__(self, annotation_file: str, img_dir: str, transforms=None, label_offset: int = 0):
         """
         Args:
             annotation_file (str): Path to the COCO JSON annotation file.
             img_dir (str): Directory with all the images.
             transforms (callable, optional): Optional transform to be applied on a sample.
+            label_offset (int): Added to every category_id. Use 1 for Faster R-CNN, which reserves 0 for background.
         """
         self.img_dir = Path(img_dir)
         self.transforms = transforms
+        self.label_offset = label_offset
         
         with open(annotation_file, 'r', encoding='utf-8') as f:
             self.coco = json.load(f)
@@ -62,7 +64,7 @@ class COCODataset(Dataset):
             x, y, w, h = ann['bbox']
             # COCO to Pascal VOC format [xmin, ymin, xmax, ymax]
             boxes.append([x, y, x + w, y + h])
-            labels.append(ann['category_id'])
+            labels.append(ann['category_id'] + self.label_offset)
             areas.append(ann.get('area', w * h))
             iscrowd.append(ann.get('iscrowd', 0))
             

@@ -24,9 +24,12 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, str(Path('.').resolve()))
 from ml.config import (
-    PROCESSED_DATA_DIR, MODEL_DIR, METRICS_DIR, PLOTS_DIR,
+    SAMPLE_RUN_DIR, PROCESSED_DATA_DIR, MODEL_DIR, METRICS_DIR, PLOTS_DIR,
     NUM_CLASSES, CLASS_NAMES, IMG_SIZE
 )
+
+# Demo notebook on synthetic sample data: keep its outputs away from real results
+MODEL_DIR, METRICS_DIR, PLOTS_DIR, PREDICTION_DIR = (SAMPLE_RUN_DIR / d for d in ('models', 'metrics', 'plots', 'predictions'))
 from ml.models.proposed_yolov8 import get_proposed_model, coco_to_yolo
 from ml.models.baseline_frcnn import get_baseline_model
 from ml.evaluation.metrics import save_metrics_report
@@ -42,7 +45,7 @@ print("=" * 60)
 
 ann_file = PROCESSED_DATA_DIR / 'sample' / 'annotations.json'
 img_dir = PROCESSED_DATA_DIR / 'sample' / 'images'
-label_dir = PROCESSED_DATA_DIR / 'sample' / 'labels'
+label_dir = SAMPLE_RUN_DIR / 'labels'
 
 coco_to_yolo(str(ann_file), str(label_dir))
 
@@ -63,7 +66,7 @@ print("2. YOLOV8 MODEL ARCHITECTURE")
 print("=" * 60)
 
 try:
-    yolo_model = get_proposed_model(model_size='n')  # nano for quick demo
+    yolo_model = get_proposed_model(model_size='n', weights_dir=str(MODEL_DIR))  # nano for quick demo
     print(f"YOLOv8n model loaded successfully")
     print(f"Model task: {yolo_model.task}")
     
