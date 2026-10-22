@@ -67,7 +67,7 @@ study (consistency, robustness) as background.
 
 ## 4. Checklist
 - [x] 1. Accessible HTML + EPUB3 export (`ml/accessible.py`, tests, app download buttons) — API endpoint still to add
-- [ ] 2. Multi-page PDF → one EPUB
+- [x] 2. Multi-page PDF → one EPUB (`scripts/pdf_to_epub.py`, CLI; app button still to add)
 - [ ] 3. Exam-paper mode
 - [ ] 4. Pluggable OCR engine (IndicOCR / CVIT)
 - [ ] 5. Braille + audio
