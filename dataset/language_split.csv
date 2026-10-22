@@ -1,0 +1,13 @@
+language,train,val,test,total
+assamese,129,30,60,219
+bengali,200,30,60,290
+english,188,30,60,278
+gujarati,200,30,60,290
+hindi,200,21,22,243
+kannada,200,21,60,281
+malayalam,200,30,60,290
+marathi,200,30,60,290
+odia,200,30,60,290
+punjabi,188,30,60,278
+tamil,200,30,60,290
+telugu,188,30,60,278

@@ -1,0 +1,102 @@
+{
+  "language_ci": {
+    "authors": 0.8609159348203225,
+    "proposed": 0.7019625400242672,
+    "baseline": 0.6052258938153111
+  },
+  "language_spread": {
+    "authors": 0.12228789797715567,
+    "proposed": 0.12878806038077012,
+    "baseline": 0.10783477564740943
+  },
+  "domain_ci": {
+    "authors": 0.545679277681612,
+    "proposed": 0.3037449817710549
+  },
+  "per_domain_authors": {
+    "research papers": 0.8886885605736545,
+    "acts & rules": 0.8557789890797228,
+    "textbooks": 0.8377603797325159,
+    "question papers": 0.8371353753588296,
+    "syllabi": 0.8329001203766946,
+    "manuals": 0.8230495299369123,
+    "notices": 0.7950461015117165,
+    "newspapers": 0.7776092408787206,
+    "novels": 0.7529769951474211,
+    "brochures": 0.7156190369466161,
+    "magazines": 0.6044913176563882,
+    "forms": 0.4849389318177432
+  },
+  "domain_pages": {
+    "research papers": 68,
+    "acts & rules": 68,
+    "textbooks": 62,
+    "question papers": 40,
+    "syllabi": 54,
+    "manuals": 58,
+    "notices": 36,
+    "newspapers": 36,
+    "novels": 69,
+    "brochures": 66,
+    "magazines": 79,
+    "forms": 46
+  },
+  "robustness_index": {
+    "authors": {
+      "blur": 0.9279773404229226,
+      "noise": 0.9932108890265197,
+      "jpeg": 0.9830155461010021,
+      "low_res": 0.9785937420678015,
+      "faded": 0.9651855979895233
+    },
+    "proposed": {
+      "blur": 0.9355958522032181,
+      "noise": 0.8907583561328722,
+      "jpeg": 0.9839523025799578,
+      "low_res": 1.0055854215960411,
+      "faded": 0.8716367672480919
+    }
+  },
+  "mean_ri": {
+    "authors": 0.9695966231215538,
+    "proposed": 0.9375057399520363
+  },
+  "robust_map50": {
+    "authors": {
+      "clean": 0.7587895457829891,
+      "blur": 0.7041395046364156,
+      "noise": 0.7536380393511516,
+      "jpeg": 0.7459019197235963,
+      "low_res": 0.7425467010497027,
+      "faded": 0.7323727414947531
+    },
+    "proposed": {
+      "clean": 0.2587134586567383,
+      "blur": 0.24205123882839308,
+      "noise": 0.230451175142526,
+      "jpeg": 0.25456170335372236,
+      "low_res": 0.2601584823959061,
+      "faded": 0.22550416274713223
+    }
+  },
+  "class_freq_spearman": {
+    "authors": 0.3965156794425088,
+    "proposed": 0.7548780487804879
+  },
+  "hardest_classes": {
+    "quote": 0.056316533909030006,
+    "sub-unordered-list": 0.1922442244224422,
+    "sub-section-title": 0.4683043294350222,
+    "subsub-headline": 0.4770045300545723,
+    "contact-info": 0.5424948145840223,
+    "subsub-section-title": 0.564020335304544
+  },
+  "easiest_classes": {
+    "paragraph": 0.9537336662602818,
+    "advertisement": 0.9531004153319393,
+    "ordered-list": 0.9085208710530653,
+    "figure": 0.9002945529943056,
+    "second-level-question": 0.8979362592737173,
+    "sub-ordered-list": 0.895795566007727
+  }
+}

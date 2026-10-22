@@ -84,3 +84,6 @@ node_modules/
 # Intermediate files of the PDF report (scripts/build_report.py)
 docs/report/*.html
 docs/report/loss_curves.png
+
+# study scratch (damaged test-page copies, logs)
+outputs/study/

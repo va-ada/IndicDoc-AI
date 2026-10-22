@@ -1,0 +1,145 @@
+\section{Introduction}
+India has 22 scheduled languages written in about a dozen scripts. Government offices, courts, schools and
+newspapers hold millions of scanned pages in these languages. To search such a page, or to read it aloud for a
+visually impaired person, a computer must first find the parts of the page --- paragraphs, headings, tables,
+figures, page numbers --- and only then read the text inside each part. This first step is called
+\emph{document layout analysis}. If it goes wrong, every later step (OCR, table extraction, question answering)
+goes wrong too.
+
+Most layout datasets and tools are built for English. The recent IndicDLP dataset~\cite{indicdlp} changed this: it
+has about 120{,}000 human-labelled pages in 12 Indian languages and 12 document types, and its authors showed that
+modern detectors such as YOLOv10 and DocLayout-YOLO~\cite{doclayout} reach about 55 mAP@50:95 on it. They also
+reported that accuracy drops by 20--25 points on scripts the model has not seen.
+
+Strong detectors therefore already exist. We do \textbf{not} propose a new detector. Instead, we ask a simpler
+and, we believe, more useful question for people who want to \emph{use} these detectors on real Indian documents:
+\textbf{where and why do they fail?} We study this with five research questions:
+\begin{itemize}
+\item \textbf{RQ1} How far behind is a detector trained on a small compute budget, compared with one trained on the full dataset?
+\item \textbf{RQ2} Is accuracy even across the 12 languages and the 12 document domains?
+\item \textbf{RQ3} Which region types are hardest, and is this because they are rare in the training data?
+\item \textbf{RQ4} How much accuracy survives common scan damage: blur, noise, heavy JPEG compression, low resolution and faded print?
+\item \textbf{RQ5} Can the detected regions be used to choose the right OCR language automatically?
+\end{itemize}
+
+\noindent Our contributions are:
+\begin{enumerate}
+\item A controlled comparison of three detectors (the released IndicDLP DocLayout-YOLO, and a YOLOv8s and a Faster
+R-CNN that we fine-tuned) on the same %%TEST_PAGES%% held-out test pages.
+\item Two simple summary measures that can be reported next to mAP: the \emph{Consistency Index} (CI) and the
+\emph{Robustness Index} (RI).
+\item The first (to our knowledge) scan-damage robustness test on IndicDLP.
+\item IndicDoc AI, an open tool (web app, REST API, Docker) that detects regions on Indian-language pages and reads
+their text with automatic script selection, built on the best detector of the study.
+\end{enumerate}
+
+\section{Related Work}
+\textbf{Indian-language layout datasets.} IndicDLP~\cite{indicdlp} provides 119{,}806 pages, 12 languages, 12
+domains and 42 region labels, and benchmarks six detectors (YOLOv10x, DocLayout-YOLO, RoDLA, DINO, DiT,
+Florence-2). The best models are vision-only and reach about 55 mAP@50:95; the paper does not test damaged scans.
+UniTabBank~\cite{unitabbank} covers tables in 28 languages and reports that borderless tables and degraded scans
+remain hard.
+
+\textbf{Detectors.} Faster R-CNN~\cite{fasterrcnn} is a classic two-stage detector: it first proposes regions,
+then classifies them. YOLO detectors~\cite{yolov8} are one-stage and much faster. DocLayout-YOLO~\cite{doclayout}
+adapts YOLOv10 to documents with a global-to-local receptive-field module and synthetic pre-training data.
+
+\textbf{Text recognition and understanding for Indian scripts.} PLATTER~\cite{platter} detects and recognises
+handwritten Indic words but needs the user to name the language. HindiOCR-VLM~\cite{hindiocr} fine-tunes a
+vision-language model for Hindi only. LayoutXLM~\cite{layoutxlm} joins text, layout and image but covers no Indian
+language. DRISHTIKON~\cite{drishtikon} grounds answers on the page and depends on OCR blocks. Table QA for Bengali
+and Hindi~\cite{tableqa} and Devanagari table extraction~\cite{devtables} both assume that tables have already
+been found. All of these works need a reliable layout step first, which motivates our study.
+
+\textbf{Robustness.} Hendrycks and Dietterich~\cite{hendrycks} showed that image classifiers lose much accuracy
+under common corruptions such as blur, noise and JPEG compression. We apply the same idea to Indian document
+layout detection.
+
+\section{Data and Models}
+\subsection{Dataset}
+We use a language-balanced subset of IndicDLP (MIT licence), taken from the official train, validation and test
+splits so that no test page was used for training by us or by the dataset authors. We stream only the needed
+parts of the Parquet files from Hugging Face, convert them to COCO JSON, clip boxes to the page and drop boxes
+smaller than one pixel (0.5\% of training boxes). Table~\ref{tab:data} gives the sizes. The subset is released as
+CSV files (pages, boxes, class counts) with the code.
+
+\begin{table}[t]
+\centering
+\caption{Our IndicDLP subset (pages).}
+\label{tab:data}
+\small
+\begin{tabular}{lrrr}
+\toprule
+Language & Train & Val & Test \\
+\midrule
+%%LANG_ROWS%%
+\midrule
+\textbf{Total} & \textbf{%%TRAIN_PAGES%%} & \textbf{%%VAL_PAGES%%} & \textbf{%%TEST_PAGES%%} \\
+Boxes & %%TRAIN_BOXES%% & %%VAL_BOXES%% & %%TEST_BOXES%% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The label distribution is very uneven: \emph{paragraph} alone is %%PARA_SHARE%% of all boxes, and %%RARE%% of the
+42 labels have fewer than 100 training boxes.
+
+\subsection{Models}
+\textbf{DocLayout-YOLO (released).} The checkpoint published by the IndicDLP authors (Zenodo 15881917, CC-BY 4.0),
+trained on the full IndicDLP training split (about 96K pages) at 1024 pixels; %%A_PARAMS%%M parameters. We use it
+exactly as released.
+
+\textbf{YOLOv8s (ours).} COCO-pretrained, with a new 42-class head, fine-tuned on our %%TRAIN_PAGES%% training pages
+at 640 pixels, batch 8, for a one-hour budget (12 epochs) on an Apple M1 Pro GPU. Mosaic, colour and scale
+augmentation are used; horizontal flips are turned off because a mirrored page is not a realistic document;
+%%P_PARAMS%%M parameters.
+
+\textbf{Faster R-CNN (ours).} ResNet-50 FPN, COCO-pretrained, new 43-output predictor (42 labels and background),
+SGD (learning rate 0.005, momentum 0.9, weight decay $5\times10^{-4}$, cosine schedule), batch 4, 2 epochs in 76
+minutes on the same GPU; %%B_PARAMS%%M parameters.
+
+\section{Study Design}
+\subsection{Measures}
+All detectors are scored with COCO~\cite{coco} mAP@50 and mAP@50:95 (pycocotools, up to 300 boxes per page), and with
+precision, recall and F1 at a fixed confidence. On top of mAP we define two simple numbers. Each is a ratio
+between 0 and (about) 1, where 1 is best.
+
+\textbf{Consistency Index.} For a set of groups $G$ (languages or domains),
+\begin{equation}
+\mathrm{CI} = \frac{\min_{g \in G} \mathrm{mAP}_{50}(g)}{\max_{g \in G} \mathrm{mAP}_{50}(g)}.
+\end{equation}
+CI $=1$ means every group is served equally well.
+
+\textbf{Robustness Index.} For a type of damage $c$,
+\begin{equation}
+\mathrm{RI}_c = \frac{\mathrm{mAP}_{50}(\text{damaged by } c)}{\mathrm{mAP}_{50}(\text{clean})}.
+\end{equation}
+RI $=0.9$ means the detector keeps 90\% of its accuracy on that kind of page.
+
+\subsection{Experiments}
+\textbf{E1 (RQ1--RQ3).} All three detectors on the %%TEST_PAGES%% clean test pages, with results broken down by
+language, domain and label.
+
+\textbf{E2 (RQ4).} The same test pages damaged in five ways that are common in real scans and phone photos
+(Table~\ref{tab:corr}). Each damaged copy is made once with a fixed random seed, and the boxes stay the same.
+
+\begin{table}[t]
+\centering
+\caption{Scan damage used in E2.}
+\label{tab:corr}
+\small
+\begin{tabular}{ll}
+\toprule
+Damage & How it is made \\
+\midrule
+Blur & Gaussian blur, radius 2 px (out of focus) \\
+Noise & Gaussian noise, $\sigma = 20$ grey levels (grain) \\
+JPEG & JPEG quality 15 (forwarded phone image) \\
+Half resolution & down to 50\%, back up (low-dpi scan) \\
+Faded print & contrast $\times 0.45$, brightness $\times 1.25$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{E3 (RQ5).} On 120 test pages (10 per language) we compare two ways of choosing the OCR language:
+Tesseract's built-in script detector (OSD), and our region probe, which reads one detected text region with
+each of the 12 script models and counts only the characters that belong to that model's own script.

@@ -1,0 +1,3318 @@
+split,file_name,language,domain,width,height,num_boxes
+train,nt_mr_000617.png,marathi,notices,612,1008,1
+train,rp_ta_000350_1.png,tamil,research papers,510,680,9
+train,qp_hi_000016_0.png,hindi,question papers,1700,2200,10
+train,qp_pa_000374_1.png,punjabi,question papers,595,842,25
+train,nt_bn_000306_0.png,bengali,notices,1999,2814,5
+train,br_pa_000606_0.png,punjabi,brochures,1778,2278,23
+train,sy_or_000655_1.png,odia,syllabi,596,842,12
+train,mg_te_000218.jpeg,telugu,magazines,595,843,14
+train,nt_te_000379_0.png,telugu,notices,596,842,3
+train,br_mr_000826_0.png,marathi,brochures,1567,2067,23
+train,fm_bn_000335_0.png,bengali,forms,904,1281,13
+train,tb_gu_000694_0.png,gujarati,textbooks,329,542,10
+train,nv_or_001002_1.png,odia,novels,369,596,16
+train,rp_kn_000177_0.png,kannada,research papers,1275,1650,6
+train,mn_kn_000112_0.png,kannada,manuals,1275,1650,20
+train,mg_or_000255_0.png,odia,magazines,1211,1625,17
+train,nt_or_000103_0.png,odia,notices,1275,1650,3
+train,sy_en_000099_0.png,english,syllabi,1275,1650,24
+train,tb_as_000643_0.png,assamese,textbooks,1262,1806,15
+train,np_or_000092_0.png,odia,newspapers,971,1563,20
+train,tb_bn_000427_0.png,bengali,textbooks,825,1200,5
+train,nt_hi_000260_0.png,hindi,notices,2200,1700,3
+train,mg_en_001148.png,english,magazines,1697,2398,19
+train,mg_kn_000587_0.png,kannada,magazines,1538,2094,12
+train,ar_mr_000606_1.png,marathi,acts & rules,600,822,15
+train,nv_mr_000840_0.png,marathi,novels,1214,1948,12
+train,mn_bn_001017_1.png,bengali,manuals,1656,2304,6
+train,ar_kn_000973_0.png,kannada,acts & rules,1040,1609,14
+train,rp_bn_000125_0.png,bengali,research papers,1241,1754,5
+train,nt_ta_000019.jpeg,tamil,notices,421,596,5
+train,sy_pa_000182_0.png,punjabi,syllabi,1654,2339,6
+train,mn_ta_000927_0.png,tamil,manuals,1284,2196,7
+train,mg_mr_000306.png,marathi,magazines,522,684,12
+train,np_as_000255_1.png,assamese,newspapers,2953,4409,50
+train,br_mr_000634_0.png,marathi,brochures,1567,2067,20
+train,np_ml_000580_1.png,malayalam,newspapers,841,1341,104
+train,br_mr_000541_0.png,marathi,brochures,1653,2339,19
+train,mg_hi_000345_0.png,hindi,magazines,1070,1637,8
+train,qp_pa_000463_1.png,punjabi,question papers,932,1280,32
+train,mg_mr_000341.png,marathi,magazines,522,684,10
+train,rp_as_001529_0.png,assamese,research papers,1653,2339,6
+train,np_gu_000067_0.png,gujarati,newspapers,1241,1755,144
+train,ar_as_000037_0.png,assamese,acts & rules,1700,2342,7
+train,mn_or_000796_0.png,odia,manuals,419,671,2
+train,rp_kn_000387_0.png,kannada,research papers,1241,1754,6
+train,nv_pa_000708_0.png,punjabi,novels,1654,2339,13
+train,mg_as_000912_0.png,assamese,magazines,1056,1606,5
+train,mg_ml_000727_0.png,malayalam,magazines,1152,1565,15
+train,nv_as_001319_1.png,assamese,novels,1270,1987,10
+train,tb_en_000678_0.png,english,textbooks,1275,1650,21
+train,br_bn_000630_0.png,bengali,brochures,1158,1601,4
+train,nv_hi_000257_0.png,hindi,novels,987,1387,3
+train,nt_gu_000571_1.png,gujarati,notices,596,842,23
+train,nv_hi_000913_0.png,hindi,novels,987,1387,3
+train,qp_or_000520_1.png,odia,question papers,595,842,28
+train,fm_bn_000445_0.png,bengali,forms,3855,1503,24
+train,br_gu_000484_1.png,gujarati,brochures,595,842,7
+train,tb_en_000879_0.png,english,textbooks,1275,1650,15
+train,np_ml_000187_0.png,malayalam,newspapers,2008,3213,70
+train,nv_as_001450_1.png,assamese,novels,1983,2806,3
+train,tb_pa_000942_1.png,punjabi,textbooks,612,792,14
+train,mg_or_000773_0.png,odia,magazines,886,1388,11
+train,mg_te_000281.jpeg,telugu,magazines,595,843,12
+train,sy_hi_000053_0.png,hindi,syllabi,1700,2200,12
+train,np_ta_000442_1.png,tamil,newspapers,1500,2272,116
+train,fm_mr_000486_1.png,marathi,forms,596,842,14
+train,nv_ml_000199_0.png,malayalam,novels,1772,2717,9
+train,rp_ta_000461_1.png,tamil,research papers,511,681,10
+train,nt_ml_000518_0.png,malayalam,notices,2480,3508,20
+train,np_bn_000375_1.png,bengali,newspapers,954,1503,61
+train,sy_mr_000651_1.png,marathi,syllabi,596,842,17
+train,mn_or_000879_0.png,odia,manuals,421,671,14
+train,rp_kn_000579_0.png,kannada,research papers,1275,1650,8
+train,sy_ta_000164.jpeg,tamil,syllabi,612,792,17
+train,tb_en_000293_0.png,english,textbooks,1275,1650,4
+train,rp_kn_000968_0.png,kannada,research papers,1275,1650,7
+train,tb_ml_000927_1.png,malayalam,textbooks,612,792,9
+train,rp_or_000226_0.png,odia,research papers,1240,1755,8
+train,sy_mr_000191_0.png,marathi,syllabi,1653,2339,4
+train,ar_as_000196_0.png,assamese,acts & rules,1700,2342,12
+train,tb_hi_001188_1.png,hindi,textbooks,504,720,16
+train,tb_ta_000492_0.png,tamil,textbooks,1088,1425,7
+train,rp_ml_000044_0.png,malayalam,research papers,2480,3509,7
+train,qp_or_000063_0.png,odia,question papers,1275,1650,8
+train,ar_mr_000449_0.png,marathi,acts & rules,1653,2339,15
+train,sy_as_000132_0.png,assamese,syllabi,1656,2339,19
+train,qp_pa_000318_1.png,punjabi,question papers,612,792,22
+train,nv_bn_000917_1.png,bengali,novels,2360,1664,13
+train,qp_gu_000412_0.png,gujarati,question papers,1241,1755,34
+train,rp_mr_000678_0.png,marathi,research papers,1700,2200,4
+train,br_bn_000742_0.png,bengali,brochures,1158,1601,4
+train,qp_bn_000475_1.png,bengali,question papers,1400,1983,16
+train,nv_hi_000691_0.png,hindi,novels,987,1387,2
+train,sy_te_000052_0.png,telugu,syllabi,1650,1275,15
+train,rp_kn_001332_0.png,kannada,research papers,1275,1650,0
+train,tb_pa_000592_0.png,punjabi,textbooks,1656,2339,9
+train,tb_kn_000960_1.png,kannada,textbooks,401,595,8
+train,rp_te_000722_0.png,telugu,research papers,909,1468,15
+train,sy_te_000594_1.png,telugu,syllabi,612,792,16
+train,sy_en_000853_0.png,english,syllabi,748,1103,15
+train,ar_kn_000730_0.png,kannada,acts & rules,1240,1755,8
+train,br_en_000074_0.png,english,brochures,2648,4259,12
+train,br_bn_000421_0.png,bengali,brochures,1158,1601,9
+train,sy_en_000427_0.png,english,syllabi,1275,1650,14
+train,br_hi_000558_0.png,hindi,brochures,1654,2339,10
+train,qp_hi_000533_0.png,hindi,question papers,595,841,16
+train,fm_te_000106_0.png,telugu,forms,596,842,19
+train,rp_as_001454_0.png,assamese,research papers,1653,2339,10
+train,br_or_000673_1.png,odia,brochures,630,900,9
+train,mg_ta_001282.jpeg,tamil,magazines,510,751,14
+train,ar_ml_000061_0.png,malayalam,acts & rules,1241,1754,11
+train,br_or_000426_1.png,odia,brochures,420,755,23
+train,br_hi_000504_0.png,hindi,brochures,1656,2339,22
+train,tb_bn_000305_0.png,bengali,textbooks,825,1200,5
+train,sy_kn_000488_0.png,kannada,syllabi,1275,1650,12
+train,fm_kn_000160_1.png,kannada,forms,596,842,18
+train,mg_ta_001188.jpeg,tamil,magazines,252,416,7
+train,sy_ml_000601_0.png,malayalam,syllabi,1241,1754,7
+train,qp_hi_000014_0.png,hindi,question papers,1700,2200,12
+train,fm_te_000365_0.png,telugu,forms,596,842,26
+train,nv_kn_000704_0.png,kannada,novels,3325,4767,25
+train,br_pa_000384_0.png,punjabi,brochures,1780,2280,33
+train,nt_bn_000201_0.png,bengali,notices,1275,1650,16
+train,nv_kn_000530_0.png,kannada,novels,3644,5500,24
+train,br_bn_000288_0.png,bengali,brochures,1158,1601,16
+train,sy_te_000499_1.png,telugu,syllabi,612,792,23
+train,sy_bn_000493_1.png,bengali,syllabi,2970,3690,13
+train,mn_ml_000098_0.png,malayalam,manuals,1275,1650,8
+train,mg_or_000970_1.png,odia,magazines,595,842,5
+train,tb_gu_000415_0.png,gujarati,textbooks,329,542,14
+train,tb_en_001068_0.png,english,textbooks,1275,1650,17
+train,nt_ml_000517_0.png,malayalam,notices,2480,3508,22
+train,sy_ml_000473_0.png,malayalam,syllabi,1241,1754,14
+train,fm_ta_000394_0.png,tamil,forms,596,842,25
+train,nv_pa_000598_0.png,punjabi,novels,1654,2339,7
+train,np_kn_000043_0.png,kannada,newspapers,823,1375,37
+train,nv_as_000148_0.png,assamese,novels,1374,1818,11
+train,qp_ml_000506_0.png,malayalam,question papers,1275,1650,10
+train,nt_kn_000302_1.png,kannada,notices,612,864,6
+train,qp_mr_000015_0.png,marathi,question papers,1653,2339,16
+train,br_mr_000106_0.png,marathi,brochures,2200,1700,7
+train,tb_or_000217_0.png,odia,textbooks,650,945,16
+train,tb_ta_000467_0.png,tamil,textbooks,1088,1425,12
+train,qp_gu_000630_0.png,gujarati,question papers,1240,1752,14
+train,mg_pa_001024_0.png,punjabi,magazines,1656,2339,9
+train,tb_gu_000667_0.png,gujarati,textbooks,329,542,8
+train,nv_ta_000156_0.png,tamil,novels,900,1350,3
+train,nt_ml_000298_0.png,malayalam,notices,2480,3508,20
+train,nv_as_000533_0.png,assamese,novels,1374,1818,20
+train,sy_ta_000267.jpeg,tamil,syllabi,612,792,10
+train,mn_hi_001099_1.png,hindi,manuals,595,842,20
+train,ar_en_000439.png,english,acts & rules,596,842,9
+train,qp_as_000211_0.png,assamese,question papers,1653,2339,27
+train,np_te_000269_0.png,telugu,newspapers,2565,3450,104
+train,mn_or_001055_1.png,odia,manuals,596,842,11
+train,np_ml_000287_0.png,malayalam,newspapers,2008,3213,87
+train,fm_or_000084_0.png,odia,forms,596,842,4
+train,br_bn_000765_1.png,bengali,brochures,548,417,10
+train,qp_hi_000177_0.png,hindi,question papers,1573,2100,15
+train,rp_gu_000532_0.png,gujarati,research papers,1240,1755,7
+train,mg_en_000767.png,english,magazines,576,783,16
+train,mg_gu_000687.png,gujarati,magazines,420,624,12
+train,rp_te_000528_0.png,telugu,research papers,909,1468,11
+train,qp_pa_000343_1.png,punjabi,question papers,612,792,14
+train,ar_mr_000161_0.png,marathi,acts & rules,1700,2342,7
+train,qp_bn_000322_1.png,bengali,question papers,1983,2806,11
+train,fm_pa_000068_0.png,punjabi,forms,1700,2200,11
+train,np_hi_000545_1.png,hindi,newspapers,963,1502,23
+train,rp_ml_000467_0.png,malayalam,research papers,2480,3509,5
+train,fm_ta_000198_0.png,tamil,forms,596,842,43
+train,tb_ml_000111_0.png,malayalam,textbooks,1000,1492,5
+train,ar_ml_000302_0.png,malayalam,acts & rules,1241,1755,8
+train,mg_pa_000578_0.png,punjabi,magazines,1123,1728,11
+train,tb_en_000093_0.png,english,textbooks,1275,1650,16
+train,tb_mr_000713_0.png,marathi,textbooks,1700,2200,5
+train,ar_bn_000354_0.png,bengali,acts & rules,1053,1430,7
+train,mn_ml_000378_0.png,malayalam,manuals,1275,1650,13
+train,nv_ta_000189_0.png,tamil,novels,1200,1350,7
+train,np_te_000436_1.png,telugu,newspapers,2136,3515,82
+train,mn_hi_000376_0.png,hindi,manuals,917,1359,12
+train,tb_or_000737_0.png,odia,textbooks,680,1063,9
+train,np_te_000030_0.png,telugu,newspapers,1950,2985,28
+train,mg_as_000658_0.png,assamese,magazines,1056,1606,13
+train,mg_ta_000462.jpeg,tamil,magazines,301,417,4
+train,br_te_000603_0.png,telugu,brochures,1275,1650,30
+train,nv_mr_000566_0.png,marathi,novels,1700,2200,10
+train,qp_or_000235_0.png,odia,question papers,1275,1650,8
+train,qp_pa_000434_1.png,punjabi,question papers,595,842,27
+train,mn_as_000071_0.png,assamese,manuals,1656,2339,14
+train,np_ta_000156_0.png,tamil,newspapers,1368,1846,26
+train,mg_en_001040.png,english,magazines,832,1075,2
+train,rp_te_000837_1.png,telugu,research papers,612,792,4
+train,mn_ta_000771_0.png,tamil,manuals,1284,2196,7
+train,nv_en_001076_0.png,english,novels,675,1030,7
+train,nv_ta_000116_0.png,tamil,novels,691,1089,12
+train,rp_or_000802_0.png,odia,research papers,1240,1755,14
+train,mg_en_001481.png,english,magazines,2327,3200,30
+train,nv_ml_000111_0.png,malayalam,novels,4167,6000,6
+train,mg_ta_001483.jpeg,tamil,magazines,315,450,5
+train,ar_en_000468.png,english,acts & rules,596,842,6
+train,nv_mr_000121_0.png,marathi,novels,900,1300,12
+train,br_ml_000514_1.png,malayalam,brochures,401,533,4
+train,mn_bn_000201_0.png,bengali,manuals,753,1267,5
+train,rp_bn_000233_0.png,bengali,research papers,1241,1754,11
+train,br_te_000944_1.png,telugu,brochures,420,596,7
+train,rp_mr_000009_0.png,marathi,research papers,1664,2311,9
+train,nv_bn_000494_0.png,bengali,novels,2482,3509,19
+train,sy_bn_000637_1.png,bengali,syllabi,2977,4210,11
+train,qp_ml_000147_0.png,malayalam,question papers,1755,1240,10
+train,rp_en_000546_0.png,english,research papers,1275,1650,8
+train,nv_mr_000718_0.png,marathi,novels,1214,1948,17
+train,nv_en_000187_0.png,english,novels,559,911,7
+train,tb_gu_000297_0.png,gujarati,textbooks,353,594,18
+train,tb_bn_000265_0.png,bengali,textbooks,825,1200,4
+train,br_bn_000193_0.png,bengali,brochures,1158,1601,5
+train,mn_or_000383_0.png,odia,manuals,400,688,13
+train,tb_hi_001257_1.png,hindi,textbooks,504,720,8
+train,tb_mr_000124_0.png,marathi,textbooks,900,1300,8
+train,mn_te_000550_0.png,telugu,manuals,552,853,2
+train,mg_en_000674.png,english,magazines,774,1064,8
+train,sy_mr_000106_0.png,marathi,syllabi,1653,2339,7
+train,rp_or_000681_0.png,odia,research papers,1240,1755,4
+train,rp_ta_000224_0.png,tamil,research papers,1241,1754,13
+train,br_hi_000830_1.png,hindi,brochures,612,792,11
+train,mn_ml_000579_0.png,malayalam,manuals,1241,1755,7
+train,qp_pa_000126_0.png,punjabi,question papers,1700,2200,10
+train,mg_pa_000508_0.png,punjabi,magazines,1123,1728,6
+train,ar_en_000023.png,english,acts & rules,596,842,10
+train,nv_te_000549_0.png,telugu,novels,2355,3896,18
+train,mg_mr_000506.png,marathi,magazines,497,672,10
+train,sy_kn_000572_0.png,kannada,syllabi,1241,1754,11
+train,rp_kn_000557_0.png,kannada,research papers,1275,1650,8
+train,sy_bn_000474_1.png,bengali,syllabi,2970,3690,6
+train,sy_ml_000178_0.png,malayalam,syllabi,1241,1754,1
+train,np_hi_000340_1.png,hindi,newspapers,1500,2384,39
+train,np_pa_000314_0.png,punjabi,newspapers,2219,3120,26
+train,br_te_000239_0.png,telugu,brochures,1319,1731,19
+train,rp_mr_000173_0.png,marathi,research papers,1734,2328,13
+train,br_bn_000515_0.png,bengali,brochures,1158,1601,5
+train,mn_en_000060_0.png,english,manuals,675,1288,11
+train,mg_gu_000145.png,gujarati,magazines,596,842,4
+train,sy_or_000029_0.png,odia,syllabi,1241,1754,18
+train,qp_pa_000257_1.png,punjabi,question papers,595,842,21
+train,rp_or_000161_0.png,odia,research papers,1268,1839,5
+train,br_en_000059_0.png,english,brochures,2721,3428,12
+train,rp_mr_000392_0.png,marathi,research papers,1653,2339,7
+train,ar_te_000178.jpeg,telugu,acts & rules,596,842,9
+train,sy_pa_000054_0.png,punjabi,syllabi,1653,2337,16
+train,mn_hi_000771_1.png,hindi,manuals,596,843,3
+train,nv_kn_000448_0.png,kannada,novels,853,1298,6
+train,br_or_000556_1.png,odia,brochures,612,792,27
+train,nt_hi_000567_1.png,hindi,notices,596,842,6
+train,rp_kn_000669_0.png,kannada,research papers,1275,1650,5
+train,ar_ml_000516_0.png,malayalam,acts & rules,1241,1755,9
+train,ar_ta_000979_0.png,tamil,acts & rules,1240,1755,13
+train,sy_gu_000140_0.png,gujarati,syllabi,1241,1754,11
+train,mn_bn_000062_0.png,bengali,manuals,753,1267,6
+train,rp_mr_000062_0.png,marathi,research papers,1802,2370,11
+train,mn_ml_000759_0.png,malayalam,manuals,1275,1650,11
+train,np_te_000409_1.png,telugu,newspapers,993,1517,100
+train,ar_hi_000345_0.png,hindi,acts & rules,1654,2339,9
+train,rp_mr_000239_0.png,marathi,research papers,1764,2370,9
+train,nt_hi_000325_1.png,hindi,notices,596,842,6
+train,ar_ta_000057_0.png,tamil,acts & rules,1038,1580,9
+train,nv_mr_000431_0.png,marathi,novels,1050,1650,16
+train,mn_pa_000450_0.png,punjabi,manuals,1700,2200,28
+train,fm_en_000213_0.png,english,forms,596,842,1
+train,qp_te_000105_0.png,telugu,question papers,1275,1650,14
+train,ar_kn_000847_0.png,kannada,acts & rules,1275,1800,5
+train,mg_pa_000505_0.png,punjabi,magazines,1123,1728,16
+train,nv_te_000676_0.png,telugu,novels,2355,3896,12
+train,sy_as_000432_1.png,assamese,syllabi,595,842,15
+train,qp_ta_000083_0.png,tamil,question papers,1193,1622,11
+train,nv_as_000482_0.png,assamese,novels,1374,1818,34
+train,tb_mr_000978_0.png,marathi,textbooks,1656,2339,3
+train,fm_pa_000036_0.png,punjabi,forms,1700,2200,8
+train,mn_gu_000817_0.png,gujarati,manuals,1241,1754,12
+train,np_kn_000111_0.png,kannada,newspapers,828,1368,41
+train,ar_ta_000516_0.png,tamil,acts & rules,1240,1755,10
+train,br_mr_000962_0.png,marathi,brochures,2338,1654,3
+train,ar_ml_000678_0.png,malayalam,acts & rules,1244,1755,13
+train,nt_te_000304_0.png,telugu,notices,612,1008,6
+train,np_mr_000112_1.png,marathi,newspapers,943,1500,62
+train,sy_pa_000494_1.png,punjabi,syllabi,547,792,5
+train,fm_pa_000126_0.png,punjabi,forms,1700,2200,9
+train,sy_ta_000663.jpeg,tamil,syllabi,612,792,9
+train,mg_bn_000725_0.png,bengali,magazines,1176,1320,15
+train,ar_gu_000106_0.png,gujarati,acts & rules,1275,1757,12
+train,ar_ml_000931_1.png,malayalam,acts & rules,477,632,9
+train,br_pa_000644_0.png,punjabi,brochures,1778,2278,25
+train,mn_mr_000586_0.png,marathi,manuals,1615,1654,25
+train,qp_bn_000321_0.png,bengali,question papers,1241,1755,17
+train,ar_ml_000634_0.png,malayalam,acts & rules,1215,1755,11
+train,mn_hi_001064_1.png,hindi,manuals,595,842,5
+train,mn_en_000527_0.png,english,manuals,834,1365,13
+train,tb_kn_000398_0.png,kannada,textbooks,720,1074,8
+train,ar_pa_000506_0.png,punjabi,acts & rules,1456,1175,7
+train,mn_en_000574_0.png,english,manuals,841,1372,8
+train,nv_bn_000836_1.png,bengali,novels,1329,2150,9
+train,nv_as_000197_0.png,assamese,novels,1374,1818,18
+train,nt_or_000056_0.png,odia,notices,1275,1650,3
+train,mg_ml_000203_0.png,malayalam,magazines,1075,1518,21
+train,mn_te_000612_0.png,telugu,manuals,552,853,12
+train,br_hi_000157_0.png,hindi,brochures,1700,2200,14
+train,mn_gu_000457_0.png,gujarati,manuals,1241,1754,6
+train,tb_as_001010_0.png,assamese,textbooks,1262,1806,14
+train,ar_te_000067.jpeg,telugu,acts & rules,596,842,14
+train,rp_kn_000230_0.png,kannada,research papers,1275,1650,7
+train,nv_gu_001228_1.png,gujarati,novels,571,789,19
+train,ar_mr_000988_1.png,marathi,acts & rules,612,843,27
+train,sy_bn_000450_1.png,bengali,syllabi,2970,3690,5
+train,tb_hi_000392_0.png,hindi,textbooks,1218,1787,11
+train,nv_mr_000835_0.png,marathi,novels,1214,1948,21
+train,tb_ml_000064_0.png,malayalam,textbooks,2318,3835,10
+train,tb_pa_000219_0.png,punjabi,textbooks,1700,2200,9
+train,nv_ta_000315_0.png,tamil,novels,900,1350,15
+train,qp_mr_000696_1.png,marathi,question papers,597,843,14
+train,mg_or_000667_0.png,odia,magazines,886,1388,9
+train,nt_or_000215_0.png,odia,notices,1275,1650,3
+train,mg_mr_000497.png,marathi,magazines,497,672,10
+train,ar_bn_000886_1.png,bengali,acts & rules,2946,4095,13
+train,fm_ta_000036_0.png,tamil,forms,613,859,10
+train,nv_bn_000490_0.png,bengali,novels,2482,3509,18
+train,tb_en_000078_0.png,english,textbooks,1275,1650,12
+train,tb_pa_000389_0.png,punjabi,textbooks,1656,2339,14
+train,rp_kn_000033_0.png,kannada,research papers,1275,1650,5
+train,br_as_000261_0.png,assamese,brochures,1653,2339,12
+train,ar_ta_001155_0.png,tamil,acts & rules,1138,1603,15
+train,qp_ta_000191_0.png,tamil,question papers,1650,1275,11
+train,ar_bn_001049_1.png,bengali,acts & rules,2865,4105,13
+train,tb_en_000783_0.png,english,textbooks,1275,1650,20
+train,nv_pa_000639_0.png,punjabi,novels,1654,2339,9
+train,nv_as_000536_0.png,assamese,novels,1374,1818,19
+train,np_hi_000535_1.png,hindi,newspapers,930,1316,3
+train,nt_ml_000209_0.png,malayalam,notices,2480,3508,20
+train,nv_en_000268_0.png,english,novels,563,978,10
+train,sy_bn_000619_1.png,bengali,syllabi,3060,3960,9
+train,br_te_000377_0.png,telugu,brochures,1323,1736,20
+train,mg_ml_000015_0.png,malayalam,magazines,1075,1518,16
+train,rp_en_001124_0.png,english,research papers,1240,1755,18
+train,ar_kn_000581_0.png,kannada,acts & rules,1240,1755,12
+train,qp_pa_000139_0.png,punjabi,question papers,1700,2200,23
+train,tb_as_000598_0.png,assamese,textbooks,1262,1806,10
+train,tb_hi_000284_0.png,hindi,textbooks,1218,1787,12
+train,rp_or_000792_0.png,odia,research papers,1240,1755,6
+train,mn_kn_000366_0.png,kannada,manuals,2134,1600,3
+train,nt_ml_000408_0.png,malayalam,notices,2480,3508,18
+train,mn_hi_000535_0.png,hindi,manuals,1289,2084,11
+train,nv_hi_001075_1.png,hindi,novels,318,507,10
+train,br_te_000330_0.png,telugu,brochures,1323,1736,21
+train,mg_en_000481.png,english,magazines,594,773,9
+train,tb_ta_000349_0.png,tamil,textbooks,1106,1461,13
+train,mn_gu_001090_0.png,gujarati,manuals,1241,1754,8
+train,br_te_000771_1.png,telugu,brochures,567,766,13
+train,mn_or_000385_0.png,odia,manuals,403,688,13
+train,fm_hi_000122_0.png,hindi,forms,1654,2339,26
+train,sy_as_000449_1.png,assamese,syllabi,1008,612,9
+train,mg_or_000881_1.png,odia,magazines,595,842,28
+train,mn_hi_000824_1.png,hindi,manuals,596,843,14
+train,tb_kn_000751_0.png,kannada,textbooks,678,1027,11
+train,mg_bn_000650_0.png,bengali,magazines,1176,1320,18
+train,nv_kn_000018_0.png,kannada,novels,622,1031,5
+train,qp_pa_000198_0.png,punjabi,question papers,1654,2339,33
+train,mn_hi_000805_1.png,hindi,manuals,596,843,5
+train,nv_or_000224_0.png,odia,novels,621,1004,7
+train,mn_bn_000873_1.png,bengali,manuals,2805,1984,4
+train,np_as_000602_1.png,assamese,newspapers,2953,4409,80
+train,sy_pa_000121_0.png,punjabi,syllabi,1645,2356,13
+train,mn_te_000026_0.png,telugu,manuals,659,998,9
+train,br_gu_000331_1.png,gujarati,brochures,1828,884,29
+train,mn_as_000365_1.png,assamese,manuals,596,842,9
+train,np_hi_000286_1.png,hindi,newspapers,1500,2384,85
+train,br_te_000930_1.png,telugu,brochures,1154,578,2
+train,nv_kn_000740_0.png,kannada,novels,3325,4767,15
+train,tb_mr_001150_0.png,marathi,textbooks,1656,2339,2
+train,fm_ml_000161_0.png,malayalam,forms,1241,1754,3
+train,nt_pa_000142_1.png,punjabi,notices,500,842,6
+train,sy_bn_000257_1.png,bengali,syllabi,4210,2977,12
+train,fm_gu_000455_1.png,gujarati,forms,600,842,17
+train,nv_hi_000546_0.png,hindi,novels,1700,2200,7
+train,mn_bn_000700_0.png,bengali,manuals,749,1162,7
+train,fm_te_000583_0.png,telugu,forms,596,842,24
+train,rp_ml_000976_0.png,malayalam,research papers,2480,3509,5
+train,nt_ta_000135.jpeg,tamil,notices,421,596,7
+train,np_ta_000399_1.png,tamil,newspapers,1500,2272,91
+train,sy_ta_000127.jpeg,tamil,syllabi,612,792,17
+train,br_bn_000657_0.png,bengali,brochures,1158,1601,16
+train,rp_en_000001_0.png,english,research papers,1275,1650,12
+train,mn_pa_000941_1.png,punjabi,manuals,612,792,12
+train,rp_mr_000903_0.png,marathi,research papers,1653,2339,5
+train,br_ta_000545_0.png,tamil,brochures,1081,1483,36
+train,sy_bn_000661_1.png,bengali,syllabi,2970,3690,9
+train,br_ta_000056_0.png,tamil,brochures,1063,1447,10
+train,tb_or_000581_0.png,odia,textbooks,680,1063,5
+train,qp_mr_000244_1.png,marathi,question papers,612,792,13
+train,rp_ml_000813_0.png,malayalam,research papers,2480,3509,5
+train,br_or_000505_1.png,odia,brochures,1078,553,12
+train,rp_or_000086_0.png,odia,research papers,1240,1755,7
+train,np_te_000123_0.png,telugu,newspapers,2565,3450,73
+train,rp_ml_000634_0.png,malayalam,research papers,2480,3509,7
+train,rp_ml_000209_0.png,malayalam,research papers,2480,3509,3
+train,mn_bn_000552_0.png,bengali,manuals,749,1162,6
+train,mn_bn_000101_0.png,bengali,manuals,753,1267,6
+train,tb_or_000812_1.png,odia,textbooks,595,842,10
+train,fm_te_000157_0.png,telugu,forms,612,792,54
+train,np_ml_000422_0.png,malayalam,newspapers,2008,3213,91
+train,nv_ta_000244_0.png,tamil,novels,900,1350,7
+train,nt_gu_000305_1.png,gujarati,notices,613,843,3
+train,qp_te_000544_1.png,telugu,question papers,595,842,26
+train,br_mr_000863_0.png,marathi,brochures,1567,2067,27
+train,ar_bn_000067_0.png,bengali,acts & rules,937,1334,18
+train,nv_kn_000893_0.png,kannada,novels,3644,5478,14
+train,sy_ta_000572.jpeg,tamil,syllabi,612,792,6
+train,fm_pa_000516_1.png,punjabi,forms,612,792,14
+train,fm_te_000541_0.png,telugu,forms,596,842,28
+train,qp_gu_000824_0.png,gujarati,question papers,1240,1752,14
+train,rp_gu_000455_0.png,gujarati,research papers,1240,1755,7
+train,mn_gu_000234_0.png,gujarati,manuals,1241,1754,7
+train,rp_or_000786_0.png,odia,research papers,1240,1755,10
+train,mg_hi_000606_0.png,hindi,magazines,1758,2241,23
+train,qp_ta_000257_0.png,tamil,question papers,1650,1275,21
+train,mn_hi_000007_0.png,hindi,manuals,1600,2400,21
+train,mn_gu_000083_0.png,gujarati,manuals,1241,1755,7
+train,rp_gu_000758_0.png,gujarati,research papers,1240,1755,7
+train,qp_or_000586_1.png,odia,question papers,596,842,16
+train,tb_bn_000286_0.png,bengali,textbooks,825,1200,5
+train,rp_as_000241_0.png,assamese,research papers,1654,2339,8
+train,mg_kn_001113_1.png,kannada,magazines,497,681,13
+train,ar_gu_000215_0.png,gujarati,acts & rules,1275,1757,10
+train,nv_pa_000080_0.png,punjabi,novels,1006,1606,6
+train,nv_ml_000172_0.png,malayalam,novels,1772,2717,2
+train,br_as_000002_0.png,assamese,brochures,1656,2339,21
+train,mn_bn_000169_0.png,bengali,manuals,753,1267,5
+train,nt_en_000015_1.png,english,notices,596,842,16
+train,nt_mr_000097.png,marathi,notices,612,792,16
+train,br_kn_000147_0.png,kannada,brochures,1241,1754,15
+train,ar_ta_000679_0.png,tamil,acts & rules,1240,1755,11
+train,tb_en_000829_0.png,english,textbooks,1275,1650,13
+train,fm_en_000564_0.png,english,forms,596,842,15
+train,tb_hi_000122_0.png,hindi,textbooks,1218,1787,10
+train,br_kn_000425_0.png,kannada,brochures,2784,3954,17
+train,tb_pa_001032_1.png,punjabi,textbooks,612,792,9
+train,ar_gu_000643_1.png,gujarati,acts & rules,611,843,12
+train,rp_en_000274_0.png,english,research papers,1275,1650,10
+train,nv_ml_000395_0.png,malayalam,novels,1772,2717,5
+train,tb_kn_000909_1.png,kannada,textbooks,401,595,5
+train,mn_gu_000927_0.png,gujarati,manuals,1241,1754,3
+train,tb_or_000034_0.png,odia,textbooks,650,945,10
+train,nt_gu_000078_1.png,gujarati,notices,595,842,3
+train,ar_gu_000204_0.png,gujarati,acts & rules,1275,1757,9
+train,nv_or_001054_1.png,odia,novels,312,468,9
+train,br_kn_000610_1.png,kannada,brochures,596,842,7
+train,sy_te_000630_1.png,telugu,syllabi,612,792,9
+train,mg_mr_000472.png,marathi,magazines,497,672,9
+train,mn_hi_000328_0.png,hindi,manuals,917,1359,6
+train,sy_pa_000194_0.png,punjabi,syllabi,1654,2339,8
+train,fm_te_000276_0.png,telugu,forms,596,842,59
+train,mn_ta_000303_0.png,tamil,manuals,1284,2196,7
+train,sy_mr_000396_0.png,marathi,syllabi,1653,2339,9
+train,nt_ta_000185.jpeg,tamil,notices,421,596,7
+train,tb_pa_000734_0.png,punjabi,textbooks,1492,1945,5
+train,nv_mr_000834_0.png,marathi,novels,1214,1948,19
+train,tb_or_000445_0.png,odia,textbooks,680,1034,6
+train,np_or_000477_1.png,odia,newspapers,921,1466,29
+train,tb_hi_000778_0.png,hindi,textbooks,1471,2049,8
+train,br_pa_000386_0.png,punjabi,brochures,1780,2280,9
+train,br_as_000295_0.png,assamese,brochures,1653,2339,6
+train,nv_ta_000815_0.png,tamil,novels,1241,1755,15
+train,nt_ml_000451_0.png,malayalam,notices,2480,3508,17
+train,mn_pa_000475_0.png,punjabi,manuals,1700,2200,15
+train,ar_mr_000610_1.png,marathi,acts & rules,600,822,13
+train,mn_ta_000229_0.png,tamil,manuals,934,1650,4
+train,mg_ta_000233.jpeg,tamil,magazines,510,751,10
+train,mn_or_000146_0.png,odia,manuals,403,688,3
+train,rp_en_000726_0.png,english,research papers,1241,1754,36
+train,np_as_000124_1.png,assamese,newspapers,2953,4409,109
+train,mg_gu_000340.png,gujarati,magazines,596,842,1
+train,np_ta_000267_0.png,tamil,newspapers,1329,1798,13
+train,mn_gu_001012_0.png,gujarati,manuals,1241,1754,11
+train,tb_ml_000042_0.png,malayalam,textbooks,2318,3835,7
+train,mn_kn_000537_0.png,kannada,manuals,853,1259,20
+train,mg_te_000158.jpeg,telugu,magazines,595,843,13
+train,qp_te_000287_1.png,telugu,question papers,553,765,15
+train,sy_en_000416_0.png,english,syllabi,1275,1650,12
+train,br_te_000039_0.png,telugu,brochures,1313,1725,12
+train,tb_gu_000961_1.png,gujarati,textbooks,596,842,12
+train,br_te_000314_0.png,telugu,brochures,1313,1725,17
+train,ar_ta_001496_1.png,tamil,acts & rules,491,753,13
+train,tb_kn_000141_0.png,kannada,textbooks,1241,1755,29
+train,mg_or_000812_0.png,odia,magazines,886,1388,21
+train,br_hi_001178_1.png,hindi,brochures,483,662,12
+train,nv_ml_000624_0.png,malayalam,novels,745,1080,0
+train,ar_bn_000180_0.png,bengali,acts & rules,937,1334,14
+train,rp_hi_000293_0.png,hindi,research papers,1462,2175,10
+train,nt_ml_000050_0.png,malayalam,notices,2480,3508,21
+train,mg_pa_000099_0.png,punjabi,magazines,1642,2337,10
+train,tb_or_000495_0.png,odia,textbooks,680,1034,8
+train,np_pa_000269_0.png,punjabi,newspapers,4054,3126,129
+train,tb_te_000103_0.png,telugu,textbooks,750,1275,6
+train,ar_ta_000614_0.png,tamil,acts & rules,1240,1755,3
+train,mn_hi_000875_1.png,hindi,manuals,612,792,7
+train,br_ml_000138_0.png,malayalam,brochures,1241,1754,12
+train,tb_ml_000775_0.png,malayalam,textbooks,2550,3300,4
+train,ar_bn_000897_1.png,bengali,acts & rules,2880,3565,4
+train,tb_ml_000531_0.png,malayalam,textbooks,2550,3300,8
+train,nt_kn_000220_1.png,kannada,notices,612,1008,5
+train,rp_gu_000626_0.png,gujarati,research papers,1240,1755,7
+train,mn_te_000482_0.png,telugu,manuals,650,963,9
+train,rp_te_000134_0.png,telugu,research papers,768,1220,15
+train,np_kn_000520_1.png,kannada,newspapers,993,1633,79
+train,nv_hi_001073_1.png,hindi,novels,322,510,0
+train,nv_ml_000274_0.png,malayalam,novels,1772,2717,5
+train,np_mr_000387_1.png,marathi,newspapers,943,1500,42
+train,ar_gu_000514_1.png,gujarati,acts & rules,612,817,18
+train,tb_ml_000176_0.png,malayalam,textbooks,1000,1492,5
+train,qp_mr_000462_1.png,marathi,question papers,596,842,19
+train,nt_ta_000149.jpeg,tamil,notices,421,596,7
+train,mg_pa_000198_0.png,punjabi,magazines,1750,2250,11
+train,rp_as_000440_0.png,assamese,research papers,1653,2339,14
+train,tb_hi_001160_1.png,hindi,textbooks,504,720,14
+train,tb_hi_000235_0.png,hindi,textbooks,1218,1787,19
+train,ar_en_000972.png,english,acts & rules,596,842,8
+train,sy_ml_000259_0.png,malayalam,syllabi,1240,1755,12
+train,ar_kn_000958_0.png,kannada,acts & rules,1240,1696,6
+train,fm_kn_000256_1.png,kannada,forms,596,979,60
+train,nv_te_000463_0.png,telugu,novels,2355,3896,7
+train,mn_bn_000734_0.png,bengali,manuals,749,1162,4
+train,mg_mr_000374.png,marathi,magazines,522,684,27
+train,nv_or_000048_0.png,odia,novels,532,827,11
+train,tb_bn_000461_0.png,bengali,textbooks,825,1200,7
+train,br_or_000106_0.png,odia,brochures,1278,1792,42
+train,qp_pa_000260_1.png,punjabi,question papers,595,842,16
+train,nv_bn_000668_0.png,bengali,novels,2482,3509,8
+train,nv_pa_000044_0.png,punjabi,novels,1006,1606,7
+train,rp_bn_000482_0.png,bengali,research papers,1241,1754,7
+train,tb_or_000944_1.png,odia,textbooks,596,780,12
+train,mg_pa_000926_0.png,punjabi,magazines,1042,1667,10
+train,fm_en_000489_0.png,english,forms,596,842,7
+train,tb_ta_000062_0.png,tamil,textbooks,1275,1650,7
+train,rp_en_000345_0.png,english,research papers,1241,1754,14
+train,mn_or_000967_0.png,odia,manuals,419,671,5
+train,sy_ml_000024_0.png,malayalam,syllabi,1275,1650,2
+train,br_kn_000804_1.png,kannada,brochures,960,540,10
+train,ar_mr_000637_1.png,marathi,acts & rules,600,822,7
+train,br_hi_000705_0.png,hindi,brochures,800,1800,11
+train,sy_te_000396_1.png,telugu,syllabi,595,842,12
+train,nv_mr_001065_0.png,marathi,novels,1214,1948,11
+train,fm_ml_000422_0.png,malayalam,forms,1275,1650,14
+train,np_te_000261_0.png,telugu,newspapers,2565,3450,106
+train,mn_en_000948_1.png,english,manuals,596,792,6
+train,mg_hi_000785_0.png,hindi,magazines,1704,2230,18
+train,mg_kn_000558_0.png,kannada,magazines,1567,2094,39
+train,nt_gu_000081_1.png,gujarati,notices,595,842,3
+train,mn_kn_000220_0.png,kannada,manuals,1275,1650,10
+train,mn_mr_000544_0.png,marathi,manuals,1653,2339,19
+train,rp_mr_000487_0.png,marathi,research papers,1700,2200,3
+train,tb_te_000772_1.png,telugu,textbooks,539,780,11
+train,mg_pa_000010_0.png,punjabi,magazines,1654,2339,9
+train,nt_mr_000054.png,marathi,notices,1008,612,4
+train,mn_kn_000148_0.png,kannada,manuals,1275,1650,1
+train,rp_kn_000319_0.png,kannada,research papers,1275,1650,10
+train,br_hi_000518_0.png,hindi,brochures,1656,2339,20
+train,nv_hi_000757_0.png,hindi,novels,987,1387,4
+train,nv_as_001224_1.png,assamese,novels,1983,2806,5
+train,qp_hi_000069_0.png,hindi,question papers,1656,2339,21
+train,nv_mr_001009_0.png,marathi,novels,1214,1948,14
+train,nt_gu_000145_1.png,gujarati,notices,596,842,11
+train,qp_ml_000697_0.png,malayalam,question papers,875,1241,9
+train,np_as_000273_1.png,assamese,newspapers,2953,4409,166
+train,tb_en_000953_0.png,english,textbooks,1275,1650,0
+train,nt_ta_000184.jpeg,tamil,notices,421,596,6
+train,ar_kn_001063_0.png,kannada,acts & rules,1275,1650,4
+train,ar_ta_001505_1.png,tamil,acts & rules,459,768,8
+train,mg_hi_000363_0.png,hindi,magazines,1070,1637,5
+train,rp_kn_000303_0.png,kannada,research papers,1275,1650,7
+train,ar_en_000355.png,english,acts & rules,596,842,7
+train,fm_bn_000251_0.png,bengali,forms,1275,1650,5
+train,rp_mr_000475_0.png,marathi,research papers,1700,2200,5
+train,qp_ta_000065_0.png,tamil,question papers,1198,1622,22
+train,tb_mr_000892_0.png,marathi,textbooks,1700,2200,5
+train,br_bn_000037_0.png,bengali,brochures,1158,1601,7
+train,ar_te_000378.jpeg,telugu,acts & rules,596,842,6
+train,fm_or_000229_0.png,odia,forms,612,792,32
+train,br_ml_000330_0.png,malayalam,brochures,1376,1394,8
+train,qp_hi_000678_0.png,hindi,question papers,595,842,16
+train,qp_or_000613_1.png,odia,question papers,595,842,21
+train,mg_pa_000052_0.png,punjabi,magazines,1654,2339,7
+train,tb_en_001138_0.png,english,textbooks,1275,1650,10
+train,mn_ml_000226_0.png,malayalam,manuals,1275,1650,6
+train,mn_gu_000767_0.png,gujarati,manuals,1241,1754,11
+train,np_gu_000152_1.png,gujarati,newspapers,2800,3974,36
+train,mn_ml_000449_0.png,malayalam,manuals,1275,1650,10
+train,fm_ml_000307_0.png,malayalam,forms,1241,1755,29
+train,mg_ta_001199.jpeg,tamil,magazines,252,416,11
+train,rp_bn_000128_0.png,bengali,research papers,1241,1754,6
+train,nv_pa_001167_0.png,punjabi,novels,845,1275,5
+train,qp_hi_000351_0.png,hindi,question papers,1587,2100,13
+train,ar_ta_000658_0.png,tamil,acts & rules,1240,1755,4
+train,nv_bn_000768_0.png,bengali,novels,2482,3509,8
+train,mn_te_000624_0.png,telugu,manuals,552,853,5
+train,mg_kn_000658_0.png,kannada,magazines,1275,1763,15
+train,sy_ta_000551.jpeg,tamil,syllabi,612,792,7
+train,ar_pa_000145_0.png,punjabi,acts & rules,1656,2342,12
+train,tb_mr_000878_0.png,marathi,textbooks,1700,2200,4
+train,nt_kn_000502_1.png,kannada,notices,612,864,6
+train,sy_te_000170_0.png,telugu,syllabi,698,1037,3
+train,nt_ta_000098.jpeg,tamil,notices,421,596,6
+train,tb_pa_000044_0.png,punjabi,textbooks,1700,2200,12
+train,br_ml_000205_0.png,malayalam,brochures,1240,1755,14
+train,fm_kn_000361_1.png,kannada,forms,596,842,13
+train,mn_or_000290_0.png,odia,manuals,542,815,8
+train,sy_ta_000272.jpeg,tamil,syllabi,612,792,16
+train,rp_ml_000268_0.png,malayalam,research papers,2480,3509,5
+train,fm_mr_000019_0.png,marathi,forms,1700,2200,14
+train,nv_hi_000547_0.png,hindi,novels,1700,2200,11
+train,mn_te_000985_1.png,telugu,manuals,595,842,10
+train,tb_en_000026_0.png,english,textbooks,1275,1650,19
+train,tb_en_000186_0.png,english,textbooks,1275,1650,15
+train,sy_pa_000576_1.png,punjabi,syllabi,596,842,20
+train,ar_pa_000430_0.png,punjabi,acts & rules,1587,2173,16
+train,tb_mr_000845_0.png,marathi,textbooks,1700,2200,6
+train,br_pa_000393_0.png,punjabi,brochures,1780,2280,25
+train,mn_ta_000479_0.png,tamil,manuals,1284,2196,7
+train,nv_en_000870_0.png,english,novels,896,1246,19
+train,mn_te_000174_0.png,telugu,manuals,1356,1978,3
+train,np_or_000582_1.png,odia,newspapers,921,1466,54
+train,nv_as_000912_1.png,assamese,novels,1219,1951,12
+train,sy_ml_000438_0.png,malayalam,syllabi,1241,1754,11
+train,tb_kn_000801_1.png,kannada,textbooks,511,681,12
+train,ar_pa_000662_1.png,punjabi,acts & rules,612,792,4
+train,mg_ta_001241.jpeg,tamil,magazines,304,426,5
+train,mg_or_000411_0.png,odia,magazines,1211,1625,36
+train,nt_ml_000749_0.png,malayalam,notices,2480,3508,23
+train,mg_gu_000393.png,gujarati,magazines,596,842,10
+train,rp_kn_000320_0.png,kannada,research papers,1275,1650,8
+train,nt_bn_000292_0.png,bengali,notices,1984,2806,7
+train,ar_bn_000833_0.png,bengali,acts & rules,1242,1755,18
+train,nt_pa_000135_1.png,punjabi,notices,597,852,5
+train,nv_en_000348_0.png,english,novels,559,911,8
+train,br_gu_000003_0.png,gujarati,brochures,1241,1754,8
+train,mg_or_000445_0.png,odia,magazines,1211,1625,18
+train,sy_ml_000179_0.png,malayalam,syllabi,1241,1754,1
+train,sy_ml_000401_0.png,malayalam,syllabi,1240,1755,5
+train,br_kn_000827_1.png,kannada,brochures,513,701,13
+train,mn_ml_000642_0.png,malayalam,manuals,1275,1650,9
+train,np_mr_000289_1.png,marathi,newspapers,943,1500,50
+train,tb_mr_000156_0.png,marathi,textbooks,900,1300,10
+train,mn_bn_000610_0.png,bengali,manuals,749,1162,8
+train,mn_ta_000527_0.png,tamil,manuals,1284,2196,8
+train,nt_ta_000071.jpeg,tamil,notices,421,596,6
+train,nv_mr_000307_0.png,marathi,novels,1050,1650,8
+train,rp_or_000869_1.png,odia,research papers,612,792,8
+train,np_bn_000091_0.png,bengali,newspapers,3713,5313,133
+train,nv_kn_000432_0.png,kannada,novels,853,1298,8
+train,tb_pa_000457_0.png,punjabi,textbooks,1656,2339,11
+train,nv_gu_000883_1.png,gujarati,novels,571,789,15
+train,mn_ta_001118_0.png,tamil,manuals,1284,2196,7
+train,mg_or_000886_1.png,odia,magazines,595,842,9
+train,tb_te_000655_0.png,telugu,textbooks,750,1275,5
+train,sy_as_000074_0.png,assamese,syllabi,1653,2339,15
+train,mg_mr_000008.png,marathi,magazines,600,770,10
+train,nt_en_000085_1.png,english,notices,596,843,6
+train,qp_kn_000460_0.png,kannada,question papers,1241,1754,7
+train,nt_or_000034_0.png,odia,notices,1275,1650,3
+train,ar_kn_001022_0.png,kannada,acts & rules,1224,1732,14
+train,qp_te_000056_0.png,telugu,question papers,1275,1650,12
+train,mn_ta_000608_0.png,tamil,manuals,1284,2196,0
+train,ar_en_001311.png,english,acts & rules,596,842,8
+train,ar_gu_000705_1.png,gujarati,acts & rules,612,843,18
+train,ar_mr_000786_1.png,marathi,acts & rules,600,822,11
+train,br_mr_000062_0.png,marathi,brochures,2000,1250,4
+train,fm_mr_000122_0.png,marathi,forms,1700,2200,14
+train,rp_bn_000026_0.png,bengali,research papers,1241,1754,9
+train,mn_as_000230_0.png,assamese,manuals,1656,2339,8
+train,sy_or_000663_1.png,odia,syllabi,624,794,14
+train,mn_ml_000055_0.png,malayalam,manuals,1275,1650,8
+train,nv_gu_000417_0.png,gujarati,novels,693,1050,9
+train,rp_bn_000232_0.png,bengali,research papers,1241,1754,11
+train,br_hi_000123_0.png,hindi,brochures,1656,2339,3
+train,rp_te_000669_0.png,telugu,research papers,909,1468,15
+train,nv_ml_000240_0.png,malayalam,novels,1772,2717,11
+train,br_ta_000057_0.png,tamil,brochures,1063,1447,9
+train,rp_or_000615_0.png,odia,research papers,1240,1755,9
+train,fm_hi_000223_0.png,hindi,forms,1653,2339,5
+train,np_en_000262_1.png,english,newspapers,1786,2781,43
+train,mg_ta_000527.jpeg,tamil,magazines,510,751,10
+train,rp_en_000802_0.png,english,research papers,1241,1630,14
+train,tb_hi_000173_0.png,hindi,textbooks,1218,1787,14
+train,ar_kn_000358_0.png,kannada,acts & rules,1240,1755,11
+train,mn_en_000116_0.png,english,manuals,734,1296,10
+train,nt_kn_000355_1.png,kannada,notices,612,792,8
+train,nv_hi_000448_0.png,hindi,novels,987,1387,4
+train,rp_te_000139_0.png,telugu,research papers,768,1220,10
+train,qp_ml_000598_0.png,malayalam,question papers,1240,1755,5
+train,qp_hi_000188_0.png,hindi,question papers,1573,2100,9
+train,fm_ml_000186_0.png,malayalam,forms,1240,1755,23
+train,tb_as_000699_0.png,assamese,textbooks,1262,1806,9
+train,ar_en_001132.png,english,acts & rules,596,842,9
+train,qp_gu_000812_0.png,gujarati,question papers,1240,1752,32
+train,nt_mr_000037.png,marathi,notices,612,1008,17
+train,br_mr_000185_0.png,marathi,brochures,1653,2339,9
+train,nt_kn_000178_1.png,kannada,notices,612,1008,6
+train,np_as_000419_1.png,assamese,newspapers,2953,4409,132
+train,br_kn_000634_1.png,kannada,brochures,595,842,3
+train,mg_ta_001204.jpeg,tamil,magazines,252,416,6
+train,br_mr_000421_0.png,marathi,brochures,1653,2339,13
+train,rp_ml_000938_0.png,malayalam,research papers,2480,3509,4
+train,tb_te_000014_0.png,telugu,textbooks,750,1275,7
+train,np_te_000049_0.png,telugu,newspapers,1567,2413,73
+train,sy_or_000046_0.png,odia,syllabi,1241,1754,12
+train,nv_gu_001193_1.png,gujarati,novels,571,789,18
+train,sy_gu_000110_0.png,gujarati,syllabi,1241,1754,4
+train,tb_hi_000375_0.png,hindi,textbooks,1218,1787,11
+train,tb_ta_000949_1.png,tamil,textbooks,655,882,12
+train,nv_hi_000168_0.png,hindi,novels,987,1387,0
+train,mg_or_000409_0.png,odia,magazines,1211,1625,23
+train,qp_gu_000446_0.png,gujarati,question papers,1241,1755,18
+train,ar_ml_000925_1.png,malayalam,acts & rules,596,842,7
+train,fm_mr_000124_0.png,marathi,forms,1700,2200,31
+train,tb_en_000385_0.png,english,textbooks,1275,1650,8
+train,mn_kn_000071_0.png,kannada,manuals,1275,1650,6
+train,sy_pa_000114_0.png,punjabi,syllabi,1659,2356,15
+train,nt_bn_000407_0.png,bengali,notices,2002,2816,5
+train,nv_te_000811_1.png,telugu,novels,612,792,7
+train,nv_hi_000564_0.png,hindi,novels,1700,2200,8
+train,qp_hi_000143_0.png,hindi,question papers,1598,2134,17
+train,rp_mr_000788_0.png,marathi,research papers,1700,2200,4
+train,mn_ml_000670_0.png,malayalam,manuals,1275,1650,11
+train,ar_ta_000541_0.png,tamil,acts & rules,1240,1755,9
+train,fm_te_000605_0.png,telugu,forms,596,842,5
+train,tb_ml_000959_1.png,malayalam,textbooks,612,792,13
+train,np_ml_000562_1.png,malayalam,newspapers,1296,2016,102
+train,nv_pa_000157_0.png,punjabi,novels,1178,1806,5
+train,mg_gu_001031.png,gujarati,magazines,612,792,15
+train,mn_ml_000306_0.png,malayalam,manuals,1275,1650,7
+train,rp_or_000485_0.png,odia,research papers,1240,1755,4
+train,rp_mr_000397_0.png,marathi,research papers,1653,2339,6
+train,qp_bn_000391_0.png,bengali,question papers,1241,1755,33
+train,qp_ta_000096_0.png,tamil,question papers,1197,1622,11
+train,tb_bn_000228_0.png,bengali,textbooks,825,1200,5
+train,mg_pa_000902_0.png,punjabi,magazines,1042,1667,11
+train,nv_hi_000728_0.png,hindi,novels,987,1387,4
+train,nv_or_000757_0.png,odia,novels,739,1152,6
+train,tb_kn_000296_0.png,kannada,textbooks,1241,1755,17
+train,nv_pa_000446_0.png,punjabi,novels,1654,2339,6
+train,rp_en_000444_0.png,english,research papers,1241,1754,13
+train,br_mr_000862_0.png,marathi,brochures,1567,2067,13
+train,tb_kn_000864_1.png,kannada,textbooks,404,595,6
+train,sy_en_000353_0.png,english,syllabi,1275,1650,11
+train,br_hi_000608_0.png,hindi,brochures,1687,2373,10
+train,tb_gu_000650_0.png,gujarati,textbooks,329,542,9
+train,fm_mr_000112_0.png,marathi,forms,1700,2200,17
+train,br_as_000066_0.png,assamese,brochures,1700,2200,4
+train,qp_ml_000504_0.png,malayalam,question papers,1275,1650,14
+train,sy_mr_000012_0.png,marathi,syllabi,1653,2339,3
+train,mg_en_000299.png,english,magazines,1800,2366,24
+train,ar_as_000175_0.png,assamese,acts & rules,1700,2342,13
+train,fm_en_000281_0.png,english,forms,612,792,14
+train,np_as_000048_1.png,assamese,newspapers,2953,4409,63
+train,br_as_000333_0.png,assamese,brochures,1654,2339,6
+train,br_te_000697_0.png,telugu,brochures,1313,1725,22
+train,ar_pa_000288_0.png,punjabi,acts & rules,1653,2339,10
+train,nv_or_000740_0.png,odia,novels,739,1152,9
+train,sy_gu_000443_0.png,gujarati,syllabi,1275,1650,1
+train,mn_bn_000149_0.png,bengali,manuals,753,1267,4
+train,br_te_000044_0.png,telugu,brochures,1313,1725,28
+train,mg_ta_000618.jpeg,tamil,magazines,307,419,10
+train,rp_ta_000408_1.png,tamil,research papers,510,680,15
+train,tb_hi_000903_1.png,hindi,textbooks,612,792,10
+train,br_pa_000592_0.png,punjabi,brochures,1778,2278,20
+train,mg_ml_000336_0.png,malayalam,magazines,1075,1518,17
+train,qp_as_000204_0.png,assamese,question papers,1653,2339,12
+train,sy_kn_000708_1.png,kannada,syllabi,596,842,7
+train,np_mr_000332_1.png,marathi,newspapers,943,1500,93
+train,mn_or_001022_1.png,odia,manuals,533,786,13
+train,np_or_000381_1.png,odia,newspapers,921,1466,65
+train,mn_te_000698_0.png,telugu,manuals,1240,1754,3
+train,ar_or_000039_0.png,odia,acts & rules,1221,973,6
+train,np_te_000047_0.png,telugu,newspapers,1602,2447,48
+train,br_hi_001106_1.png,hindi,brochures,396,603,2
+train,fm_hi_000191_0.png,hindi,forms,1653,2339,9
+train,sy_bn_000354_1.png,bengali,syllabi,3060,3960,11
+train,nv_hi_000911_0.png,hindi,novels,987,1387,3
+train,mn_gu_000669_0.png,gujarati,manuals,1240,1755,11
+train,mg_te_000005.jpeg,telugu,magazines,577,791,20
+train,qp_kn_000089_0.png,kannada,question papers,1190,1635,21
+train,qp_te_000387_1.png,telugu,question papers,596,842,8
+train,sy_hi_000481_1.png,hindi,syllabi,576,792,12
+train,nv_hi_000997_1.png,hindi,novels,612,792,9
+train,rp_en_000807_0.png,english,research papers,1240,1755,20
+train,ar_te_000553.jpeg,telugu,acts & rules,559,789,7
+train,fm_mr_000482_1.png,marathi,forms,612,792,13
+train,qp_te_000494_1.png,telugu,question papers,596,842,4
+train,sy_or_000650_1.png,odia,syllabi,595,842,18
+train,tb_pa_000466_0.png,punjabi,textbooks,1656,2339,13
+train,mg_pa_000666_0.png,punjabi,magazines,1656,2339,6
+train,rp_kn_000098_0.png,kannada,research papers,1241,1754,3
+train,nv_te_000060_0.png,telugu,novels,2355,3896,21
+train,fm_pa_000483_1.png,punjabi,forms,612,792,9
+train,tb_pa_000294_0.png,punjabi,textbooks,1028,1578,9
+train,mg_gu_000428.png,gujarati,magazines,612,792,17
+train,nv_kn_000452_0.png,kannada,novels,853,1298,6
+train,nt_gu_000524_1.png,gujarati,notices,596,842,23
+train,sy_bn_000172_0.png,bengali,syllabi,877,1241,9
+train,sy_or_000507_0.png,odia,syllabi,1240,1755,8
+train,nv_as_000565_0.png,assamese,novels,1374,1818,18
+train,mg_hi_000036_0.png,hindi,magazines,1656,2342,12
+train,br_or_000116_0.png,odia,brochures,1241,1754,19
+train,mn_or_000616_0.png,odia,manuals,403,690,14
+train,np_ta_000044_0.png,tamil,newspapers,1336,1784,17
+train,nv_mr_000254_0.png,marathi,novels,1050,1650,11
+train,ar_mr_000979_1.png,marathi,acts & rules,612,843,21
+train,qp_hi_000841_0.png,hindi,question papers,612,792,21
+train,nt_mr_000141.png,marathi,notices,612,792,9
+train,qp_kn_000431_0.png,kannada,question papers,1246,1748,9
+train,nv_hi_000071_0.png,hindi,novels,1650,2334,8
+train,sy_ta_000002.jpeg,tamil,syllabi,612,792,7
+train,ar_kn_001107_0.png,kannada,acts & rules,1259,1777,12
+train,np_ml_000535_1.png,malayalam,newspapers,1296,2016,82
+train,nv_kn_000416_0.png,kannada,novels,853,1298,8
+train,mn_ta_000595_0.png,tamil,manuals,1284,2196,8
+train,mg_gu_000383.png,gujarati,magazines,596,842,4
+train,mn_te_000921_1.png,telugu,manuals,842,596,12
+train,ar_or_000275_0.png,odia,acts & rules,1030,1400,13
+train,nt_gu_000707_1.png,gujarati,notices,792,612,3
+train,mn_te_000917_1.png,telugu,manuals,504,818,7
+train,qp_hi_000705_0.png,hindi,question papers,596,842,18
+train,mg_or_000112_0.png,odia,magazines,1211,1625,19
+train,tb_pa_000557_0.png,punjabi,textbooks,1656,2339,13
+train,mg_mr_000461.png,marathi,magazines,497,672,8
+train,rp_kn_000573_0.png,kannada,research papers,1275,1650,8
+train,rp_te_000513_0.png,telugu,research papers,909,1468,10
+train,br_mr_000958_0.png,marathi,brochures,2338,1654,12
+train,rp_ta_000438_1.png,tamil,research papers,510,680,9
+train,ar_gu_000821_1.png,gujarati,acts & rules,596,842,12
+train,mn_te_000315_0.png,telugu,manuals,838,1288,6
+train,ar_en_001377.png,english,acts & rules,596,842,15
+train,tb_or_000458_0.png,odia,textbooks,680,1034,11
+train,nv_or_000854_0.png,odia,novels,739,1152,8
+train,ar_en_000529.png,english,acts & rules,612,792,8
+train,mn_as_000500_1.png,assamese,manuals,624,814,6
+train,ar_hi_000293_0.png,hindi,acts & rules,1654,2339,7
+train,ar_as_000899_0.png,assamese,acts & rules,1700,2342,13
+train,ar_gu_000317_1.png,gujarati,acts & rules,596,842,12
+train,ar_ta_001224_0.png,tamil,acts & rules,1275,1757,15
+train,sy_hi_000478_1.png,hindi,syllabi,576,792,16
+train,fm_bn_000439_0.png,bengali,forms,1983,2804,24
+train,br_as_000028_0.png,assamese,brochures,1656,2339,24
+train,tb_ta_000234_0.png,tamil,textbooks,1088,1425,11
+train,mn_hi_000005_0.png,hindi,manuals,1600,2400,9
+train,np_kn_000118_0.png,kannada,newspapers,849,1423,42
+train,mg_en_000928.png,english,magazines,2263,3200,12
+train,sy_mr_000717_1.png,marathi,syllabi,596,842,3
+train,mn_bn_000131_0.png,bengali,manuals,753,1267,5
+train,nv_pa_001145_0.png,punjabi,novels,842,1271,6
+train,br_hi_000128_0.png,hindi,brochures,1656,2339,5
+train,ar_en_001325.png,english,acts & rules,596,842,12
+train,ar_as_000760_0.png,assamese,acts & rules,1428,2042,14
+train,tb_bn_000426_0.png,bengali,textbooks,825,1200,9
+train,mn_te_000622_0.png,telugu,manuals,552,853,3
+train,tb_pa_000743_0.png,punjabi,textbooks,1492,1945,4
+train,tb_as_000883_0.png,assamese,textbooks,1262,1806,10
+train,nv_bn_000097_0.png,bengali,novels,755,1164,8
+train,br_hi_000064_0.png,hindi,brochures,1678,2342,8
+train,ar_bn_000146_0.png,bengali,acts & rules,937,1334,12
+train,ar_ta_001350_0.png,tamil,acts & rules,1275,1757,10
+train,ar_mr_000531_0.png,marathi,acts & rules,1653,2339,6
+train,nt_ta_000526.jpeg,tamil,notices,792,612,1
+train,rp_or_000074_0.png,odia,research papers,1240,1755,6
+train,rp_or_000196_0.png,odia,research papers,1268,1839,3
+train,np_gu_000295_1.png,gujarati,newspapers,2800,3974,128
+train,sy_hi_000328_0.png,hindi,syllabi,1700,2200,14
+train,qp_kn_000034_0.png,kannada,question papers,1269,1664,23
+train,fm_hi_000258_1.png,hindi,forms,596,842,40
+train,rp_kn_001200_0.png,kannada,research papers,1275,1650,7
+train,br_bn_000116_0.png,bengali,brochures,1158,1601,7
+train,nv_mr_000609_0.png,marathi,novels,1700,2200,10
+train,br_mr_000420_0.png,marathi,brochures,1653,2339,20
+train,sy_te_000182_0.png,telugu,syllabi,698,1037,23
+train,nt_ta_000502.jpeg,tamil,notices,421,596,6
+train,qp_or_000103_0.png,odia,question papers,1275,1650,7
+train,tb_te_000770_1.png,telugu,textbooks,596,842,19
+train,fm_ml_000271_0.png,malayalam,forms,1275,1650,14
+train,rp_as_001444_0.png,assamese,research papers,1653,2339,11
+train,fm_pa_000412_1.png,punjabi,forms,612,1008,29
+train,mg_gu_001239.png,gujarati,magazines,596,842,15
+train,br_hi_000395_0.png,hindi,brochures,1609,2339,14
+train,br_te_000302_0.png,telugu,brochures,1313,1725,12
+train,mg_ta_001489.jpeg,tamil,magazines,315,450,6
+train,ar_en_000844.png,english,acts & rules,596,842,4
+train,nt_hi_000230_0.png,hindi,notices,2200,1700,1
+train,mn_as_000201_0.png,assamese,manuals,1656,2339,7
+train,ar_as_000226_0.png,assamese,acts & rules,1700,2342,13
+train,nv_ml_000344_0.png,malayalam,novels,1772,2717,9
+train,mg_te_000543.jpeg,telugu,magazines,596,842,24
+train,np_ml_000503_0.png,malayalam,newspapers,2008,3213,49
+train,fm_bn_000131_0.png,bengali,forms,1984,2806,4
+train,sy_ta_000718.jpeg,tamil,syllabi,612,792,7
+train,tb_mr_000932_0.png,marathi,textbooks,1700,2200,15
+train,qp_kn_000297_0.png,kannada,question papers,1240,1755,7
+train,tb_ml_000246_0.png,malayalam,textbooks,1000,1492,7
+train,mn_pa_000737_0.png,punjabi,manuals,1630,2230,8
+train,mn_as_000107_0.png,assamese,manuals,1656,2339,8
+train,br_bn_000127_0.png,bengali,brochures,1158,1601,12
+train,tb_bn_000238_0.png,bengali,textbooks,825,1200,6
+train,np_pa_000600_1.png,punjabi,newspapers,964,1503,158
+train,qp_as_000181_0.png,assamese,question papers,1653,2339,18
+train,fm_te_000567_0.png,telugu,forms,595,842,23
+train,ar_ml_000513_0.png,malayalam,acts & rules,1241,1755,13
+train,rp_or_000783_0.png,odia,research papers,1240,1755,7
+train,br_en_000766_1.png,english,brochures,842,596,10
+train,nv_ta_000598_0.png,tamil,novels,1241,1755,7
+train,nt_kn_000391_1.png,kannada,notices,612,864,9
+train,mg_ml_000529_0.png,malayalam,magazines,1275,1650,7
+train,mg_ta_000059.jpeg,tamil,magazines,510,751,17
+train,tb_te_000115_0.png,telugu,textbooks,750,1275,8
+train,rp_ta_000327_1.png,tamil,research papers,511,681,12
+train,ar_en_000454.png,english,acts & rules,596,842,7
+train,mg_pa_001005_0.png,punjabi,magazines,1656,2339,9
+train,nt_kn_000390_1.png,kannada,notices,612,864,6
+train,mn_ta_001368_1.png,tamil,manuals,595,842,7
+train,sy_as_000446_1.png,assamese,syllabi,792,612,1
+train,br_bn_000896_1.png,bengali,brochures,3960,3060,6
+train,ar_en_001014.png,english,acts & rules,596,842,7
+train,fm_gu_000420_1.png,gujarati,forms,612,792,1
+train,ar_or_000703_1.png,odia,acts & rules,537,793,7
+train,fm_hi_000168_0.png,hindi,forms,1700,2200,16
+train,rp_as_001440_0.png,assamese,research papers,1653,2339,9
+train,nt_or_000098_0.png,odia,notices,1275,1650,3
+train,mg_en_001162.png,english,magazines,1697,2398,7
+train,sy_mr_000584_1.png,marathi,syllabi,612,792,22
+train,ar_ta_000216_0.png,tamil,acts & rules,1275,1757,10
+train,fm_hi_000740_1.png,hindi,forms,596,842,24
+train,nt_ta_000403.jpeg,tamil,notices,421,596,6
+train,rp_gu_000748_0.png,gujarati,research papers,1240,1755,8
+train,tb_en_000664_0.png,english,textbooks,1275,1650,31
+train,br_ta_000035_0.png,tamil,brochures,1063,1447,14
+train,sy_gu_000187_0.png,gujarati,syllabi,1241,1754,8
+train,tb_hi_000202_0.png,hindi,textbooks,1218,1787,12
+train,qp_pa_000450_1.png,punjabi,question papers,595,842,17
+train,nv_mr_000341_0.png,marathi,novels,1050,1650,16
+train,mg_en_001266.png,english,magazines,595,842,23
+train,nv_ta_000084_0.png,tamil,novels,689,1086,7
+train,ar_bn_000656_0.png,bengali,acts & rules,975,1425,9
+train,nv_gu_001213_1.png,gujarati,novels,571,789,12
+train,nt_or_000117_0.png,odia,notices,1275,1650,3
+train,tb_ml_000942_1.png,malayalam,textbooks,612,792,9
+train,sy_as_000326_0.png,assamese,syllabi,1653,2339,14
+train,tb_as_001523_0.png,assamese,textbooks,326,554,6
+train,mn_ta_000544_0.png,tamil,manuals,1284,2196,7
+train,br_ta_000482_0.png,tamil,brochures,1063,1447,17
+train,nv_as_001021_1.png,assamese,novels,1219,1951,11
+train,rp_as_001322_0.png,assamese,research papers,1653,2339,10
+train,nv_pa_000414_0.png,punjabi,novels,1178,1806,5
+train,tb_as_000053_0.png,assamese,textbooks,1048,1638,10
+train,qp_te_000243_1.png,telugu,question papers,595,842,4
+train,rp_kn_000801_0.png,kannada,research papers,1241,1754,10
+train,mg_bn_000136_0.png,bengali,magazines,1176,1320,14
+train,nt_hi_000173_0.png,hindi,notices,2200,1700,4
+train,mg_ml_000254_0.png,malayalam,magazines,1075,1518,14
+train,np_kn_000176_1.png,kannada,newspapers,993,1633,91
+train,ar_kn_000529_0.png,kannada,acts & rules,1240,1755,6
+train,tb_gu_001137_1.png,gujarati,textbooks,612,792,17
+train,np_as_000166_1.png,assamese,newspapers,2953,4409,165
+train,nv_gu_001204_1.png,gujarati,novels,571,789,14
+train,br_bn_000110_0.png,bengali,brochures,1158,1601,13
+train,np_gu_000224_1.png,gujarati,newspapers,2800,3974,7
+train,qp_te_000350_1.png,telugu,question papers,792,612,4
+train,np_or_000259_0.png,odia,newspapers,971,1563,17
+train,br_ta_000240_0.png,tamil,brochures,1063,1447,7
+train,nt_kn_000067_1.png,kannada,notices,612,864,7
+train,mg_ml_000407_0.png,malayalam,magazines,1075,1518,12
+train,mg_ta_000220.jpeg,tamil,magazines,510,751,10
+train,nv_mr_000340_0.png,marathi,novels,1050,1650,7
+train,br_en_000586_1.png,english,brochures,596,842,11
+train,mn_ta_001377_1.png,tamil,manuals,596,842,3
+train,rp_or_000342_0.png,odia,research papers,1268,1839,4
+train,nv_as_001267_1.png,assamese,novels,1983,2806,10
+train,br_en_000679_1.png,english,brochures,596,842,4
+train,nv_mr_000008_0.png,marathi,novels,1000,1650,6
+train,fm_te_000515_0.png,telugu,forms,612,792,41
+train,ar_hi_000317_0.png,hindi,acts & rules,1654,2339,13
+train,nv_ml_000668_0.png,malayalam,novels,745,1080,0
+train,rp_or_000276_0.png,odia,research papers,1240,1755,7
+train,tb_te_000122_0.png,telugu,textbooks,750,1275,11
+train,ar_kn_001130_0.png,kannada,acts & rules,1224,1732,5
+train,nv_hi_000711_0.png,hindi,novels,987,1387,0
+train,np_mr_000458_1.png,marathi,newspapers,943,1500,68
+train,sy_or_000556_0.png,odia,syllabi,1241,1754,7
+train,rp_kn_000202_0.png,kannada,research papers,1241,1754,5
+train,tb_as_001132_0.png,assamese,textbooks,326,554,7
+train,nt_mr_000065.png,marathi,notices,612,792,9
+train,br_te_000797_1.png,telugu,brochures,612,792,10
+train,ar_as_001081_0.png,assamese,acts & rules,1700,2342,16
+train,mg_en_001372.png,english,magazines,2400,3103,22
+train,mn_hi_000218_0.png,hindi,manuals,843,1336,19
+train,mg_as_000040_0.png,assamese,magazines,1375,1823,13
+train,rp_en_000682_0.png,english,research papers,1275,1650,8
+train,ar_pa_000023_0.png,punjabi,acts & rules,1628,2303,8
+train,sy_kn_000634_0.png,kannada,syllabi,1275,1650,20
+train,ar_hi_000158_0.png,hindi,acts & rules,1656,2339,9
+train,rp_kn_000860_0.png,kannada,research papers,1275,1650,6
+train,br_mr_000228_0.png,marathi,brochures,1653,2339,7
+train,tb_te_000725_1.png,telugu,textbooks,596,842,12
+train,np_gu_000024_0.png,gujarati,newspapers,1241,1755,71
+train,br_mr_000574_0.png,marathi,brochures,1567,2067,20
+train,ar_gu_000509_1.png,gujarati,acts & rules,612,843,13
+train,br_pa_000380_0.png,punjabi,brochures,1780,2280,23
+train,mg_bn_000918_1.png,bengali,magazines,1814,2428,26
+train,qp_mr_000448_1.png,marathi,question papers,595,843,5
+train,mn_te_000080_0.png,telugu,manuals,703,988,7
+train,mn_bn_000038_0.png,bengali,manuals,753,1267,7
+train,nv_as_001378_1.png,assamese,novels,1270,1987,5
+train,tb_ta_000198_0.png,tamil,textbooks,1088,1425,11
+train,mg_en_001368.png,english,magazines,2400,3103,2
+train,qp_as_000031_0.png,assamese,question papers,1653,2339,28
+train,fm_te_000027_0.png,telugu,forms,595,841,65
+train,ar_en_000345.png,english,acts & rules,596,842,9
+train,qp_or_000509_1.png,odia,question papers,595,842,31
+train,tb_hi_001280_1.png,hindi,textbooks,504,720,10
+train,nv_or_000918_1.png,odia,novels,412,709,7
+train,qp_hi_000865_0.png,hindi,question papers,612,792,9
+train,ar_ta_000667_0.png,tamil,acts & rules,1240,1755,10
+train,mg_te_000280.jpeg,telugu,magazines,595,843,15
+train,mg_gu_000548.png,gujarati,magazines,420,624,9
+train,rp_en_000012_0.png,english,research papers,1275,1650,24
+train,rp_or_000543_0.png,odia,research papers,1240,1755,8
+train,tb_kn_000359_0.png,kannada,textbooks,720,1074,21
+train,br_hi_000069_0.png,hindi,brochures,1678,2342,14
+train,np_bn_000352_1.png,bengali,newspapers,954,1503,63
+train,mg_en_000918.png,english,magazines,2263,3200,21
+train,mg_en_000128.png,english,magazines,568,768,11
+train,ar_ml_000865_1.png,malayalam,acts & rules,595,842,6
+train,rp_or_000147_0.png,odia,research papers,1268,1839,4
+train,sy_kn_000333_0.png,kannada,syllabi,1241,1754,9
+train,nt_bn_000330_0.png,bengali,notices,1983,2806,15
+train,mg_bn_000451_0.png,bengali,magazines,1176,1320,19
+train,tb_hi_000004_0.png,hindi,textbooks,1218,1787,1
+train,mg_as_000249_0.png,assamese,magazines,1375,1823,6
+train,mg_mr_000175.png,marathi,magazines,600,770,30
+train,fm_gu_000600_1.png,gujarati,forms,612,792,11
+train,br_as_000101_0.png,assamese,brochures,1653,2339,14
+train,br_bn_000794_1.png,bengali,brochures,3960,3060,8
+train,br_bn_000660_0.png,bengali,brochures,1158,1601,16
+train,np_en_000008_0.png,english,newspapers,1005,1400,45
+train,br_pa_000404_0.png,punjabi,brochures,1780,2280,39
+train,nv_or_000844_0.png,odia,novels,739,1152,5
+train,mg_hi_000590_0.png,hindi,magazines,1717,2209,9
+train,sy_en_000043_0.png,english,syllabi,1240,1754,18
+train,nv_gu_000566_0.png,gujarati,novels,741,1230,14
+train,np_kn_000556_1.png,kannada,newspapers,595,842,6
+train,nv_as_000923_1.png,assamese,novels,1219,1951,10
+train,mg_ta_001173.jpeg,tamil,magazines,510,751,11
+train,ar_te_000025.jpeg,telugu,acts & rules,596,842,11
+train,sy_ta_000633.jpeg,tamil,syllabi,612,792,5
+train,mg_as_000147_0.png,assamese,magazines,1375,1823,6
+train,mn_gu_000200_0.png,gujarati,manuals,1241,1755,14
+train,tb_pa_000119_0.png,punjabi,textbooks,1700,2200,7
+train,tb_hi_000239_0.png,hindi,textbooks,1218,1787,15
+train,nt_hi_000555_1.png,hindi,notices,596,842,9
+train,sy_en_000003_0.png,english,syllabi,1241,1754,12
+train,nv_or_000502_0.png,odia,novels,798,1211,8
+train,sy_kn_000568_0.png,kannada,syllabi,1241,1754,10
+train,ar_te_000129.jpeg,telugu,acts & rules,596,842,0
+train,mn_or_000352_0.png,odia,manuals,403,688,9
+train,np_gu_000142_1.png,gujarati,newspapers,2800,3974,54
+train,rp_or_000002_0.png,odia,research papers,1240,1755,10
+train,nt_mr_000710.png,marathi,notices,612,1008,12
+train,br_hi_000967_1.png,hindi,brochures,1728,720,11
+train,mg_gu_001009.png,gujarati,magazines,612,792,7
+train,tb_pa_000291_0.png,punjabi,textbooks,1028,1578,9
+train,mn_pa_000940_1.png,punjabi,manuals,612,792,10
+train,mg_pa_000555_0.png,punjabi,magazines,1123,1728,5
+train,tb_ta_000063_0.png,tamil,textbooks,1275,1650,5
+train,rp_ml_000789_0.png,malayalam,research papers,2480,3509,5
+train,tb_mr_000401_0.png,marathi,textbooks,1700,2200,8
+train,rp_ta_000486_1.png,tamil,research papers,511,681,4
+train,fm_gu_000720_1.png,gujarati,forms,596,842,7
+train,nt_mr_000135.png,marathi,notices,612,792,5
+train,mn_gu_000830_0.png,gujarati,manuals,1241,1754,6
+train,rp_kn_000412_0.png,kannada,research papers,1275,1650,9
+train,sy_en_000487_0.png,english,syllabi,1241,1754,17
+train,nv_bn_000840_1.png,bengali,novels,1329,2150,1
+train,rp_kn_001319_0.png,kannada,research papers,1275,1650,7
+train,rp_en_000661_0.png,english,research papers,1241,1630,11
+train,nv_pa_000116_0.png,punjabi,novels,1006,1606,6
+train,np_bn_000179_0.png,bengali,newspapers,3344,5297,75
+train,nt_or_000529_0.png,odia,notices,596,842,10
+train,rp_en_000361_0.png,english,research papers,1241,1754,5
+train,rp_en_000635_0.png,english,research papers,1275,1650,8
+train,fm_ml_000179_0.png,malayalam,forms,1275,2100,10
+train,mn_or_001069_1.png,odia,manuals,536,787,3
+train,sy_te_000277_1.png,telugu,syllabi,595,842,12
+train,br_bn_000519_0.png,bengali,brochures,1158,1601,3
+train,qp_hi_000385_0.png,hindi,question papers,1592,2106,11
+train,mn_hi_000174_0.png,hindi,manuals,847,1347,11
+train,nt_hi_000286_1.png,hindi,notices,596,842,8
+train,mn_gu_000152_0.png,gujarati,manuals,1241,1755,6
+train,mg_as_000981_1.png,assamese,magazines,2806,3968,17
+train,sy_gu_000061_0.png,gujarati,syllabi,1241,1754,4
+train,ar_or_000768_1.png,odia,acts & rules,596,842,8
+train,ar_te_000309.jpeg,telugu,acts & rules,596,842,6
+train,mg_ta_000720.jpeg,tamil,magazines,510,751,12
+train,br_en_000513_1.png,english,brochures,621,810,6
+train,rp_hi_000199_0.png,hindi,research papers,1653,2339,4
+train,qp_ml_000344_0.png,malayalam,question papers,1269,1667,24
+train,qp_bn_000645_1.png,bengali,question papers,3060,3960,11
+train,qp_hi_000491_0.png,hindi,question papers,612,792,22
+train,mn_bn_000448_0.png,bengali,manuals,749,1162,5
+train,ar_mr_000924_1.png,marathi,acts & rules,612,792,10
+train,mg_gu_000146.png,gujarati,magazines,596,842,12
+train,tb_pa_000967_1.png,punjabi,textbooks,612,792,14
+train,qp_or_000611_1.png,odia,question papers,594,908,15
+train,nv_ta_001154_1.png,tamil,novels,612,792,1
+train,rp_kn_000124_0.png,kannada,research papers,1275,1650,3
+train,tb_or_000730_0.png,odia,textbooks,680,1063,6
+train,mg_gu_000746.png,gujarati,magazines,420,624,9
+train,qp_hi_000110_0.png,hindi,question papers,1614,2150,19
+train,ar_te_000333.jpeg,telugu,acts & rules,596,842,5
+train,mn_pa_000164_0.png,punjabi,manuals,1400,2000,13
+train,sy_ml_000118_0.png,malayalam,syllabi,1241,1754,4
+train,sy_te_000371_1.png,telugu,syllabi,612,792,5
+train,mg_gu_000593.png,gujarati,magazines,420,624,11
+train,mn_gu_000826_0.png,gujarati,manuals,1241,1754,8
+train,mg_pa_000820_0.png,punjabi,magazines,1700,2200,12
+train,tb_ml_000514_0.png,malayalam,textbooks,2550,3300,5
+train,tb_pa_000014_0.png,punjabi,textbooks,1700,2200,14
+train,tb_hi_001062_1.png,hindi,textbooks,504,720,15
+train,ar_bn_000781_0.png,bengali,acts & rules,1100,1448,8
+train,ar_as_001063_0.png,assamese,acts & rules,1700,2342,15
+train,sy_ml_000582_0.png,malayalam,syllabi,1241,1754,9
+train,mn_kn_000006_0.png,kannada,manuals,1241,1754,17
+train,ar_ta_000279_0.png,tamil,acts & rules,1275,1757,5
+train,qp_hi_000409_0.png,hindi,question papers,1628,2123,15
+train,tb_pa_000585_0.png,punjabi,textbooks,1656,2339,8
+train,tb_gu_000177_0.png,gujarati,textbooks,353,594,15
+train,nt_kn_000219_1.png,kannada,notices,612,1008,6
+train,qp_mr_000402_1.png,marathi,question papers,612,792,15
+train,br_ml_000123_0.png,malayalam,brochures,1241,1241,3
+train,np_ml_000083_0.png,malayalam,newspapers,2008,3213,113
+train,br_bn_000080_0.png,bengali,brochures,1158,1601,3
+train,ar_hi_000268_0.png,hindi,acts & rules,1654,2339,6
+train,nv_hi_000006_0.png,hindi,novels,1650,2334,7
+train,mg_ta_000919.jpeg,tamil,magazines,307,433,5
+train,tb_gu_001045_1.png,gujarati,textbooks,612,792,16
+train,ar_as_000467_0.png,assamese,acts & rules,1653,2339,9
+train,mg_hi_000731_0.png,hindi,magazines,1704,2230,14
+train,sy_pa_000247_0.png,punjabi,syllabi,612,1008,4
+train,br_or_000433_1.png,odia,brochures,612,792,1
+train,rp_or_000416_0.png,odia,research papers,1240,1755,11
+train,rp_te_000095_0.png,telugu,research papers,768,1220,1
+train,mg_pa_001044_0.png,punjabi,magazines,1656,2339,7
+train,br_or_000187_0.png,odia,brochures,1278,1792,30
+train,ar_hi_000568_1.png,hindi,acts & rules,596,842,10
+train,qp_ta_000224_0.png,tamil,question papers,1650,1275,12
+train,ar_ml_000226_0.png,malayalam,acts & rules,1241,1755,11
+train,fm_pa_000147_0.png,punjabi,forms,1700,2200,11
+train,nv_gu_000823_1.png,gujarati,novels,571,789,14
+train,np_ta_000538_1.png,tamil,newspapers,1500,2272,20
+train,mg_kn_000301_0.png,kannada,magazines,1152,1565,24
+train,rp_te_000821_1.png,telugu,research papers,396,612,15
+train,rp_bn_000329_0.png,bengali,research papers,1241,1754,10
+train,np_te_000054_0.png,telugu,newspapers,1595,2420,37
+train,mn_or_000672_0.png,odia,manuals,419,671,11
+train,mg_ta_000046.jpeg,tamil,magazines,510,751,14
+train,tb_ml_000110_0.png,malayalam,textbooks,1000,1492,6
+train,sy_gu_000148_0.png,gujarati,syllabi,1241,1754,7
+train,tb_kn_000442_0.png,kannada,textbooks,720,1074,6
+train,mg_gu_000311.png,gujarati,magazines,596,842,4
+train,mg_or_000982_1.png,odia,magazines,595,842,7
+train,mn_mr_000578_0.png,marathi,manuals,1615,1654,11
+train,ar_pa_000436_0.png,punjabi,acts & rules,1598,2217,12
+train,mg_bn_000710_0.png,bengali,magazines,1176,1320,11
+train,mg_kn_000451_0.png,kannada,magazines,1545,2075,16
+train,rp_en_000996_0.png,english,research papers,1275,1650,11
+train,mg_hi_000981_1.png,hindi,magazines,612,792,11
+train,mg_bn_000897_1.png,bengali,magazines,1800,3020,11
+train,ar_ta_001144_0.png,tamil,acts & rules,1046,1600,15
+train,mn_kn_000572_0.png,kannada,manuals,853,1259,18
+train,rp_mr_001062_0.png,marathi,research papers,1653,2339,6
+train,sy_kn_000263_0.png,kannada,syllabi,1241,1754,9
+train,nv_kn_000164_0.png,kannada,novels,849,1372,4
+train,nt_hi_000505_1.png,hindi,notices,596,842,8
+train,ar_gu_000691_1.png,gujarati,acts & rules,480,751,16
+train,mn_kn_000288_0.png,kannada,manuals,1241,1754,10
+train,mg_gu_000851.png,gujarati,magazines,420,624,6
+train,sy_ml_000233_0.png,malayalam,syllabi,1241,1755,14
+train,np_bn_000464_1.png,bengali,newspapers,954,1503,73
+train,mn_ta_000100_0.png,tamil,manuals,934,1650,7
+train,mg_or_000204_0.png,odia,magazines,1211,1625,27
+train,mg_ta_000573.jpeg,tamil,magazines,510,751,11
+train,mg_te_000182.jpeg,telugu,magazines,595,843,13
+train,tb_mr_000686_0.png,marathi,textbooks,1700,2200,7
+train,ar_hi_000145_0.png,hindi,acts & rules,1700,2314,10
+train,nv_ta_000339_0.png,tamil,novels,900,1350,11
+train,sy_mr_000519_0.png,marathi,syllabi,1653,2339,3
+train,rp_ml_000243_0.png,malayalam,research papers,2480,3509,4
+train,br_te_000783_1.png,telugu,brochures,596,842,15
+train,qp_bn_000072_0.png,bengali,question papers,1005,1419,6
+train,nt_en_000373_1.png,english,notices,596,842,11
+train,rp_or_000059_0.png,odia,research papers,1240,1755,5
+train,qp_pa_000488_1.png,punjabi,question papers,650,919,24
+train,mg_ta_001033.jpeg,tamil,magazines,510,751,5
+train,nv_ta_000988_0.png,tamil,novels,1241,1755,13
+train,mg_gu_000701.png,gujarati,magazines,420,624,10
+train,ar_ta_001033_0.png,tamil,acts & rules,1240,1755,3
+train,ar_ml_000743_0.png,malayalam,acts & rules,1217,1769,14
+train,nt_pa_000198_1.png,punjabi,notices,611,999,7
+train,tb_ta_000873_1.png,tamil,textbooks,655,882,12
+train,rp_mr_001043_0.png,marathi,research papers,1653,2339,8
+train,mg_ta_000184.jpeg,tamil,magazines,252,416,6
+train,rp_kn_000176_0.png,kannada,research papers,1275,1650,8
+train,qp_hi_000754_0.png,hindi,question papers,612,792,16
+train,rp_kn_000882_0.png,kannada,research papers,1275,1650,8
+train,ar_en_001214.png,english,acts & rules,596,842,9
+train,nv_or_001022_1.png,odia,novels,312,468,8
+train,qp_hi_000478_0.png,hindi,question papers,595,842,8
+train,rp_kn_000367_0.png,kannada,research papers,1241,1754,4
+train,ar_te_000128.jpeg,telugu,acts & rules,596,842,12
+train,br_te_000940_1.png,telugu,brochures,576,578,1
+train,br_kn_000026_0.png,kannada,brochures,827,1241,4
+train,qp_hi_000454_0.png,hindi,question papers,1617,2117,7
+train,mn_te_000818_0.png,telugu,manuals,875,1240,1
+train,tb_gu_000395_0.png,gujarati,textbooks,329,542,9
+train,mg_ta_001042.jpeg,tamil,magazines,510,751,11
+train,mn_te_001003_1.png,telugu,manuals,595,842,10
+train,mn_bn_000285_0.png,bengali,manuals,753,1267,7
+train,sy_or_000016_0.png,odia,syllabi,1241,1754,10
+train,rp_as_000233_0.png,assamese,research papers,1654,2339,7
+train,sy_te_000345_1.png,telugu,syllabi,595,842,10
+train,rp_te_000227_0.png,telugu,research papers,829,1326,11
+train,br_ml_000841_1.png,malayalam,brochures,742,576,5
+train,sy_kn_000210_0.png,kannada,syllabi,1325,1719,5
+train,ar_pa_000493_0.png,punjabi,acts & rules,1450,2006,13
+train,nt_gu_000627_1.png,gujarati,notices,612,841,12
+train,mn_en_000774_0.png,english,manuals,794,1261,8
+train,ar_bn_000334_0.png,bengali,acts & rules,1242,1755,11
+train,nv_gu_001240_1.png,gujarati,novels,571,789,17
+train,np_gu_000309_1.png,gujarati,newspapers,2800,3974,101
+train,tb_ml_000263_0.png,malayalam,textbooks,1000,1492,10
+train,mn_gu_000795_0.png,gujarati,manuals,1241,1754,5
+train,tb_ta_000248_0.png,tamil,textbooks,1088,1425,19
+train,nv_bn_000868_1.png,bengali,novels,1213,1868,3
+train,ar_mr_000865_1.png,marathi,acts & rules,612,792,5
+train,tb_ta_000471_0.png,tamil,textbooks,1088,1425,10
+train,qp_ml_000681_0.png,malayalam,question papers,1275,1650,2
+train,ar_en_001297.png,english,acts & rules,596,842,10
+train,mg_or_000530_0.png,odia,magazines,886,1388,11
+train,nv_pa_000355_0.png,punjabi,novels,1178,1806,10
+train,rp_kn_001066_0.png,kannada,research papers,1275,1650,5
+train,mg_te_000296.jpeg,telugu,magazines,595,843,0
+train,ar_en_001398.png,english,acts & rules,596,842,8
+train,nv_te_000095_0.png,telugu,novels,2355,3896,7
+train,mg_pa_000200_0.png,punjabi,magazines,1750,2250,12
+train,ar_gu_000430_1.png,gujarati,acts & rules,612,843,12
+train,rp_as_001521_0.png,assamese,research papers,1653,2339,11
+train,mn_te_000032_0.png,telugu,manuals,696,1003,9
+train,mn_or_000865_0.png,odia,manuals,423,673,7
+train,br_en_000741_1.png,english,brochures,876,630,37
+train,nv_te_000379_0.png,telugu,novels,2355,3896,14
+train,qp_mr_000689_1.png,marathi,question papers,597,843,12
+train,nv_en_000602_0.png,english,novels,921,1253,12
+train,nv_ml_000189_0.png,malayalam,novels,1772,2717,9
+train,ar_or_000257_0.png,odia,acts & rules,1271,1657,7
+train,qp_hi_000029_0.png,hindi,question papers,1700,2200,6
+train,mg_pa_000920_0.png,punjabi,magazines,1042,1667,11
+train,mg_ml_000222_0.png,malayalam,magazines,1075,1518,11
+train,nv_bn_000343_0.png,bengali,novels,2482,3509,25
+train,mn_hi_000289_0.png,hindi,manuals,1653,2339,3
+train,nt_kn_000481_1.png,kannada,notices,612,864,5
+train,sy_te_000204_0.png,telugu,syllabi,698,1037,9
+train,mg_kn_000705_0.png,kannada,magazines,1275,1763,18
+train,tb_ta_000434_0.png,tamil,textbooks,1088,1425,12
+train,qp_pa_000321_1.png,punjabi,question papers,612,792,20
+train,nv_mr_000960_0.png,marathi,novels,1214,1948,3
+train,fm_kn_000139_1.png,kannada,forms,639,313,14
+train,nv_bn_000318_0.png,bengali,novels,2482,3509,23
+train,tb_te_000731_1.png,telugu,textbooks,596,842,28
+train,qp_gu_000789_0.png,gujarati,question papers,1240,1752,17
+train,tb_pa_001052_1.png,punjabi,textbooks,612,792,13
+train,sy_ta_000105.jpeg,tamil,syllabi,612,792,6
+train,rp_gu_000907_0.png,gujarati,research papers,1275,1650,6
+train,mn_en_000258_0.png,english,manuals,859,1368,9
+train,ar_te_000546.jpeg,telugu,acts & rules,549,810,8
+train,mn_bn_000713_0.png,bengali,manuals,749,1162,5
+train,nt_bn_000213_0.png,bengali,notices,1983,2805,12
+train,qp_gu_000626_0.png,gujarati,question papers,1240,1752,18
+train,sy_mr_000054_0.png,marathi,syllabi,2339,1653,6
+train,mg_or_000008_0.png,odia,magazines,1211,1625,19
+train,mg_kn_000347_0.png,kannada,magazines,1275,1725,21
+train,br_bn_000716_0.png,bengali,brochures,1158,1601,7
+train,mn_or_000855_0.png,odia,manuals,421,671,8
+train,sy_en_000531_0.png,english,syllabi,1275,1650,14
+train,tb_mr_000490_0.png,marathi,textbooks,1700,2200,8
+train,ar_ml_000794_1.png,malayalam,acts & rules,595,842,11
+train,br_or_000138_0.png,odia,brochures,1240,1754,18
+train,tb_en_000935_0.png,english,textbooks,1275,1650,18
+train,qp_bn_000408_1.png,bengali,question papers,3060,3960,26
+train,tb_mr_000497_0.png,marathi,textbooks,1700,2200,6
+train,nt_te_000197_0.png,telugu,notices,596,842,5
+train,qp_gu_000847_0.png,gujarati,question papers,1240,1752,43
+train,mn_en_000141_0.png,english,manuals,734,1278,14
+train,rp_as_001071_0.png,assamese,research papers,1653,2339,6
+train,nv_gu_000830_1.png,gujarati,novels,571,789,8
+train,nt_kn_000154_1.png,kannada,notices,612,1008,15
+train,mn_ml_000122_0.png,malayalam,manuals,1241,1654,1
+train,nv_mr_000227_0.png,marathi,novels,1050,1650,13
+train,nv_pa_000914_0.png,punjabi,novels,1654,2339,13
+train,tb_as_001268_0.png,assamese,textbooks,326,554,8
+train,nt_bn_000315_0.png,bengali,notices,1984,2806,6
+train,fm_bn_000163_0.png,bengali,forms,3200,1800,1
+train,tb_ml_000726_0.png,malayalam,textbooks,2550,3300,3
+train,ar_en_000303.png,english,acts & rules,596,842,9
+train,nt_en_000054_1.png,english,notices,596,843,30
+train,ar_bn_000694_0.png,bengali,acts & rules,975,1425,10
+train,sy_bn_000659_1.png,bengali,syllabi,2970,3690,5
+train,ar_ta_000684_0.png,tamil,acts & rules,1240,1755,18
+train,rp_en_000251_0.png,english,research papers,1275,1650,6
+train,nv_ml_000527_0.png,malayalam,novels,2480,3509,11
+train,mn_en_000067_0.png,english,manuals,730,1275,9
+train,rp_bn_000641_0.png,bengali,research papers,1240,1755,6
+train,tb_ml_000584_0.png,malayalam,textbooks,2550,3300,7
+train,nv_as_000287_0.png,assamese,novels,1374,1818,20
+train,br_pa_000600_0.png,punjabi,brochures,1778,2278,17
+train,nv_ml_000806_1.png,malayalam,novels,1654,2481,24
+train,mn_pa_000591_0.png,punjabi,manuals,1778,2278,15
+train,br_hi_000455_0.png,hindi,brochures,1609,2339,16
+train,tb_ml_000412_0.png,malayalam,textbooks,2550,3300,10
+train,ar_gu_000016_0.png,gujarati,acts & rules,2000,1125,7
+train,fm_or_000123_0.png,odia,forms,596,842,23
+train,ar_kn_000555_0.png,kannada,acts & rules,1240,1755,9
+train,fm_or_000195_0.png,odia,forms,595,842,9
+train,nt_ta_000627.jpeg,tamil,notices,843,596,10
+train,tb_en_000069_0.png,english,textbooks,1275,1650,19
+train,fm_ml_000500_0.png,malayalam,forms,1240,1754,13
+train,np_mr_000140_1.png,marathi,newspapers,943,1500,125
+train,tb_pa_000240_0.png,punjabi,textbooks,1028,1578,10
+train,mg_hi_000875_1.png,hindi,magazines,612,792,18
+train,qp_ml_000296_0.png,malayalam,question papers,1240,1755,14
+train,nv_bn_000314_0.png,bengali,novels,2482,3509,8
+train,br_pa_000167_0.png,punjabi,brochures,1700,2200,15
+train,tb_bn_000100_0.png,bengali,textbooks,688,1040,7
+train,np_pa_000577_1.png,punjabi,newspapers,1258,1887,92
+train,fm_ml_000003_0.png,malayalam,forms,1240,1755,18
+train,mn_ta_000486_0.png,tamil,manuals,1284,2196,7
+train,mn_bn_001027_1.png,bengali,manuals,2040,2640,7
+train,rp_as_000635_0.png,assamese,research papers,1700,2200,7
+train,mn_or_000063_0.png,odia,manuals,827,1300,11
+train,rp_ml_000745_0.png,malayalam,research papers,2480,3509,6
+train,mg_bn_000653_0.png,bengali,magazines,1176,1320,12
+train,mg_kn_000549_0.png,kannada,magazines,1567,2094,16
+train,qp_hi_000253_0.png,hindi,question papers,1559,2125,13
+train,mg_bn_000830_0.png,bengali,magazines,1176,1320,10
+train,ar_bn_000082_0.png,bengali,acts & rules,937,1334,12
+train,br_kn_000627_1.png,kannada,brochures,596,842,14
+train,rp_gu_000696_0.png,gujarati,research papers,1240,1755,11
+train,rp_as_001015_0.png,assamese,research papers,1653,2339,6
+train,rp_en_000261_0.png,english,research papers,1275,1650,26
+train,rp_mr_000349_0.png,marathi,research papers,1653,2339,7
+train,nv_te_000591_0.png,telugu,novels,2355,3896,17
+train,nt_te_000076_0.png,telugu,notices,596,842,1
+train,mn_kn_000229_0.png,kannada,manuals,1275,1650,18
+train,nt_gu_000219_1.png,gujarati,notices,596,842,37
+train,tb_ml_000608_0.png,malayalam,textbooks,2550,3300,5
+train,sy_or_000533_0.png,odia,syllabi,1240,1755,13
+train,tb_pa_000036_0.png,punjabi,textbooks,1700,2200,4
+train,tb_mr_001129_0.png,marathi,textbooks,1656,2339,6
+train,nv_ml_000352_0.png,malayalam,novels,1772,2717,13
+train,qp_pa_000274_1.png,punjabi,question papers,335,410,16
+train,nt_gu_000224_1.png,gujarati,notices,595,842,62
+train,np_mr_000050_1.png,marathi,newspapers,943,1500,66
+train,nv_as_000969_1.png,assamese,novels,1219,1951,7
+train,tb_as_000847_0.png,assamese,textbooks,1262,1806,12
+train,mg_gu_001063.png,gujarati,magazines,612,792,10
+train,fm_bn_000281_0.png,bengali,forms,1650,1275,18
+train,mn_or_000481_0.png,odia,manuals,407,690,7
+train,tb_as_001267_0.png,assamese,textbooks,326,554,6
+train,ar_ta_001279_0.png,tamil,acts & rules,1117,1590,14
+train,np_pa_000573_1.png,punjabi,newspapers,968,1545,43
+train,nv_hi_000825_0.png,hindi,novels,987,1387,2
+train,np_en_000138_0.png,english,newspapers,1865,2845,75
+train,rp_gu_000533_0.png,gujarati,research papers,1240,1755,9
+train,mg_te_000546.jpeg,telugu,magazines,596,842,22
+train,ar_ta_000478_0.png,tamil,acts & rules,1240,1755,3
+train,mg_gu_000943.png,gujarati,magazines,420,624,10
+train,br_te_000670_0.png,telugu,brochures,1275,1650,23
+train,mg_kn_000703_0.png,kannada,magazines,1275,1763,18
+train,ar_ml_000112_0.png,malayalam,acts & rules,1241,1755,14
+train,mg_ta_000373.jpeg,tamil,magazines,510,751,10
+train,mg_kn_001089_1.png,kannada,magazines,624,794,39
+train,rp_en_000156_0.png,english,research papers,1275,1650,3
+train,mn_pa_000600_0.png,punjabi,manuals,1778,2278,37
+train,nv_te_000814_1.png,telugu,novels,397,609,29
+train,br_kn_000951_1.png,kannada,brochures,960,540,6
+train,fm_bn_000007_0.png,bengali,forms,1984,2806,3
+train,ar_gu_000163_0.png,gujarati,acts & rules,1275,1757,16
+train,mn_en_000840_0.png,english,manuals,787,1262,7
+train,mg_mr_000096.png,marathi,magazines,612,792,14
+train,ar_en_000720.png,english,acts & rules,596,842,6
+train,fm_ta_000183_0.png,tamil,forms,595,841,48
+train,nv_or_000313_0.png,odia,novels,650,1004,9
+train,mg_gu_000709.png,gujarati,magazines,420,624,8
+train,np_kn_000322_1.png,kannada,newspapers,595,842,33
+train,mn_or_000174_0.png,odia,manuals,400,688,6
+train,nt_or_000351_0.png,odia,notices,1275,1650,3
+train,rp_ml_000148_0.png,malayalam,research papers,2480,3509,5
+train,nv_hi_000967_0.png,hindi,novels,987,1387,6
+train,br_gu_000525_1.png,gujarati,brochures,596,842,7
+train,nv_or_000357_0.png,odia,novels,650,1004,7
+train,mn_ta_000488_0.png,tamil,manuals,1284,2196,7
+train,mn_te_000270_0.png,telugu,manuals,831,1291,6
+train,br_or_000559_1.png,odia,brochures,420,755,20
+train,sy_ml_000241_0.png,malayalam,syllabi,1241,1755,6
+train,mg_pa_000267_0.png,punjabi,magazines,1656,2339,12
+train,tb_gu_000081_0.png,gujarati,textbooks,353,594,12
+train,mn_en_000584_0.png,english,manuals,857,1379,23
+train,ar_mr_000386_0.png,marathi,acts & rules,1478,2281,12
+train,mn_pa_000361_0.png,punjabi,manuals,1700,2200,23
+train,tb_en_000431_0.png,english,textbooks,1275,1650,12
+train,rp_gu_001008_0.png,gujarati,research papers,1240,1755,8
+train,mg_bn_001012_1.png,bengali,magazines,2040,2640,26
+train,ar_as_001044_0.png,assamese,acts & rules,1700,2342,15
+train,tb_kn_000227_0.png,kannada,textbooks,1241,1755,12
+train,tb_kn_001106_1.png,kannada,textbooks,401,595,9
+train,rp_mr_000218_0.png,marathi,research papers,1699,2327,5
+train,mg_kn_000986_1.png,kannada,magazines,609,834,7
+train,qp_mr_000298_1.png,marathi,question papers,612,792,13
+train,mg_en_000486.png,english,magazines,594,773,8
+train,ar_ml_000720_0.png,malayalam,acts & rules,1229,1747,14
+train,mn_ta_000974_0.png,tamil,manuals,1284,2196,7
+train,nv_pa_000733_0.png,punjabi,novels,1654,2339,7
+train,br_en_000005_0.png,english,brochures,2492,2067,6
+train,mn_bn_000034_0.png,bengali,manuals,753,1267,7
+train,sy_en_000449_0.png,english,syllabi,1275,1650,14
+train,rp_kn_001243_0.png,kannada,research papers,1241,1754,4
+train,rp_as_001622_0.png,assamese,research papers,1653,2339,6
+train,mn_te_000216_0.png,telugu,manuals,825,1296,8
+train,rp_gu_000037_0.png,gujarati,research papers,1275,1650,4
+train,mn_te_000853_1.png,telugu,manuals,596,842,25
+train,np_ml_000229_0.png,malayalam,newspapers,2008,3213,89
+train,br_gu_000035_0.png,gujarati,brochures,615,889,6
+train,fm_gu_000596_1.png,gujarati,forms,612,792,17
+train,br_gu_000089_0.png,gujarati,brochures,1241,1755,12
+train,nv_hi_000527_0.png,hindi,novels,1700,2200,15
+train,sy_en_000554_0.png,english,syllabi,1275,1650,16
+train,np_kn_000285_1.png,kannada,newspapers,993,1633,58
+train,np_or_000263_0.png,odia,newspapers,971,1563,45
+train,tb_gu_000198_0.png,gujarati,textbooks,353,594,8
+train,ar_or_000188_0.png,odia,acts & rules,1007,1419,15
+train,nv_as_000852_1.png,assamese,novels,1185,1884,12
+train,tb_or_000370_0.png,odia,textbooks,680,1034,11
+train,qp_te_000534_1.png,telugu,question papers,596,842,16
+train,ar_mr_000926_1.png,marathi,acts & rules,612,792,20
+train,mn_ml_000664_0.png,malayalam,manuals,1275,1650,9
+train,ar_ml_000557_0.png,malayalam,acts & rules,1224,1749,11
+train,rp_te_000635_0.png,telugu,research papers,909,1468,4
+train,sy_or_000395_0.png,odia,syllabi,1241,1754,10
+train,nv_kn_000727_0.png,kannada,novels,3325,4767,11
+train,mn_pa_000951_1.png,punjabi,manuals,612,792,5
+train,mn_te_000343_0.png,telugu,manuals,623,938,7
+train,tb_en_000569_0.png,english,textbooks,1275,1650,12
+train,ar_gu_000314_1.png,gujarati,acts & rules,596,842,15
+train,ar_gu_000373_1.png,gujarati,acts & rules,611,843,11
+train,tb_ml_000766_0.png,malayalam,textbooks,2550,3300,4
+train,mn_or_001041_1.png,odia,manuals,596,842,7
+train,nt_or_000277_0.png,odia,notices,1240,1754,3
+train,nv_kn_000905_0.png,kannada,novels,3644,5478,15
+train,tb_ta_000038_0.png,tamil,textbooks,1275,1650,8
+train,nv_ml_000214_0.png,malayalam,novels,1772,2717,8
+train,qp_gu_000700_0.png,gujarati,question papers,1240,1752,39
+train,nv_mr_000317_0.png,marathi,novels,1050,1650,10
+train,sy_kn_000606_0.png,kannada,syllabi,1275,1650,10
+train,nt_or_000367_0.png,odia,notices,1275,1650,3
+train,sy_ta_000604.jpeg,tamil,syllabi,612,792,7
+train,mg_bn_000039_0.png,bengali,magazines,1176,1320,23
+train,nv_mr_000365_0.png,marathi,novels,1050,1650,7
+train,tb_kn_000335_0.png,kannada,textbooks,1241,1755,18
+train,mn_ml_000333_0.png,malayalam,manuals,1275,1650,9
+train,br_hi_001025_1.png,hindi,brochures,596,842,11
+train,br_hi_000790_1.png,hindi,brochures,510,709,10
+train,br_bn_000165_0.png,bengali,brochures,1158,1601,4
+train,nv_te_000205_0.png,telugu,novels,2355,3896,15
+train,rp_or_000189_0.png,odia,research papers,1268,1839,4
+train,mn_as_000634_1.png,assamese,manuals,624,814,15
+train,fm_gu_000489_1.png,gujarati,forms,612,792,27
+train,tb_mr_000571_0.png,marathi,textbooks,1700,2200,7
+train,br_ta_001288_1.png,tamil,brochures,756,576,7
+train,rp_bn_000463_0.png,bengali,research papers,1241,1754,13
+train,qp_hi_000095_0.png,hindi,question papers,1598,2103,17
+train,qp_mr_000326_1.png,marathi,question papers,612,792,14
+train,ar_ta_001508_1.png,tamil,acts & rules,544,762,11
+train,nv_kn_000316_0.png,kannada,novels,853,1298,9
+train,sy_gu_000207_0.png,gujarati,syllabi,1275,1650,5
+train,np_as_000116_1.png,assamese,newspapers,2953,4409,102
+train,rp_ml_000986_0.png,malayalam,research papers,2480,3509,6
+train,mn_bn_000135_0.png,bengali,manuals,753,1267,5
+train,mn_ml_000403_0.png,malayalam,manuals,1275,1650,12
+train,nt_mr_000403.png,marathi,notices,612,792,8
+train,rp_gu_000957_0.png,gujarati,research papers,1275,1650,4
+train,np_pa_000186_0.png,punjabi,newspapers,4331,3136,62
+train,mn_bn_000040_0.png,bengali,manuals,753,1267,5
+train,nv_en_000407_0.png,english,novels,884,1275,11
+train,sy_ta_000433.jpeg,tamil,syllabi,612,792,12
+train,mg_mr_000315.png,marathi,magazines,522,684,6
+train,mg_or_000332_0.png,odia,magazines,1211,1625,8
+train,br_bn_000067_0.png,bengali,brochures,1158,1601,10
+train,fm_en_000273_0.png,english,forms,612,792,10
+train,np_mr_000331_1.png,marathi,newspapers,943,1500,44
+train,mn_hi_000787_1.png,hindi,manuals,596,843,14
+train,nv_hi_001049_1.png,hindi,novels,318,507,7
+train,tb_pa_001050_1.png,punjabi,textbooks,612,792,11
+train,fm_or_000426_0.png,odia,forms,596,979,46
+train,fm_gu_000291_1.png,gujarati,forms,596,842,14
+train,sy_as_000443_1.png,assamese,syllabi,792,612,1
+train,qp_ta_000431_0.png,tamil,question papers,1650,1275,37
+train,mg_te_000401.jpeg,telugu,magazines,596,842,18
+train,tb_gu_001077_1.png,gujarati,textbooks,612,792,11
+train,ar_en_000211.png,english,acts & rules,596,842,7
+train,rp_te_000379_0.png,telugu,research papers,765,1238,23
+train,rp_or_000557_0.png,odia,research papers,1240,1755,7
+train,mg_ml_000535_0.png,malayalam,magazines,1275,1650,9
+train,tb_ml_000707_0.png,malayalam,textbooks,2550,3300,7
+train,sy_en_000672_0.png,english,syllabi,1241,1755,8
+train,tb_hi_000950_1.png,hindi,textbooks,612,792,0
+train,mg_gu_000121.png,gujarati,magazines,596,842,14
+train,mn_mr_000539_0.png,marathi,manuals,1653,2339,3
+train,mn_pa_000212_0.png,punjabi,manuals,1675,2175,19
+train,mn_en_000261_0.png,english,manuals,857,1365,12
+train,mn_pa_000934_1.png,punjabi,manuals,612,792,12
+train,rp_ta_000346_1.png,tamil,research papers,510,680,7
+train,br_pa_000394_0.png,punjabi,brochures,1780,2280,17
+train,qp_pa_000219_1.png,punjabi,question papers,522,756,43
+train,rp_bn_000524_0.png,bengali,research papers,1241,1754,1
+train,nv_ta_000847_0.png,tamil,novels,1241,1755,12
+train,fm_or_000416_0.png,odia,forms,597,844,22
+train,rp_ta_000011_0.png,tamil,research papers,1241,1754,9
+train,rp_as_000522_0.png,assamese,research papers,1700,2200,8
+train,tb_pa_000449_0.png,punjabi,textbooks,1656,2339,12
+train,br_ta_001295_1.png,tamil,brochures,596,842,1
+train,ar_as_000051_0.png,assamese,acts & rules,1700,2342,15
+train,nv_as_001287_1.png,assamese,novels,1983,2806,4
+train,fm_mr_000398_0.png,marathi,forms,1653,2339,14
+train,fm_te_000290_0.png,telugu,forms,596,842,33
+train,ar_mr_000785_1.png,marathi,acts & rules,600,822,9
+train,rp_en_000794_0.png,english,research papers,1241,1630,17
+train,mn_pa_000712_0.png,punjabi,manuals,1630,2230,11
+train,qp_as_000264_0.png,assamese,question papers,1653,2339,12
+train,nv_kn_000639_0.png,kannada,novels,3325,4767,6
+train,sy_pa_000177_0.png,punjabi,syllabi,1654,2339,17
+train,ar_as_000716_0.png,assamese,acts & rules,1448,2048,19
+train,tb_pa_000474_0.png,punjabi,textbooks,1656,2339,9
+train,ar_ta_000498_0.png,tamil,acts & rules,1240,1755,10
+train,mn_en_000213_0.png,english,manuals,856,1357,11
+train,nt_hi_000021_0.png,hindi,notices,2200,1700,1
+train,ar_or_000472_0.png,odia,acts & rules,1275,1757,16
+train,tb_gu_001124_1.png,gujarati,textbooks,612,792,13
+train,br_or_000184_0.png,odia,brochures,1278,1792,20
+train,np_gu_000157_1.png,gujarati,newspapers,2800,3974,103
+train,rp_te_000330_0.png,telugu,research papers,765,1238,18
+train,np_kn_000255_1.png,kannada,newspapers,595,842,72
+train,nv_en_000582_0.png,english,novels,930,1282,7
+train,mn_gu_000450_0.png,gujarati,manuals,1241,1754,6
+train,nv_pa_000212_0.png,punjabi,novels,1178,1806,4
+train,mg_gu_000148.png,gujarati,magazines,596,842,14
+train,mg_or_000645_0.png,odia,magazines,886,1388,9
+train,qp_te_000067_0.png,telugu,question papers,1275,1650,10
+train,ar_kn_001067_0.png,kannada,acts & rules,1275,1650,5
+train,tb_bn_000598_0.png,bengali,textbooks,825,1200,5
+train,fm_te_000080_0.png,telugu,forms,596,842,39
+train,br_ml_000476_1.png,malayalam,brochures,792,612,7
+train,mn_bn_000833_0.png,bengali,manuals,749,1162,8
+train,sy_or_000271_0.png,odia,syllabi,1241,1754,7
+train,rp_mr_000754_0.png,marathi,research papers,1700,2200,4
+train,qp_ml_000286_0.png,malayalam,question papers,1240,1755,11
+train,rp_ml_000583_0.png,malayalam,research papers,2480,3509,4
+train,mg_hi_000728_0.png,hindi,magazines,1705,2241,14
+train,sy_as_000162_0.png,assamese,syllabi,1656,2339,23
+train,ar_te_000291.jpeg,telugu,acts & rules,596,842,9
+train,np_ml_000244_0.png,malayalam,newspapers,3928,3130,100
+train,nv_ta_000064_0.png,tamil,novels,689,1087,0
+train,tb_kn_000807_1.png,kannada,textbooks,511,681,28
+train,nv_en_000303_0.png,english,novels,559,911,5
+train,tb_mr_000211_0.png,marathi,textbooks,900,1300,5
+train,np_hi_000217_1.png,hindi,newspapers,1500,2384,14
+train,tb_mr_000198_0.png,marathi,textbooks,900,1300,14
+train,tb_mr_000909_0.png,marathi,textbooks,1700,2200,10
+train,ar_gu_000744_1.png,gujarati,acts & rules,487,743,17
+train,br_hi_000017_0.png,hindi,brochures,2867,2025,10
+train,rp_as_001494_0.png,assamese,research papers,1653,2339,11
+train,mg_kn_000768_0.png,kannada,magazines,1275,1763,19
+train,br_hi_000260_0.png,hindi,brochures,1656,2339,12
+train,sy_gu_000048_0.png,gujarati,syllabi,1241,1754,6
+train,rp_te_000827_1.png,telugu,research papers,396,612,1
+train,rp_kn_001043_0.png,kannada,research papers,1275,1650,7
+train,mg_en_000961.png,english,magazines,832,1075,36
+train,fm_ml_000359_0.png,malayalam,forms,1755,1240,2
+train,fm_ml_000811_1.png,malayalam,forms,596,842,53
+train,nv_mr_000209_0.png,marathi,novels,1050,1650,10
+train,mn_or_000542_0.png,odia,manuals,400,688,5
+train,tb_pa_000921_1.png,punjabi,textbooks,612,792,13
+train,br_ta_001303_1.png,tamil,brochures,596,842,11
+train,fm_hi_000677_1.png,hindi,forms,596,842,11
+train,nt_or_000488_0.png,odia,notices,596,842,4
+train,fm_gu_000357_1.png,gujarati,forms,612,792,5
+train,sy_hi_000597_1.png,hindi,syllabi,612,792,11
+train,rp_as_000357_0.png,assamese,research papers,1653,2339,18
+train,nv_kn_000691_0.png,kannada,novels,3325,4767,9
+train,nv_ta_000350_0.png,tamil,novels,900,1350,8
+train,mg_ml_000123_0.png,malayalam,magazines,1075,1518,14
+train,mg_or_000895_1.png,odia,magazines,595,842,14
+train,nv_as_001519_1.png,assamese,novels,1983,2806,5
+train,np_mr_000111_1.png,marathi,newspapers,943,1500,69
+train,ar_ml_000270_0.png,malayalam,acts & rules,1250,1742,9
+train,fm_te_000321_0.png,telugu,forms,613,859,41
+train,br_hi_000290_0.png,hindi,brochures,1656,2339,13
+train,tb_hi_001179_1.png,hindi,textbooks,504,720,11
+train,fm_en_000531_0.png,english,forms,594,840,9
+train,qp_as_000470_1.png,assamese,question papers,564,726,13
+train,tb_hi_001115_1.png,hindi,textbooks,504,720,12
+train,br_kn_000493_1.png,kannada,brochures,596,842,32
+train,tb_kn_000238_0.png,kannada,textbooks,1241,1755,44
+train,nv_gu_000536_0.png,gujarati,novels,741,1230,4
+train,mn_hi_000583_0.png,hindi,manuals,1289,2084,10
+train,np_hi_000573_1.png,hindi,newspapers,963,1502,103
+train,mn_te_000870_1.png,telugu,manuals,504,818,4
+train,tb_en_001104_0.png,english,textbooks,1275,1650,19
+train,rp_mr_000468_0.png,marathi,research papers,1700,2200,6
+train,ar_bn_000894_1.png,bengali,acts & rules,2340,3420,9
+train,rp_mr_001015_0.png,marathi,research papers,1653,2339,6
+train,mn_ta_001076_0.png,tamil,manuals,1284,2196,7
+train,rp_en_001118_0.png,english,research papers,1240,1755,15
+train,mg_ta_000008.jpeg,tamil,magazines,510,751,10
+train,nv_te_000551_0.png,telugu,novels,2355,3896,14
+train,nv_bn_000856_1.png,bengali,novels,1027,1612,22
+train,fm_kn_000254_1.png,kannada,forms,596,842,6
+train,nt_gu_000164_1.png,gujarati,notices,596,842,26
+train,mn_gu_000663_0.png,gujarati,manuals,1240,1755,6
+train,qp_gu_000550_0.png,gujarati,question papers,1240,1752,31
+train,ar_en_000573.png,english,acts & rules,596,842,7
+train,mn_te_000865_1.png,telugu,manuals,596,842,9
+train,ar_mr_000589_1.png,marathi,acts & rules,600,822,13
+train,rp_bn_000666_0.png,bengali,research papers,1240,1755,4
+train,fm_hi_000077_0.png,hindi,forms,1700,2200,35
+train,mn_gu_000870_0.png,gujarati,manuals,1241,1754,3
+train,br_en_000624_1.png,english,brochures,1728,738,9
+train,qp_ml_000732_0.png,malayalam,question papers,1240,1755,22
+train,tb_kn_000617_0.png,kannada,textbooks,1241,1755,35
+train,sy_kn_000594_0.png,kannada,syllabi,1241,1754,12
+train,mg_or_000486_0.png,odia,magazines,1211,1625,24
+train,sy_or_000367_0.png,odia,syllabi,1241,1754,9
+train,mg_gu_000766.png,gujarati,magazines,420,624,9
+train,ar_ml_000985_1.png,malayalam,acts & rules,452,627,8
+train,mg_en_001077.png,english,magazines,832,1075,18
+train,sy_ta_000693.jpeg,tamil,syllabi,612,792,6
+train,mg_gu_000579.png,gujarati,magazines,420,624,6
+train,nt_kn_000378_1.png,kannada,notices,612,864,6
+train,sy_kn_000584_0.png,kannada,syllabi,1241,1754,14
+train,fm_or_000325_0.png,odia,forms,596,842,34
+train,br_bn_000597_0.png,bengali,brochures,1158,1601,7
+train,nv_hi_000526_0.png,hindi,novels,1700,2200,11
+train,sy_pa_000461_1.png,punjabi,syllabi,610,990,6
+train,qp_hi_000822_0.png,hindi,question papers,596,842,34
+train,nv_kn_000618_0.png,kannada,novels,1275,1650,6
+train,np_pa_000524_1.png,punjabi,newspapers,612,792,6
+train,fm_ml_000804_1.png,malayalam,forms,612,792,6
+train,br_hi_000958_1.png,hindi,brochures,1728,720,7
+train,rp_or_000770_0.png,odia,research papers,1240,1755,4
+train,mg_gu_000986.png,gujarati,magazines,420,624,13
+train,nv_ml_000502_0.png,malayalam,novels,2480,3509,8
+train,mg_ml_000188_0.png,malayalam,magazines,1075,1518,13
+train,np_kn_000329_1.png,kannada,newspapers,595,842,60
+train,rp_ta_000180_0.png,tamil,research papers,1241,1754,13
+train,fm_pa_000210_0.png,punjabi,forms,1811,2311,6
+train,nv_or_000507_0.png,odia,novels,798,1211,8
+train,sy_bn_000556_1.png,bengali,syllabi,2975,4210,42
+train,mn_kn_000388_0.png,kannada,manuals,2134,1600,10
+train,mn_ta_000134_0.png,tamil,manuals,934,1650,8
+train,rp_en_000793_0.png,english,research papers,1241,1630,28
+train,qp_ml_000648_0.png,malayalam,question papers,1275,1650,18
+train,br_te_000790_1.png,telugu,brochures,683,539,6
+train,tb_kn_000056_0.png,kannada,textbooks,1200,1875,7
+train,tb_kn_001131_1.png,kannada,textbooks,401,595,5
+train,rp_mr_001074_0.png,marathi,research papers,1653,2339,10
+train,nv_or_000239_0.png,odia,novels,621,1004,5
+train,mn_en_000707_0.png,english,manuals,821,1358,16
+train,rp_en_000880_0.png,english,research papers,1241,1754,25
+train,rp_te_000362_0.png,telugu,research papers,765,1238,23
+train,mg_or_000234_0.png,odia,magazines,1211,1625,36
+train,tb_bn_000027_0.png,bengali,textbooks,695,1051,5
+train,br_or_000471_1.png,odia,brochures,396,612,5
+train,nv_or_000124_0.png,odia,novels,532,827,13
+train,nv_as_000177_0.png,assamese,novels,1374,1818,18
+train,ar_te_000081.jpeg,telugu,acts & rules,596,842,13
+train,br_mr_000891_0.png,marathi,brochures,1567,2067,41
+train,rp_bn_000248_0.png,bengali,research papers,1240,1755,3
+train,ar_en_001035.png,english,acts & rules,596,842,7
+train,sy_pa_000565_1.png,punjabi,syllabi,613,1009,5
+train,nt_kn_000116_1.png,kannada,notices,612,864,6
+train,mg_hi_000263_0.png,hindi,magazines,1070,1637,8
+train,nv_mr_000334_0.png,marathi,novels,1050,1650,13
+train,tb_mr_000375_0.png,marathi,textbooks,1700,2200,9
+train,mg_en_001421.png,english,magazines,2400,3103,15
+train,sy_ml_000279_0.png,malayalam,syllabi,1240,1755,8
+train,nv_ml_000289_0.png,malayalam,novels,1772,2717,12
+train,mg_hi_000031_0.png,hindi,magazines,1656,2342,11
+train,qp_kn_000153_0.png,kannada,question papers,1240,1755,16
+train,nv_bn_000315_0.png,bengali,novels,2482,3509,14
+train,mg_or_000489_0.png,odia,magazines,1211,1625,13
+train,rp_ml_000556_0.png,malayalam,research papers,2480,3509,5
+train,nt_kn_000050_1.png,kannada,notices,612,864,11
+train,rp_en_000845_0.png,english,research papers,1275,1650,8
+train,br_as_000399_1.png,assamese,brochures,612,792,14
+train,mn_pa_000219_0.png,punjabi,manuals,1675,2175,32
+train,ar_bn_000525_0.png,bengali,acts & rules,657,1596,6
+train,mn_en_000376_0.png,english,manuals,835,1363,9
+train,sy_te_000153_0.png,telugu,syllabi,698,1037,17
+train,ar_en_000809.png,english,acts & rules,596,842,9
+train,ar_gu_000200_0.png,gujarati,acts & rules,1275,1757,16
+train,rp_mr_000753_0.png,marathi,research papers,1700,2200,4
+train,mg_ta_000582.jpeg,tamil,magazines,510,751,12
+train,ar_or_000825_1.png,odia,acts & rules,612,792,1
+train,nv_or_000061_0.png,odia,novels,532,827,6
+train,qp_bn_000565_1.png,bengali,question papers,1983,2806,32
+train,br_gu_000363_1.png,gujarati,brochures,596,842,10
+train,rp_ta_000007_0.png,tamil,research papers,1241,1754,1
+train,fm_ml_000638_1.png,malayalam,forms,612,792,29
+train,mn_mr_000147_0.png,marathi,manuals,1700,2200,13
+train,mn_kn_000222_0.png,kannada,manuals,1275,1650,9
+train,mg_gu_000059.png,gujarati,magazines,596,842,22
+train,fm_bn_000297_0.png,bengali,forms,1530,4950,23
+train,qp_mr_000045_0.png,marathi,question papers,1653,2339,21
+train,mn_en_000374_0.png,english,manuals,846,1369,7
+train,nt_mr_000066.png,marathi,notices,612,792,18
+train,ar_pa_000377_0.png,punjabi,acts & rules,1653,2339,0
+train,tb_or_000272_0.png,odia,textbooks,680,1034,5
+train,rp_kn_000955_0.png,kannada,research papers,1241,1754,6
+train,nt_kn_000226_1.png,kannada,notices,612,1008,5
+train,fm_en_000003_0.png,english,forms,612,792,14
+train,rp_mr_000268_0.png,marathi,research papers,1653,2339,7
+train,sy_hi_000132_0.png,hindi,syllabi,1700,2200,14
+train,fm_ta_000151_0.png,tamil,forms,596,843,36
+train,mg_te_000428.jpeg,telugu,magazines,577,793,7
+train,nv_gu_000740_1.png,gujarati,novels,571,789,8
+train,br_mr_000823_0.png,marathi,brochures,1567,2067,21
+train,br_ml_000226_0.png,malayalam,brochures,1477,1890,8
+train,mg_ml_000612_0.png,malayalam,magazines,1240,1754,20
+train,mg_or_000748_0.png,odia,magazines,886,1388,10
+train,nv_ta_001031_1.png,tamil,novels,255,340,7
+train,fm_pa_000471_1.png,punjabi,forms,596,842,16
+train,np_gu_000358_1.png,gujarati,newspapers,2800,3974,152
+train,br_gu_000541_1.png,gujarati,brochures,596,842,7
+train,nv_as_001114_1.png,assamese,novels,1219,1951,6
+train,ar_ta_000550_0.png,tamil,acts & rules,1240,1755,12
+train,br_ml_000310_0.png,malayalam,brochures,1852,1339,1
+train,nv_hi_000603_0.png,hindi,novels,1700,2200,10
+train,rp_gu_000553_0.png,gujarati,research papers,1240,1755,7
+train,tb_ml_000967_1.png,malayalam,textbooks,612,792,11
+train,qp_ml_000399_0.png,malayalam,question papers,1755,1240,10
+train,mg_te_000422.jpeg,telugu,magazines,577,793,14
+train,mg_or_000310_0.png,odia,magazines,1211,1625,21
+train,nv_mr_000187_0.png,marathi,novels,1050,1650,6
+train,np_hi_000284_1.png,hindi,newspapers,1500,2384,97
+train,np_mr_000167_1.png,marathi,newspapers,943,1500,58
+train,mn_hi_000699_0.png,hindi,manuals,1289,2084,5
+train,rp_en_000054_0.png,english,research papers,1275,1650,23
+train,br_te_000561_0.png,telugu,brochures,1275,1650,31
+train,fm_ta_000098_0.png,tamil,forms,596,842,62
+train,br_gu_000155_0.png,gujarati,brochures,1241,1755,8
+train,tb_mr_000352_0.png,marathi,textbooks,1700,2200,7
+train,br_hi_000715_1.png,hindi,brochures,621,809,14
+train,mn_gu_000898_0.png,gujarati,manuals,1241,1754,9
+train,fm_hi_000704_1.png,hindi,forms,612,792,12
+train,qp_pa_000145_0.png,punjabi,question papers,1700,2200,22
+train,tb_gu_000951_1.png,gujarati,textbooks,596,842,29
+train,mn_kn_000450_0.png,kannada,manuals,1241,1754,3
+train,ar_gu_000229_0.png,gujarati,acts & rules,1275,1757,11
+train,mg_mr_000395.png,marathi,magazines,497,667,12
+train,rp_bn_000685_0.png,bengali,research papers,1240,1755,4
+train,mn_pa_000805_0.png,punjabi,manuals,1630,2230,30
+train,nt_ta_000533.jpeg,tamil,notices,792,612,1
+train,sy_te_000488_1.png,telugu,syllabi,595,842,5
+train,br_te_000107_0.png,telugu,brochures,1313,1725,15
+train,tb_te_000511_0.png,telugu,textbooks,750,1275,5
+train,fm_mr_000230_0.png,marathi,forms,1700,2200,10
+train,nv_bn_000234_0.png,bengali,novels,755,1164,11
+train,mg_hi_001062_1.png,hindi,magazines,612,792,13
+train,mg_hi_000480_0.png,hindi,magazines,1410,2009,37
+train,br_ta_000659_0.png,tamil,brochures,1063,1447,17
+train,br_mr_000194_0.png,marathi,brochures,1653,2339,5
+train,fm_mr_000427_0.png,marathi,forms,1862,2547,14
+train,mg_or_000359_0.png,odia,magazines,1211,1625,13
+train,ar_mr_000353_0.png,marathi,acts & rules,1653,2339,9
+train,qp_mr_000204_0.png,marathi,question papers,1653,2339,10
+train,mn_kn_000007_0.png,kannada,manuals,1241,1754,31
+train,mg_or_000878_1.png,odia,magazines,595,842,21
+train,rp_kn_000778_0.png,kannada,research papers,1241,1754,8
+train,nv_as_000042_0.png,assamese,novels,1374,1818,7
+train,ar_pa_000703_1.png,punjabi,acts & rules,612,792,8
+train,mn_ta_000930_0.png,tamil,manuals,1284,2196,7
+train,np_ta_000309_0.png,tamil,newspapers,1447,1941,13
+train,fm_gu_000297_1.png,gujarati,forms,596,842,14
+train,mg_en_001500.png,english,magazines,2327,3200,11
+train,np_ml_000038_0.png,malayalam,newspapers,2008,3213,129
+train,nv_hi_001024_1.png,hindi,novels,317,507,10
+train,sy_pa_000469_1.png,punjabi,syllabi,596,842,15
+train,nt_kn_000058_1.png,kannada,notices,612,864,9
+train,tb_ml_000798_0.png,malayalam,textbooks,2550,3300,4
+train,ar_hi_000041_0.png,hindi,acts & rules,1654,2339,8
+train,np_gu_000265_1.png,gujarati,newspapers,2800,3974,7
+train,mn_or_000656_0.png,odia,manuals,419,671,18
+train,ar_mr_000807_1.png,marathi,acts & rules,600,822,8
+train,mg_gu_000926.png,gujarati,magazines,420,624,11
+train,br_hi_001140_1.png,hindi,brochures,576,576,17
+train,br_ml_000711_1.png,malayalam,brochures,661,669,13
+train,qp_bn_000441_1.png,bengali,question papers,1400,1983,24
+train,mg_as_000801_0.png,assamese,magazines,1056,1606,17
+train,qp_ta_000619_1.png,tamil,question papers,579,776,24
+train,rp_ml_000442_0.png,malayalam,research papers,2480,3509,7
+train,tb_en_000947_0.png,english,textbooks,1275,1650,31
+train,tb_ta_000804_1.png,tamil,textbooks,655,882,21
+train,nv_pa_001085_0.png,punjabi,novels,845,579,1
+train,ar_ta_000398_0.png,tamil,acts & rules,1240,1755,12
+train,tb_as_000864_0.png,assamese,textbooks,1262,1806,5
+train,ar_gu_000118_0.png,gujarati,acts & rules,1275,1117,10
+train,br_kn_000232_0.png,kannada,brochures,1240,1755,10
+train,mg_pa_001065_1.png,punjabi,magazines,558,748,23
+train,mg_mr_000311.png,marathi,magazines,522,684,11
+train,ar_hi_000646_1.png,hindi,acts & rules,596,842,12
+train,rp_kn_001238_0.png,kannada,research papers,1241,1754,5
+train,nv_ml_000409_0.png,malayalam,novels,1772,2717,9
+train,fm_hi_000484_1.png,hindi,forms,612,792,17
+train,mn_te_000273_0.png,telugu,manuals,839,1290,7
+train,mg_or_000148_0.png,odia,magazines,1211,1625,33
+train,ar_bn_000087_0.png,bengali,acts & rules,937,1334,15
+train,tb_pa_000796_0.png,punjabi,textbooks,1492,1945,13
+train,mn_gu_000639_0.png,gujarati,manuals,1241,1754,13
+train,tb_gu_000197_0.png,gujarati,textbooks,353,594,8
+train,ar_hi_000099_0.png,hindi,acts & rules,1654,2339,3
+train,tb_en_000789_0.png,english,textbooks,1275,1650,12
+train,sy_mr_000153_0.png,marathi,syllabi,1653,2339,5
+train,mn_as_000627_1.png,assamese,manuals,624,814,15
+train,qp_te_000390_1.png,telugu,question papers,557,773,15
+train,rp_en_001090_0.png,english,research papers,1241,1754,12
+train,nt_pa_000364_1.png,punjabi,notices,596,842,16
+train,sy_or_000662_1.png,odia,syllabi,584,737,12
+train,mn_or_000804_0.png,odia,manuals,419,671,5
+train,tb_gu_000871_1.png,gujarati,textbooks,596,842,11
+train,qp_gu_000857_0.png,gujarati,question papers,1240,1752,24
+train,mn_te_000672_0.png,telugu,manuals,552,853,6
+train,ar_or_000542_0.png,odia,acts & rules,1169,1600,13
+train,sy_en_000561_0.png,english,syllabi,1275,1650,7
+train,ar_en_000636.png,english,acts & rules,596,842,7
+train,mg_kn_000340_0.png,kannada,magazines,1275,1725,20
+train,tb_pa_000339_0.png,punjabi,textbooks,1028,1578,5
+train,np_te_000037_0.png,telugu,newspapers,1950,2985,29
+train,mg_pa_000070_0.png,punjabi,magazines,1654,2339,5
+train,br_hi_000109_0.png,hindi,brochures,1678,2342,12
+train,nv_ta_001110_1.png,tamil,novels,612,792,4
+train,sy_mr_000298_0.png,marathi,syllabi,1653,2339,6
+train,sy_or_000691_1.png,odia,syllabi,596,842,14
+train,rp_te_000244_0.png,telugu,research papers,829,1326,6
+train,ar_gu_000139_0.png,gujarati,acts & rules,1128,1653,16
+train,nv_en_000788_0.png,english,novels,907,1242,0
+train,mn_pa_000093_0.png,punjabi,manuals,1400,2000,13
+train,np_mr_000158_1.png,marathi,newspapers,943,1500,59
+train,sy_pa_000052_0.png,punjabi,syllabi,1653,2337,17
+train,fm_ta_000144_0.png,tamil,forms,596,842,21
+train,fm_ta_000176_0.png,tamil,forms,596,842,86
+train,nv_hi_000615_0.png,hindi,novels,1700,2200,7
+train,tb_or_000866_1.png,odia,textbooks,567,766,20
+train,rp_gu_000447_0.png,gujarati,research papers,1240,1755,7
+train,br_mr_000098_0.png,marathi,brochures,1654,1654,10
+train,ar_en_000734.png,english,acts & rules,596,842,8
+train,nv_as_001410_1.png,assamese,novels,1270,1987,9
+train,fm_hi_000008_0.png,hindi,forms,1700,2200,6
+train,mn_pa_000429_0.png,punjabi,manuals,1700,2200,29
+train,sy_en_000582_0.png,english,syllabi,1275,1650,25
+train,rp_or_000890_1.png,odia,research papers,612,792,8
+train,nv_or_000948_1.png,odia,novels,369,596,6
+train,nv_en_000715_0.png,english,novels,890,1292,10
+train,sy_pa_000236_0.png,punjabi,syllabi,612,792,10
+train,rp_en_000121_0.png,english,research papers,1275,1650,6
+train,mg_bn_000386_0.png,bengali,magazines,1176,1320,10
+train,fm_or_000191_0.png,odia,forms,600,846,7
+train,qp_ml_000592_0.png,malayalam,question papers,1240,1755,10
+train,nt_hi_000460_1.png,hindi,notices,596,842,13
+train,tb_pa_000775_0.png,punjabi,textbooks,1492,1945,5
+train,nv_pa_000227_0.png,punjabi,novels,1178,1806,9
+train,sy_ml_000325_0.png,malayalam,syllabi,1240,1755,18
+train,br_or_000405_1.png,odia,brochures,596,842,17
+train,rp_hi_000390_0.png,hindi,research papers,1468,2179,10
+train,nv_bn_000801_1.png,bengali,novels,1233,2061,9
+train,fm_mr_000429_0.png,marathi,forms,1653,2339,7
+train,ar_te_000525.jpeg,telugu,acts & rules,584,767,10
+train,qp_mr_000287_1.png,marathi,question papers,612,792,15
+train,mg_en_000864.png,english,magazines,2263,3200,22
+train,br_hi_000182_0.png,hindi,brochures,1656,2339,1
+train,np_pa_000506_1.png,punjabi,newspapers,1201,1820,98
+train,mn_ta_000814_0.png,tamil,manuals,1284,2196,7
+train,mg_pa_000346_0.png,punjabi,magazines,1656,2339,10
+train,sy_or_000708_1.png,odia,syllabi,596,843,11
+train,mn_pa_000377_0.png,punjabi,manuals,1700,2200,6
+train,mn_hi_000687_0.png,hindi,manuals,1289,2084,7
+train,fm_gu_000293_1.png,gujarati,forms,596,842,5
+train,nv_as_001189_1.png,assamese,novels,1219,1951,11
+train,br_bn_000882_1.png,bengali,brochures,3960,3060,8
+train,ar_hi_000705_1.png,hindi,acts & rules,596,842,9
+train,nv_bn_000163_0.png,bengali,novels,755,1164,14
+train,ar_ml_000188_0.png,malayalam,acts & rules,1241,1755,11
+train,rp_ml_000939_0.png,malayalam,research papers,2480,3509,5
+train,br_ta_001430_1.png,tamil,brochures,1191,842,18
+train,sy_or_000272_0.png,odia,syllabi,1241,1754,13
+train,ar_as_000802_0.png,assamese,acts & rules,1434,2023,14
+train,qp_ml_000531_0.png,malayalam,question papers,1240,1755,12
+train,ar_bn_000512_0.png,bengali,acts & rules,1200,1486,8
+train,mn_pa_000196_0.png,punjabi,manuals,1675,2175,5
+train,tb_mr_000679_0.png,marathi,textbooks,1700,2200,6
+train,br_pa_000643_0.png,punjabi,brochures,1778,2278,29
+train,rp_bn_000556_0.png,bengali,research papers,1240,1755,2
+train,sy_te_000361_1.png,telugu,syllabi,596,842,11
+train,br_ta_000523_0.png,tamil,brochures,1063,1447,19
+train,nv_ml_000154_0.png,malayalam,novels,4167,6000,10
+train,ar_ta_000091_0.png,tamil,acts & rules,1090,1665,12
+train,nt_mr_000369.png,marathi,notices,596,842,12
+train,fm_ml_000862_1.png,malayalam,forms,575,824,28
+train,ar_hi_000150_0.png,hindi,acts & rules,1700,2303,8
+train,tb_or_000543_0.png,odia,textbooks,680,1034,4
+train,mn_en_000161_0.png,english,manuals,721,1300,10
+train,ar_gu_000045_0.png,gujarati,acts & rules,1275,1757,7
+train,np_ml_000346_0.png,malayalam,newspapers,2008,3213,79
+train,qp_bn_000541_1.png,bengali,question papers,3060,3960,16
+train,nv_or_000819_0.png,odia,novels,739,1152,12
+train,tb_gu_000127_0.png,gujarati,textbooks,353,594,11
+train,ar_as_000511_0.png,assamese,acts & rules,1653,2339,11
+train,rp_as_000798_0.png,assamese,research papers,1653,2339,8
+train,nt_te_000350_0.png,telugu,notices,596,842,3
+train,nv_or_000108_0.png,odia,novels,532,827,9
+train,fm_te_000083_0.png,telugu,forms,612,792,9
+train,qp_ml_000083_0.png,malayalam,question papers,1755,1240,10
+train,nv_bn_000901_1.png,bengali,novels,1020,1605,10
+train,rp_as_000697_0.png,assamese,research papers,1700,2200,8
+train,sy_ta_000421.jpeg,tamil,syllabi,612,792,16
+train,tb_pa_000918_1.png,punjabi,textbooks,612,792,16
+train,mn_pa_000689_0.png,punjabi,manuals,1630,2230,15
+train,nt_en_000350_1.png,english,notices,596,842,10
+train,ar_kn_000727_0.png,kannada,acts & rules,1240,1755,10
+train,rp_kn_000521_0.png,kannada,research papers,1275,1650,10
+train,ar_gu_000656_1.png,gujarati,acts & rules,572,843,16
+train,np_pa_000099_0.png,punjabi,newspapers,4331,3110,40
+train,mg_ml_000310_0.png,malayalam,magazines,1075,1518,14
+train,rp_mr_001156_0.png,marathi,research papers,1653,2339,6
+train,fm_en_000298_0.png,english,forms,595,842,24
+train,nv_gu_000885_1.png,gujarati,novels,571,789,7
+train,mn_mr_000028_0.png,marathi,manuals,1615,1654,23
+train,nv_en_000446_0.png,english,novels,911,1242,5
+train,br_ml_000146_0.png,malayalam,brochures,1241,1754,7
+train,tb_gu_000237_0.png,gujarati,textbooks,353,594,13
+train,qp_gu_000294_0.png,gujarati,question papers,1241,1754,42
+train,qp_bn_000421_1.png,bengali,question papers,1984,2806,11
+train,sy_ml_000211_0.png,malayalam,syllabi,1241,1755,6
+train,qp_or_000368_0.png,odia,question papers,1241,1754,14
+train,rp_bn_000694_0.png,bengali,research papers,1240,1755,4
+train,fm_pa_000425_1.png,punjabi,forms,612,792,8
+train,nv_bn_000064_0.png,bengali,novels,755,1164,14
+train,tb_te_000594_0.png,telugu,textbooks,750,1275,7
+train,rp_bn_000602_0.png,bengali,research papers,1240,1755,2
+train,mn_pa_000611_0.png,punjabi,manuals,1778,2278,36
+train,nv_ta_000154_0.png,tamil,novels,900,1350,6
+train,br_bn_000616_0.png,bengali,brochures,1158,1601,7
+train,rp_mr_001114_0.png,marathi,research papers,1653,2339,5
+train,ar_ta_000773_0.png,tamil,acts & rules,1240,1755,13
+train,tb_gu_000408_0.png,gujarati,textbooks,329,542,9
+train,mn_ml_000678_0.png,malayalam,manuals,1275,1650,6
+train,nv_or_000473_0.png,odia,novels,798,1211,8
+train,ar_mr_000529_0.png,marathi,acts & rules,1653,2339,8
+train,rp_as_001754_0.png,assamese,research papers,1653,2339,11
+train,nv_te_000682_0.png,telugu,novels,2355,3896,16
+train,rp_mr_000277_0.png,marathi,research papers,1653,2339,11
+train,mn_or_001116_1.png,odia,manuals,612,792,9
+train,br_ml_000394_1.png,malayalam,brochures,792,612,8
+train,rp_gu_000068_0.png,gujarati,research papers,1275,1650,5
+train,rp_mr_000484_0.png,marathi,research papers,1700,2200,6
+train,nv_kn_000177_0.png,kannada,novels,849,1372,7
+train,mg_or_000228_0.png,odia,magazines,1211,1625,14
+train,tb_hi_000661_0.png,hindi,textbooks,1457,2039,11
+train,nv_bn_000873_1.png,bengali,novels,2360,1664,9
+train,mg_gu_000471.png,gujarati,magazines,420,624,12
+train,mg_hi_000937_1.png,hindi,magazines,612,792,16
+train,br_en_000794_1.png,english,brochures,1134,851,4
+train,mn_pa_000038_0.png,punjabi,manuals,1400,2000,14
+train,np_ta_000540_1.png,tamil,newspapers,1500,2272,101
+train,tb_pa_000625_0.png,punjabi,textbooks,1656,2339,17
+train,tb_gu_000958_1.png,gujarati,textbooks,596,842,20
+train,fm_ta_000210_0.png,tamil,forms,596,842,21
+train,mn_te_000067_0.png,telugu,manuals,661,998,9
+train,sy_ta_000669.jpeg,tamil,syllabi,612,792,7
+train,br_kn_000517_1.png,kannada,brochures,720,540,7
+train,sy_en_000148_0.png,english,syllabi,1241,1754,3
+train,rp_kn_001070_0.png,kannada,research papers,1241,1754,4
+train,qp_bn_000601_1.png,bengali,question papers,3060,3960,3
+train,rp_bn_000570_0.png,bengali,research papers,1240,1755,6
+train,rp_ml_000518_0.png,malayalam,research papers,2480,3509,5
+train,nv_ml_000095_0.png,malayalam,novels,4167,6000,5
+train,br_te_000490_0.png,telugu,brochures,1323,1736,19
+train,nv_as_001040_1.png,assamese,novels,1219,1951,7
+train,mn_bn_000634_0.png,bengali,manuals,749,1162,6
+train,mg_ta_000222.jpeg,tamil,magazines,510,751,9
+train,nv_or_000862_0.png,odia,novels,739,1152,6
+train,br_pa_000227_0.png,punjabi,brochures,1780,2280,22
+train,nt_ta_000341.jpeg,tamil,notices,421,596,5
+train,ar_kn_000143_0.png,kannada,acts & rules,1240,1755,8
+train,fm_gu_000326_1.png,gujarati,forms,612,792,20
+train,tb_mr_000667_0.png,marathi,textbooks,1700,2200,6
+train,nv_mr_000413_0.png,marathi,novels,1050,1650,11
+train,fm_bn_000283_0.png,bengali,forms,1275,2100,33
+train,ar_hi_000654_1.png,hindi,acts & rules,596,842,10
+train,br_gu_000028_0.png,gujarati,brochures,1240,1755,10
+train,ar_en_000747.png,english,acts & rules,596,842,8
+train,rp_gu_000217_0.png,gujarati,research papers,1275,1650,5
+train,qp_mr_000547_1.png,marathi,question papers,599,842,15
+train,np_mr_000304_1.png,marathi,newspapers,943,1500,93
+train,ar_te_000554.jpeg,telugu,acts & rules,552,821,12
+train,nv_gu_000532_0.png,gujarati,novels,741,1230,6
+train,br_ta_001388_1.png,tamil,brochures,421,596,5
+train,nv_te_000662_0.png,telugu,novels,2355,3896,18
+train,br_kn_000129_0.png,kannada,brochures,1241,1754,21
+train,nv_ml_000005_0.png,malayalam,novels,4167,6000,4
+train,fm_ml_000328_0.png,malayalam,forms,1755,1240,4
+train,np_mr_000357_1.png,marathi,newspapers,943,1500,103
+train,sy_te_000637_1.png,telugu,syllabi,595,842,11
+train,mn_bn_000557_0.png,bengali,manuals,749,1162,9
+train,rp_ml_000217_0.png,malayalam,research papers,2480,3509,3
+train,mn_as_000217_0.png,assamese,manuals,1656,2339,4
+train,tb_ml_000474_0.png,malayalam,textbooks,2550,3300,3
+train,tb_te_000698_1.png,telugu,textbooks,1191,842,21
+train,ar_en_000901.png,english,acts & rules,596,842,8
+train,nv_ml_000582_0.png,malayalam,novels,745,1080,0
+train,nv_pa_000492_0.png,punjabi,novels,1654,2339,8
+train,ar_ta_000113_0.png,tamil,acts & rules,1050,1538,7
+train,nt_bn_000185_0.png,bengali,notices,1241,1754,12
+train,mg_hi_000047_0.png,hindi,magazines,1656,2342,10
+train,mn_en_000079_0.png,english,manuals,694,1300,11
+train,nv_ta_000996_0.png,tamil,novels,1241,1755,14
+train,tb_mr_001028_0.png,marathi,textbooks,1656,2339,2
+train,qp_bn_000428_1.png,bengali,question papers,1400,1983,22
+train,ar_ml_000642_0.png,malayalam,acts & rules,1221,1750,14
+train,mn_bn_000471_0.png,bengali,manuals,749,1162,10
+train,tb_hi_001058_1.png,hindi,textbooks,504,720,21
+train,sy_bn_000632_1.png,bengali,syllabi,2970,3690,3
+train,nv_bn_000854_1.png,bengali,novels,1213,1868,4
+train,np_gu_000199_1.png,gujarati,newspapers,2800,3974,111
+train,mn_ta_001077_0.png,tamil,manuals,1284,2196,6
+train,rp_bn_000315_0.png,bengali,research papers,1241,1754,7
+train,nt_bn_000216_0.png,bengali,notices,2040,2640,16
+train,qp_ml_000608_0.png,malayalam,question papers,1240,1755,14
+train,fm_bn_000125_0.png,bengali,forms,1530,4950,53
+train,br_bn_000473_0.png,bengali,brochures,1158,1601,6
+train,br_hi_000552_0.png,hindi,brochures,1654,2339,8
+train,fm_ml_000242_0.png,malayalam,forms,1275,1650,3
+train,mn_hi_000637_0.png,hindi,manuals,1289,2084,5
+train,mg_gu_000320.png,gujarati,magazines,596,842,12
+train,mg_ta_000137.jpeg,tamil,magazines,558,810,5
+train,mg_pa_000574_0.png,punjabi,magazines,1123,1728,18
+train,np_ml_000541_1.png,malayalam,newspapers,1296,2016,163
+train,qp_pa_000049_0.png,punjabi,question papers,1656,2339,13
+train,rp_kn_000215_0.png,kannada,research papers,1275,1650,9
+train,sy_or_000658_1.png,odia,syllabi,595,842,14
+train,rp_as_001489_0.png,assamese,research papers,1653,2339,14
+train,ar_or_000067_0.png,odia,acts & rules,1221,936,7
+train,nv_gu_001154_1.png,gujarati,novels,571,789,15
+train,sy_bn_000625_1.png,bengali,syllabi,2970,3690,6
+train,mn_or_000014_0.png,odia,manuals,827,1300,3
+train,mg_hi_000274_0.png,hindi,magazines,1070,1637,7
+train,mg_ta_001402.jpeg,tamil,magazines,511,752,17
+train,br_ta_000304_0.png,tamil,brochures,1063,1447,12
+train,br_or_000075_0.png,odia,brochures,1276,1790,9
+train,tb_gu_000062_0.png,gujarati,textbooks,353,594,8
+train,rp_kn_000221_0.png,kannada,research papers,1275,1650,8
+train,np_en_000535_1.png,english,newspapers,1786,2781,15
+train,mg_as_000650_0.png,assamese,magazines,1056,1606,19
+train,nt_bn_000089_0.png,bengali,notices,2806,1984,3
+train,ar_en_000358.png,english,acts & rules,596,842,7
+train,br_pa_000695_0.png,punjabi,brochures,1778,2278,25
+train,tb_bn_000551_0.png,bengali,textbooks,825,1200,6
+train,fm_kn_000074_1.png,kannada,forms,596,842,43
+train,np_pa_000378_0.png,punjabi,newspapers,4331,3110,50
+train,rp_te_000919_1.png,telugu,research papers,612,792,4
+train,ar_hi_000261_0.png,hindi,acts & rules,1654,2339,10
+train,nt_te_000411_0.png,telugu,notices,596,842,3
+train,nt_gu_000692_1.png,gujarati,notices,596,842,19
+train,mg_pa_000168_0.png,punjabi,magazines,1642,2337,8
+train,tb_te_000481_0.png,telugu,textbooks,750,1275,11
+train,mg_hi_000497_0.png,hindi,magazines,1444,2037,30
+train,fm_kn_000029_1.png,kannada,forms,595,841,40
+train,mg_en_000962.png,english,magazines,832,1075,26
+train,ar_mr_000179_0.png,marathi,acts & rules,1456,2214,12
+train,sy_or_000291_0.png,odia,syllabi,1241,1754,6
+train,tb_bn_000175_0.png,bengali,textbooks,825,1200,7
+train,mg_en_000912.png,english,magazines,2263,3200,22
+train,rp_bn_000091_0.png,bengali,research papers,1241,1754,12
+train,mg_ta_000318.jpeg,tamil,magazines,510,751,13
+train,nt_or_000542_0.png,odia,notices,596,842,9
+train,tb_pa_000083_0.png,punjabi,textbooks,1700,2200,9
+train,rp_mr_001047_0.png,marathi,research papers,1653,2339,6
+train,sy_pa_000373_0.png,punjabi,syllabi,612,1008,4
+train,np_en_000069_0.png,english,newspapers,2582,3409,36
+train,mg_en_000309.png,english,magazines,1800,2366,11
+train,mn_hi_000662_0.png,hindi,manuals,1289,2084,10
+train,br_or_000149_0.png,odia,brochures,1240,1754,7
+train,ar_ta_001266_0.png,tamil,acts & rules,1117,1634,12
+train,mg_kn_001096_1.png,kannada,magazines,497,681,10
+train,mg_ta_000032.jpeg,tamil,magazines,510,751,10
+train,qp_gu_000449_0.png,gujarati,question papers,1241,1755,20
+train,np_hi_000231_1.png,hindi,newspapers,1500,2384,91
+train,nv_ta_000431_0.png,tamil,novels,1050,1500,8
+train,fm_ml_000690_1.png,malayalam,forms,596,842,41
+train,nv_kn_000821_0.png,kannada,novels,3644,5478,14
+train,mg_te_000482.jpeg,telugu,magazines,596,842,21
+train,rp_te_000442_0.png,telugu,research papers,909,1468,10
+train,ar_mr_000144_0.png,marathi,acts & rules,1453,2223,10
+train,mg_as_000645_0.png,assamese,magazines,1056,1606,18
+train,np_bn_000187_0.png,bengali,newspapers,3825,5313,25
+train,rp_kn_001067_0.png,kannada,research papers,1275,1650,8
+train,tb_bn_000324_0.png,bengali,textbooks,825,1200,6
+train,sy_bn_000415_1.png,bengali,syllabi,2970,3690,9
+train,nv_as_001190_1.png,assamese,novels,1983,2806,6
+train,qp_te_000017_0.png,telugu,question papers,1240,1755,28
+train,mg_kn_000328_0.png,kannada,magazines,1275,1725,8
+train,ar_as_000522_0.png,assamese,acts & rules,1653,2339,5
+train,tb_mr_000259_0.png,marathi,textbooks,1700,2200,6
+train,br_bn_000558_0.png,bengali,brochures,1158,1601,17
+train,tb_kn_001090_1.png,kannada,textbooks,401,595,8
+train,rp_kn_000088_0.png,kannada,research papers,1241,1754,7
+train,mn_en_000386_0.png,english,manuals,831,1359,7
+train,mg_pa_000984_0.png,punjabi,magazines,1656,2339,10
+train,rp_te_000583_0.png,telugu,research papers,909,1468,14
+train,mn_pa_000906_1.png,punjabi,manuals,612,792,13
+train,mn_or_000053_0.png,odia,manuals,827,1300,13
+train,ar_or_000423_0.png,odia,acts & rules,1275,1757,7
+train,mn_ml_000272_0.png,malayalam,manuals,1241,1755,7
+train,fm_hi_000542_1.png,hindi,forms,612,792,35
+train,nv_hi_000121_0.png,hindi,novels,1650,2334,7
+train,br_pa_000225_0.png,punjabi,brochures,1780,2280,21
+train,sy_kn_000056_0.png,kannada,syllabi,1275,1650,5
+train,tb_gu_000008_0.png,gujarati,textbooks,353,594,4
+train,qp_ta_000474_1.png,tamil,question papers,557,773,16
+train,np_gu_000515_1.png,gujarati,newspapers,2800,3974,104
+train,mg_en_001139.png,english,magazines,1697,2398,36
+train,ar_bn_000192_0.png,bengali,acts & rules,937,1334,16
+train,qp_ta_000163_0.png,tamil,question papers,1650,1275,17
+train,tb_en_000462_0.png,english,textbooks,1275,1650,14
+train,mn_te_000344_0.png,telugu,manuals,700,950,8
+train,nt_kn_000150_1.png,kannada,notices,612,864,7
+train,nv_bn_000714_0.png,bengali,novels,2482,3509,14
+train,mn_kn_000048_0.png,kannada,manuals,1241,1654,21
+train,tb_ml_000568_0.png,malayalam,textbooks,2550,3300,6
+train,nv_mr_000691_0.png,marathi,novels,1214,1948,15
+train,nv_en_000718_0.png,english,novels,919,1288,13
+train,nv_as_000009_0.png,assamese,novels,1374,1818,6
+train,mg_ta_000975.jpeg,tamil,magazines,510,751,9
+train,sy_mr_000273_0.png,marathi,syllabi,1653,2339,15
+train,fm_as_000233_1.png,assamese,forms,596,842,84
+train,mg_gu_000723.png,gujarati,magazines,420,624,10
+train,tb_or_000413_0.png,odia,textbooks,680,1034,6
+train,nt_te_000078_0.png,telugu,notices,612,1008,5
+train,fm_te_000444_0.png,telugu,forms,596,842,57
+train,rp_te_000943_1.png,telugu,research papers,612,792,7
+train,tb_ml_000864_0.png,malayalam,textbooks,2550,3300,15
+train,mg_en_001303.png,english,magazines,595,842,13
+train,mn_ta_000298_0.png,tamil,manuals,1284,2196,7
+train,np_hi_000282_1.png,hindi,newspapers,1500,2384,14
+train,ar_ta_000300_0.png,tamil,acts & rules,1240,1755,11
+train,np_kn_000055_0.png,kannada,newspapers,811,1361,51
+train,mn_as_000562_1.png,assamese,manuals,624,814,3
+train,mg_pa_000349_0.png,punjabi,magazines,1656,2339,10
+train,rp_gu_000577_0.png,gujarati,research papers,1275,1650,3
+train,nv_pa_000595_0.png,punjabi,novels,1654,2339,9
+train,mg_ml_000461_0.png,malayalam,magazines,1075,1518,12
+train,fm_te_000376_0.png,telugu,forms,612,792,37
+train,nv_te_000027_0.png,telugu,novels,2355,3896,17
+train,np_kn_000379_1.png,kannada,newspapers,993,1633,60
+train,nv_en_000258_0.png,english,novels,609,978,6
+train,mn_as_000282_0.png,assamese,manuals,1653,2339,5
+train,mg_kn_000324_0.png,kannada,magazines,1152,1565,6
+train,sy_te_000096_0.png,telugu,syllabi,1650,1275,17
+train,tb_ta_000556_0.png,tamil,textbooks,1088,1425,12
+train,mg_or_000237_0.png,odia,magazines,1211,1625,22
+train,mn_or_000157_0.png,odia,manuals,403,690,3
+train,br_bn_000752_1.png,bengali,brochures,1350,1080,2
+train,mg_pa_000705_0.png,punjabi,magazines,1656,2339,12
+train,mg_gu_000185.png,gujarati,magazines,596,842,8
+train,br_gu_000059_0.png,gujarati,brochures,615,889,5
+train,mn_en_000006_0.png,english,manuals,725,1284,8
+train,np_bn_000099_0.png,bengali,newspapers,3793,5328,111
+train,ar_en_001400.png,english,acts & rules,596,842,11
+train,nt_ta_000366.jpeg,tamil,notices,421,596,6
+train,br_ta_000725_0.png,tamil,brochures,1063,1477,9
+train,ar_gu_000722_1.png,gujarati,acts & rules,612,843,14
+train,ar_hi_000429_1.png,hindi,acts & rules,596,842,8
+train,qp_mr_000058_0.png,marathi,question papers,1653,2339,13
+train,mn_or_000100_0.png,odia,manuals,827,1300,6
+train,sy_pa_000001_0.png,punjabi,syllabi,1700,2200,21
+train,fm_kn_000506_1.png,kannada,forms,596,842,77
+train,fm_kn_000426_1.png,kannada,forms,596,842,19
+train,nv_te_000877_1.png,telugu,novels,595,842,19
+train,rp_kn_000217_0.png,kannada,research papers,1275,1650,9
+train,rp_gu_000593_0.png,gujarati,research papers,1275,1650,5
+train,sy_pa_000036_0.png,punjabi,syllabi,1653,2337,7
+train,sy_or_000736_1.png,odia,syllabi,555,792,14
+train,br_ta_001343_1.png,tamil,brochures,756,576,18
+train,br_hi_000129_0.png,hindi,brochures,1700,2200,9
+train,sy_ml_000124_0.png,malayalam,syllabi,1241,1754,1
+train,tb_hi_000592_0.png,hindi,textbooks,1474,2051,10
+train,ar_bn_000109_0.png,bengali,acts & rules,937,1334,17
+train,ar_kn_000451_0.png,kannada,acts & rules,1240,1755,11
+train,mg_or_000481_0.png,odia,magazines,1211,1625,22
+train,sy_ml_000338_0.png,malayalam,syllabi,1240,1755,8
+train,br_bn_000640_0.png,bengali,brochures,1158,1601,14
+train,mn_kn_000030_0.png,kannada,manuals,1241,1654,7
+train,mn_bn_000382_0.png,bengali,manuals,749,1162,6
+train,nv_mr_000558_0.png,marathi,novels,1700,2200,14
+train,mg_hi_000214_0.png,hindi,magazines,1070,1637,6
+train,sy_kn_000422_0.png,kannada,syllabi,1241,1754,12
+train,rp_or_000421_0.png,odia,research papers,1240,1755,12
+train,np_pa_000238_0.png,punjabi,newspapers,4331,3136,61
+train,nv_gu_001008_1.png,gujarati,novels,571,789,7
+train,fm_kn_000356_1.png,kannada,forms,596,842,23
+train,np_te_000113_0.png,telugu,newspapers,2565,3450,77
+train,mg_gu_000398.png,gujarati,magazines,596,842,4
+train,br_bn_000492_0.png,bengali,brochures,1158,1601,8
+train,mg_kn_001044_1.png,kannada,magazines,567,792,13
+train,mn_hi_000870_1.png,hindi,manuals,612,792,10
+train,tb_mr_000977_0.png,marathi,textbooks,1656,2339,5
+train,mn_mr_000079_0.png,marathi,manuals,1700,2200,7
+train,nt_gu_000421_1.png,gujarati,notices,596,842,17
+train,ar_mr_000077_0.png,marathi,acts & rules,1450,2231,19
+train,mg_pa_000913_0.png,punjabi,magazines,1042,1667,12
+train,ar_te_000110.jpeg,telugu,acts & rules,596,842,9
+train,rp_te_000375_0.png,telugu,research papers,765,1238,30
+train,mn_en_000719_0.png,english,manuals,829,1362,15
+train,mg_kn_000037_0.png,kannada,magazines,1152,1565,7
+train,mn_bn_000329_0.png,bengali,manuals,749,1162,8
+train,fm_ml_000569_0.png,malayalam,forms,1237,1750,15
+train,ar_kn_000899_0.png,kannada,acts & rules,1275,1800,7
+train,qp_bn_000428_0.png,bengali,question papers,1241,1755,18
+train,rp_bn_000571_0.png,bengali,research papers,1240,1755,4
+train,nv_hi_000436_0.png,hindi,novels,987,1387,6
+train,ar_mr_000653_1.png,marathi,acts & rules,600,822,3
+train,br_ml_000072_0.png,malayalam,brochures,1418,1063,7
+train,ar_bn_000591_0.png,bengali,acts & rules,1275,1636,16
+train,mn_or_000201_0.png,odia,manuals,1053,607,9
+train,np_en_000246_1.png,english,newspapers,1786,2781,5
+train,tb_te_000736_1.png,telugu,textbooks,596,842,20
+train,mg_pa_000269_0.png,punjabi,magazines,1656,2339,8
+train,nt_bn_000177_0.png,bengali,notices,2040,2810,21
+train,nv_kn_000415_0.png,kannada,novels,853,1298,6
+train,ar_mr_000849_1.png,marathi,acts & rules,595,842,11
+train,nv_mr_000693_0.png,marathi,novels,1214,1948,17
+train,mn_en_000356_0.png,english,manuals,820,1354,8
+train,ar_or_000623_1.png,odia,acts & rules,572,814,3
+train,br_en_000373_0.png,english,brochures,863,1309,2
+train,fm_en_000075_0.png,english,forms,612,792,8
+train,nv_mr_000882_0.png,marathi,novels,1214,1948,19
+train,br_hi_000510_0.png,hindi,brochures,1656,2339,27
+train,tb_gu_000543_0.png,gujarati,textbooks,329,542,11
+train,tb_ml_000301_0.png,malayalam,textbooks,1000,1492,6
+train,mn_mr_000096_0.png,marathi,manuals,1700,2200,7
+train,tb_pa_000324_0.png,punjabi,textbooks,1028,1578,10
+train,tb_gu_000787_0.png,gujarati,textbooks,792,1226,15
+train,tb_as_000479_0.png,assamese,textbooks,1262,1806,7
+train,fm_ml_000267_0.png,malayalam,forms,1275,1650,19
+train,mg_pa_000868_0.png,punjabi,magazines,1042,1667,17
+train,br_hi_000668_0.png,hindi,brochures,1656,2342,13
+train,np_pa_000136_0.png,punjabi,newspapers,4331,3115,64
+train,ar_te_000004.jpeg,telugu,acts & rules,596,842,6
+train,br_hi_000965_1.png,hindi,brochures,1728,720,8
+train,rp_as_000785_0.png,assamese,research papers,1653,2339,9
+train,qp_ta_000498_1.png,tamil,question papers,557,773,14
+train,np_kn_000168_1.png,kannada,newspapers,993,1633,82
+train,br_hi_000928_1.png,hindi,brochures,612,792,11
+train,mn_en_000037_0.png,english,manuals,705,1273,9
+train,tb_as_000977_0.png,assamese,textbooks,1262,1806,12
+train,rp_bn_000200_0.png,bengali,research papers,1241,1754,7
+train,qp_pa_000008_0.png,punjabi,question papers,1700,2200,13
+train,mn_en_000230_0.png,english,manuals,850,1363,11
+train,rp_te_000096_0.png,telugu,research papers,768,1220,11
+train,mn_en_000517_0.png,english,manuals,832,1366,13
+train,ar_gu_000073_0.png,gujarati,acts & rules,1275,1757,7
+train,mn_hi_001033_1.png,hindi,manuals,595,842,12
+train,ar_kn_000335_0.png,kannada,acts & rules,1240,1755,12
+train,mg_ml_000082_0.png,malayalam,magazines,1075,1518,13
+train,rp_as_001612_0.png,assamese,research papers,1653,2339,6
+train,tb_en_000841_0.png,english,textbooks,1275,1650,14
+val,mn_kn_000542_0.png,kannada,manuals,853,1259,14
+val,br_kn_000932_1.png,kannada,brochures,960,540,4
+val,sy_bn_000114_0.png,bengali,syllabi,877,1241,7
+val,nv_ml_000464_0.png,malayalam,novels,2480,3509,14
+val,mn_ta_000546_0.png,tamil,manuals,1284,2196,7
+val,fm_en_000290_0.png,english,forms,612,792,23
+val,br_or_000054_0.png,odia,brochures,1278,1792,21
+val,nt_ta_000555.jpeg,tamil,notices,843,596,12
+val,tb_or_000754_1.png,odia,textbooks,567,766,13
+val,rp_te_000006_0.png,telugu,research papers,878,1437,6
+val,fm_mr_000304_0.png,marathi,forms,1700,2200,11
+val,ar_ml_000500_0.png,malayalam,acts & rules,1241,1755,9
+val,sy_ml_000380_0.png,malayalam,syllabi,1240,1755,14
+val,sy_pa_000143_0.png,punjabi,syllabi,1700,2800,19
+val,tb_bn_000204_0.png,bengali,textbooks,825,1200,7
+val,tb_or_000436_0.png,odia,textbooks,680,1034,5
+val,nv_kn_000368_0.png,kannada,novels,853,1298,11
+val,np_ml_000281_0.png,malayalam,newspapers,2008,3213,90
+val,tb_en_000866_0.png,english,textbooks,1275,1650,19
+val,mg_hi_000657_0.png,hindi,magazines,1704,2230,8
+val,br_as_000196_0.png,assamese,brochures,1653,2339,0
+val,mg_en_000987.png,english,magazines,832,1075,7
+val,rp_as_001488_0.png,assamese,research papers,1653,2339,11
+val,ar_mr_000772_1.png,marathi,acts & rules,600,822,16
+val,np_pa_000303_0.png,punjabi,newspapers,4331,3126,100
+val,nv_te_000293_0.png,telugu,novels,2355,3896,10
+val,sy_hi_000296_0.png,hindi,syllabi,1654,2339,11
+val,sy_mr_000227_0.png,marathi,syllabi,1653,2339,6
+val,mg_ta_000957.jpeg,tamil,magazines,510,751,11
+val,np_te_000180_0.png,telugu,newspapers,2565,3450,63
+val,sy_mr_000295_0.png,marathi,syllabi,1653,2339,6
+val,nv_mr_000345_0.png,marathi,novels,1050,1650,9
+val,mg_pa_000122_0.png,punjabi,magazines,1642,2337,13
+val,np_te_000398_1.png,telugu,newspapers,4211,3515,134
+val,ar_te_000304.jpeg,telugu,acts & rules,596,842,10
+val,np_bn_000079_0.png,bengali,newspapers,3825,5328,81
+val,nt_bn_000084_0.png,bengali,notices,1226,1414,13
+val,mg_bn_000908_1.png,bengali,magazines,1815,2427,14
+val,nv_pa_000839_0.png,punjabi,novels,1654,2339,7
+val,nv_ml_000811_1.png,malayalam,novels,1654,2481,22
+val,sy_bn_000430_1.png,bengali,syllabi,2970,3690,6
+val,nv_te_000146_0.png,telugu,novels,2355,3896,15
+val,br_hi_000499_0.png,hindi,brochures,1656,2339,22
+val,mg_en_001155.png,english,magazines,1697,2398,26
+val,ar_hi_000459_1.png,hindi,acts & rules,596,842,6
+val,sy_ml_000156_0.png,malayalam,syllabi,1241,1754,6
+val,rp_te_000740_0.png,telugu,research papers,909,1468,7
+val,tb_ml_000294_0.png,malayalam,textbooks,1000,1492,8
+val,mg_ml_000776_0.png,malayalam,magazines,1152,1565,11
+val,rp_mr_000532_0.png,marathi,research papers,1700,2200,7
+val,nt_mr_000173.png,marathi,notices,612,792,8
+val,ar_ml_000563_0.png,malayalam,acts & rules,1227,1754,11
+val,br_gu_000425_1.png,gujarati,brochures,479,655,8
+val,mg_gu_000171.png,gujarati,magazines,596,842,1
+val,tb_ta_000187_0.png,tamil,textbooks,1088,1425,10
+val,tb_gu_001113_1.png,gujarati,textbooks,612,792,5
+val,sy_as_000310_0.png,assamese,syllabi,1653,2339,16
+val,mn_te_000642_0.png,telugu,manuals,552,853,4
+val,rp_en_000388_0.png,english,research papers,1241,1754,18
+val,rp_as_001006_0.png,assamese,research papers,1653,2339,13
+val,nv_gu_000896_1.png,gujarati,novels,571,789,8
+val,ar_or_000382_0.png,odia,acts & rules,875,1369,12
+val,fm_en_000205_0.png,english,forms,612,792,26
+val,fm_mr_000239_0.png,marathi,forms,1700,2200,12
+val,tb_gu_000563_0.png,gujarati,textbooks,329,542,4
+val,br_kn_000218_0.png,kannada,brochures,1241,1754,15
+val,rp_mr_000420_0.png,marathi,research papers,1653,2339,5
+val,nv_as_000132_0.png,assamese,novels,1374,1818,15
+val,ar_ta_001547_1.png,tamil,acts & rules,612,843,10
+val,nv_gu_000755_1.png,gujarati,novels,571,789,6
+val,rp_en_001086_0.png,english,research papers,1241,1754,11
+val,tb_en_001129_0.png,english,textbooks,1275,1650,13
+val,nv_hi_000118_0.png,hindi,novels,1650,2334,15
+val,ar_ml_000886_1.png,malayalam,acts & rules,431,638,3
+val,mg_ta_000465.jpeg,tamil,magazines,301,417,8
+val,tb_pa_000387_0.png,punjabi,textbooks,1656,2339,15
+val,nv_gu_001225_1.png,gujarati,novels,571,789,13
+val,mg_or_000525_0.png,odia,magazines,886,1388,16
+val,sy_mr_000621_1.png,marathi,syllabi,612,792,8
+val,fm_kn_000428_1.png,kannada,forms,596,842,4
+val,rp_kn_000708_0.png,kannada,research papers,1275,1650,5
+val,nv_mr_000154_0.png,marathi,novels,900,1300,13
+val,mn_gu_000144_0.png,gujarati,manuals,1241,1755,11
+val,mn_gu_000643_0.png,gujarati,manuals,1240,1755,4
+val,nv_ta_000866_0.png,tamil,novels,1241,1755,10
+val,rp_te_000767_0.png,telugu,research papers,909,1468,16
+val,fm_bn_000051_0.png,bengali,forms,1240,1753,32
+val,sy_pa_000452_1.png,punjabi,syllabi,595,842,10
+val,rp_as_001291_0.png,assamese,research papers,1653,2339,9
+val,tb_or_000121_0.png,odia,textbooks,650,945,16
+val,mg_ml_000876_0.png,malayalam,magazines,769,1044,17
+val,fm_pa_000399_1.png,punjabi,forms,612,792,17
+val,nv_hi_000025_0.png,hindi,novels,1650,2334,6
+val,mg_as_000071_0.png,assamese,magazines,1375,1823,19
+val,tb_gu_001104_1.png,gujarati,textbooks,612,792,0
+val,mn_bn_000548_0.png,bengali,manuals,749,1162,6
+val,br_gu_000467_1.png,gujarati,brochures,667,465,19
+val,br_kn_000009_0.png,kannada,brochures,827,1241,5
+val,br_pa_000467_0.png,punjabi,brochures,1780,2280,17
+val,mg_bn_000699_0.png,bengali,magazines,1176,1320,18
+val,tb_en_001088_0.png,english,textbooks,1275,1650,28
+val,mn_or_000238_0.png,odia,manuals,409,694,7
+val,ar_or_000464_0.png,odia,acts & rules,1275,1757,14
+val,rp_as_001577_0.png,assamese,research papers,1653,2339,6
+val,ar_ta_001622_1.png,tamil,acts & rules,535,765,18
+val,nt_gu_000693_1.png,gujarati,notices,596,842,20
+val,mg_pa_001072_1.png,punjabi,magazines,565,754,18
+val,nt_gu_000311_1.png,gujarati,notices,612,792,5
+val,nv_bn_000556_0.png,bengali,novels,2482,3509,20
+val,tb_en_000136_0.png,english,textbooks,1275,1650,6
+val,mg_pa_000772_0.png,punjabi,magazines,1656,2339,5
+val,sy_en_000120_0.png,english,syllabi,1241,1754,7
+val,np_pa_000308_0.png,punjabi,newspapers,4352,3120,80
+val,nt_or_000571_0.png,odia,notices,596,842,18
+val,nt_en_000305_1.png,english,notices,612,792,7
+val,mg_pa_000214_0.png,punjabi,magazines,1750,2250,24
+val,tb_en_000916_0.png,english,textbooks,1275,1650,25
+val,rp_en_001083_0.png,english,research papers,1241,1754,9
+val,br_or_000599_1.png,odia,brochures,612,792,12
+val,nv_kn_000102_0.png,kannada,novels,849,1372,4
+val,mn_en_000627_0.png,english,manuals,821,1358,14
+val,ar_as_000298_0.png,assamese,acts & rules,1653,2339,8
+val,br_kn_000071_0.png,kannada,brochures,1241,1754,8
+val,sy_ta_000330.jpeg,tamil,syllabi,612,792,9
+val,fm_ml_000997_1.png,malayalam,forms,612,792,66
+val,tb_hi_001316_1.png,hindi,textbooks,504,720,11
+val,tb_as_000452_0.png,assamese,textbooks,1092,1723,12
+val,nv_mr_000322_0.png,marathi,novels,1050,1650,5
+val,ar_te_000544.jpeg,telugu,acts & rules,547,831,8
+val,np_as_000603_1.png,assamese,newspapers,2953,4409,175
+val,tb_as_001371_0.png,assamese,textbooks,326,554,5
+val,tb_or_000587_0.png,odia,textbooks,680,1063,5
+val,mg_bn_000846_1.png,bengali,magazines,1814,2428,15
+val,tb_as_000729_0.png,assamese,textbooks,1262,1806,8
+val,tb_en_000804_0.png,english,textbooks,1275,1650,20
+val,sy_mr_000218_0.png,marathi,syllabi,1653,2339,4
+val,fm_te_000164_0.png,telugu,forms,612,792,12
+val,tb_or_000938_1.png,odia,textbooks,567,766,16
+val,mn_bn_000886_1.png,bengali,manuals,1656,2304,10
+val,fm_gu_000586_1.png,gujarati,forms,612,792,3
+val,br_hi_001138_1.png,hindi,brochures,576,576,16
+val,fm_pa_000235_0.png,punjabi,forms,1811,2311,8
+val,np_ta_000396_1.png,tamil,newspapers,1500,2272,75
+val,tb_or_000710_0.png,odia,textbooks,680,1063,8
+val,rp_te_000237_0.png,telugu,research papers,829,1326,21
+val,ar_ta_000269_0.png,tamil,acts & rules,1275,1757,6
+val,fm_mr_000082_0.png,marathi,forms,1700,2200,14
+val,nv_pa_000040_0.png,punjabi,novels,1006,1606,14
+val,nt_mr_000512.png,marathi,notices,591,839,18
+val,nv_ml_000946_1.png,malayalam,novels,412,635,14
+val,qp_ml_000138_0.png,malayalam,question papers,1755,1240,27
+val,sy_bn_000640_1.png,bengali,syllabi,2977,4210,17
+val,qp_te_000342_1.png,telugu,question papers,595,842,7
+val,mg_hi_000941_1.png,hindi,magazines,612,792,10
+val,tb_ml_000814_0.png,malayalam,textbooks,2550,3300,4
+val,qp_bn_000673_1.png,bengali,question papers,3060,3960,6
+val,mg_pa_000072_0.png,punjabi,magazines,1654,2339,6
+val,nv_as_000097_0.png,assamese,novels,1374,1818,17
+val,qp_hi_000103_0.png,hindi,question papers,1598,2103,11
+val,tb_as_000481_0.png,assamese,textbooks,1262,1806,6
+val,tb_as_000285_0.png,assamese,textbooks,1092,1723,4
+val,nv_kn_000444_0.png,kannada,novels,853,1298,7
+val,nt_mr_000340.png,marathi,notices,596,842,5
+val,np_as_000281_1.png,assamese,newspapers,2953,4409,68
+val,mg_en_001295.png,english,magazines,595,842,11
+val,br_en_000484_1.png,english,brochures,284,601,9
+val,rp_te_000068_0.png,telugu,research papers,878,1437,11
+val,ar_mr_000073_0.png,marathi,acts & rules,1398,2231,13
+val,np_as_000349_1.png,assamese,newspapers,2953,4409,79
+val,np_pa_000545_1.png,punjabi,newspapers,612,792,100
+val,mg_en_000497.png,english,magazines,594,773,6
+val,rp_kn_000671_0.png,kannada,research papers,1275,1650,5
+val,mn_or_000517_0.png,odia,manuals,400,688,7
+val,nv_mr_000760_0.png,marathi,novels,1214,1948,11
+val,mg_pa_000339_0.png,punjabi,magazines,1656,2339,15
+val,mn_bn_000283_0.png,bengali,manuals,753,1267,5
+val,nv_gu_000648_0.png,gujarati,novels,798,1241,9
+val,np_or_000132_0.png,odia,newspapers,973,1565,26
+val,nv_bn_000842_1.png,bengali,novels,1329,2150,9
+val,nt_kn_000429_1.png,kannada,notices,612,1008,9
+val,np_ta_000341_0.png,tamil,newspapers,1438,1924,25
+val,tb_ml_000306_0.png,malayalam,textbooks,1000,1492,5
+val,ar_en_000990.png,english,acts & rules,596,842,8
+val,nv_mr_000921_0.png,marathi,novels,1214,1948,15
+val,mn_as_000278_0.png,assamese,manuals,1653,2339,3
+val,fm_hi_000211_0.png,hindi,forms,1653,2339,7
+val,br_bn_000253_0.png,bengali,brochures,1158,1601,18
+val,fm_hi_000081_0.png,hindi,forms,1700,2200,9
+val,nv_or_000159_0.png,odia,novels,532,827,13
+val,mn_or_001033_1.png,odia,manuals,596,842,7
+val,tb_pa_000015_0.png,punjabi,textbooks,1700,2200,6
+val,mg_as_000631_0.png,assamese,magazines,1056,1606,16
+val,ar_ta_000439_0.png,tamil,acts & rules,1240,1755,11
+val,fm_or_000164_0.png,odia,forms,596,842,42
+val,sy_te_000241_1.png,telugu,syllabi,516,792,16
+val,ar_en_001352.png,english,acts & rules,596,842,10
+val,nt_or_000419_0.png,odia,notices,1275,1650,9
+val,fm_pa_000178_0.png,punjabi,forms,1811,2311,6
+val,nv_or_000387_0.png,odia,novels,650,1004,14
+val,tb_mr_000863_0.png,marathi,textbooks,1700,2200,5
+val,nt_en_000459_1.png,english,notices,596,842,8
+val,tb_mr_000106_0.png,marathi,textbooks,900,1300,14
+val,mn_or_000900_0.png,odia,manuals,419,671,9
+val,nt_mr_000151.png,marathi,notices,612,792,28
+val,mg_as_000968_1.png,assamese,magazines,2806,3968,11
+val,mg_ml_000346_0.png,malayalam,magazines,1075,1518,14
+val,fm_mr_000562_1.png,marathi,forms,612,1008,18
+val,ar_as_000164_0.png,assamese,acts & rules,1603,2342,12
+val,nv_kn_000112_0.png,kannada,novels,849,1372,4
+val,rp_en_000241_0.png,english,research papers,1275,1650,5
+val,mg_ta_000777.jpeg,tamil,magazines,304,430,7
+val,mg_ta_000982.jpeg,tamil,magazines,510,751,11
+val,sy_ta_000450.jpeg,tamil,syllabi,612,792,12
+val,qp_gu_000296_0.png,gujarati,question papers,1241,1754,34
+val,sy_ta_000374.jpeg,tamil,syllabi,612,792,6
+val,tb_pa_000863_0.png,punjabi,textbooks,1184,1795,5
+val,np_kn_000529_1.png,kannada,newspapers,595,842,52
+val,br_pa_000714_0.png,punjabi,brochures,1778,2278,15
+val,mn_ta_000415_0.png,tamil,manuals,1284,2196,7
+val,np_mr_000306_1.png,marathi,newspapers,943,1500,101
+val,tb_ta_000322_0.png,tamil,textbooks,1106,1461,11
+val,ar_kn_000631_0.png,kannada,acts & rules,1240,1755,3
+val,mg_bn_000667_0.png,bengali,magazines,1176,1320,14
+val,ar_pa_000069_0.png,punjabi,acts & rules,1648,2342,13
+val,mn_mr_000474_0.png,marathi,manuals,1214,1750,7
+val,tb_te_000305_0.png,telugu,textbooks,750,1275,7
+val,np_ta_000322_0.png,tamil,newspapers,1442,1941,28
+val,rp_te_000232_0.png,telugu,research papers,829,1326,38
+val,tb_hi_001248_1.png,hindi,textbooks,504,720,9
+val,tb_hi_000781_0.png,hindi,textbooks,1484,2058,6
+val,rp_or_000176_0.png,odia,research papers,1268,1839,4
+val,mg_bn_000632_0.png,bengali,magazines,1176,1320,23
+val,nv_gu_000276_0.png,gujarati,novels,693,1050,6
+val,qp_gu_000529_0.png,gujarati,question papers,1240,1752,26
+val,rp_or_000683_0.png,odia,research papers,1268,1839,6
+val,ar_te_000399.jpeg,telugu,acts & rules,596,842,6
+val,np_gu_000381_1.png,gujarati,newspapers,2800,3974,115
+val,fm_kn_000063_1.png,kannada,forms,596,842,14
+val,np_ml_000458_0.png,malayalam,newspapers,2008,3213,94
+val,rp_or_000105_0.png,odia,research papers,1240,1755,4
+val,mn_te_000859_1.png,telugu,manuals,596,842,11
+val,ar_kn_000960_0.png,kannada,acts & rules,1275,1680,11
+val,nv_ml_000727_0.png,malayalam,novels,745,1080,0
+val,fm_ta_000135_0.png,tamil,forms,596,842,21
+val,sy_ta_000659.jpeg,tamil,syllabi,612,792,16
+val,mn_en_000684_0.png,english,manuals,827,1361,10
+val,mn_pa_000288_0.png,punjabi,manuals,1700,2200,31
+val,mn_pa_000081_0.png,punjabi,manuals,1400,2000,21
+val,mg_ml_000553_0.png,malayalam,magazines,1275,1650,14
+val,br_or_000664_1.png,odia,brochures,595,842,7
+val,nv_or_000723_0.png,odia,novels,739,1152,9
+val,rp_te_000592_0.png,telugu,research papers,909,1468,41
+val,br_hi_000114_0.png,hindi,brochures,1656,2339,3
+val,tb_ml_000521_0.png,malayalam,textbooks,2550,3300,5
+val,np_bn_000390_1.png,bengali,newspapers,954,1503,30
+val,sy_pa_000126_0.png,punjabi,syllabi,1659,2353,21
+val,rp_gu_000939_0.png,gujarati,research papers,1275,1650,3
+val,mg_bn_000258_0.png,bengali,magazines,1176,1320,21
+val,br_hi_000879_1.png,hindi,brochures,612,792,28
+val,ar_mr_000020_0.png,marathi,acts & rules,1542,2145,11
+val,ar_kn_000835_0.png,kannada,acts & rules,1240,1755,6
+val,fm_te_000153_0.png,telugu,forms,596,842,67
+val,nv_gu_001162_1.png,gujarati,novels,571,789,16
+val,qp_as_000430_1.png,assamese,question papers,560,727,21
+val,mn_ml_000144_0.png,malayalam,manuals,1241,1654,8
+val,qp_te_000382_1.png,telugu,question papers,792,612,3
+val,np_hi_000262_1.png,hindi,newspapers,1500,2384,85
+val,mg_pa_000106_0.png,punjabi,magazines,1642,2337,6
+val,tb_or_000117_0.png,odia,textbooks,650,945,16
+val,sy_pa_000262_0.png,punjabi,syllabi,439,792,3
+val,fm_te_000019_0.png,telugu,forms,596,842,26
+val,nt_en_000042_1.png,english,notices,596,842,17
+val,np_bn_000231_0.png,bengali,newspapers,3344,5328,72
+val,nv_hi_001080_1.png,hindi,novels,319,508,8
+val,mg_gu_000464.png,gujarati,magazines,420,624,11
+val,tb_ml_000011_0.png,malayalam,textbooks,2310,3778,7
+val,br_ml_000484_1.png,malayalam,brochures,504,612,13
+val,tb_en_000470_0.png,english,textbooks,1275,1650,15
+val,nv_ml_000723_0.png,malayalam,novels,745,1080,0
+val,tb_or_000675_0.png,odia,textbooks,680,1063,5
+val,ar_ta_001310_0.png,tamil,acts & rules,1275,1757,7
+val,np_ta_000244_0.png,tamil,newspapers,1392,1913,13
+val,rp_bn_000055_0.png,bengali,research papers,1241,1754,13
+val,qp_te_000371_1.png,telugu,question papers,612,792,0
+val,ar_ta_001117_0.png,tamil,acts & rules,1275,1757,9
+val,ar_kn_000894_0.png,kannada,acts & rules,1275,1800,6
+val,mn_gu_000857_0.png,gujarati,manuals,1241,1754,4
+val,rp_as_001563_0.png,assamese,research papers,1653,2339,11
+val,nt_bn_000255_0.png,bengali,notices,1993,2833,5
+val,mg_gu_000682.png,gujarati,magazines,420,624,11
+val,fm_ml_000311_0.png,malayalam,forms,1275,1650,14
+val,sy_kn_000085_0.png,kannada,syllabi,1241,1754,4
+val,tb_ta_000807_1.png,tamil,textbooks,655,882,17
+val,nt_bn_000169_0.png,bengali,notices,1976,2844,14
+val,mn_mr_000342_0.png,marathi,manuals,1700,2200,18
+val,tb_en_000738_0.png,english,textbooks,1275,1650,14
+val,nv_pa_000074_0.png,punjabi,novels,1006,1606,10
+val,qp_or_000200_0.png,odia,question papers,1241,1754,14
+val,mg_as_000769_0.png,assamese,magazines,1056,1606,8
+val,qp_hi_000094_0.png,hindi,question papers,1598,2103,11
+val,np_ml_000098_0.png,malayalam,newspapers,2008,3213,74
+val,ar_ml_000205_0.png,malayalam,acts & rules,1241,1755,12
+val,mg_bn_000907_1.png,bengali,magazines,2040,2640,10
+val,rp_mr_000862_0.png,marathi,research papers,1653,2339,6
+val,br_te_000681_0.png,telugu,brochures,2513,1725,13
+val,mn_te_000979_1.png,telugu,manuals,596,842,21
+val,fm_ml_000349_0.png,malayalam,forms,1275,1650,36
+val,fm_gu_000308_1.png,gujarati,forms,596,842,21
+val,fm_en_000168_0.png,english,forms,612,792,15
+val,rp_te_000344_0.png,telugu,research papers,765,1238,12
+val,mg_ml_000193_0.png,malayalam,magazines,1075,1518,15
+val,rp_te_000939_1.png,telugu,research papers,612,792,7
+val,sy_en_000255_0.png,english,syllabi,1240,1755,1
+val,tb_as_001137_0.png,assamese,textbooks,326,554,5
+val,tb_kn_000594_0.png,kannada,textbooks,1241,1755,22
+val,np_ta_000420_1.png,tamil,newspapers,1500,2272,52
+val,mn_or_000435_0.png,odia,manuals,400,688,11
+val,mn_gu_000813_0.png,gujarati,manuals,1241,1754,4
+val,br_mr_000137_0.png,marathi,brochures,2200,1700,14
+val,fm_te_000542_0.png,telugu,forms,596,842,33
+val,rp_gu_000397_0.png,gujarati,research papers,1275,1650,5
+val,nt_ta_000045.jpeg,tamil,notices,421,596,5
+val,nv_as_001090_1.png,assamese,novels,1219,1951,7
+val,ar_ta_000607_0.png,tamil,acts & rules,1240,1755,9
+val,mg_pa_000673_0.png,punjabi,magazines,1656,2339,10
+val,np_gu_000278_1.png,gujarati,newspapers,2800,3824,79
+val,ar_gu_000669_1.png,gujarati,acts & rules,612,843,7
+val,nv_bn_000007_0.png,bengali,novels,755,1164,7
+val,nv_as_001095_1.png,assamese,novels,1219,1951,12
+val,qp_as_000085_0.png,assamese,question papers,1653,2339,12
+val,rp_mr_000900_0.png,marathi,research papers,1653,2339,7
+val,fm_ta_000217_0.png,tamil,forms,596,842,47
+val,mg_bn_000522_0.png,bengali,magazines,1176,1320,12
+val,tb_pa_000470_0.png,punjabi,textbooks,1656,2339,21
+val,qp_bn_000586_1.png,bengali,question papers,2440,3481,20
+val,sy_en_000537_0.png,english,syllabi,1275,1650,19
+val,rp_gu_000663_0.png,gujarati,research papers,1240,1755,11
+val,br_hi_000934_1.png,hindi,brochures,612,792,18
+val,br_hi_000291_0.png,hindi,brochures,1656,2339,12
+val,np_as_000370_1.png,assamese,newspapers,2953,4409,92
+val,fm_bn_000204_0.png,bengali,forms,1984,2806,33
+val,br_te_000924_1.png,telugu,brochures,567,766,16
+test,np_kn_000364_1.png,kannada,newspapers,595,842,95
+test,ar_kn_000954_0.png,kannada,acts & rules,1121,1700,8
+test,qp_bn_000319_0.png,bengali,question papers,1241,1755,17
+test,tb_or_000624_0.png,odia,textbooks,680,1063,4
+test,ar_mr_000485_0.png,marathi,acts & rules,1653,2339,21
+test,br_te_000800_1.png,telugu,brochures,842,596,9
+test,ar_kn_000330_0.png,kannada,acts & rules,1240,1755,6
+test,br_pa_000181_0.png,punjabi,brochures,1700,2200,16
+test,np_ml_000437_0.png,malayalam,newspapers,2008,3213,114
+test,mg_en_000510.png,english,magazines,594,773,22
+test,fm_hi_000249_0.png,hindi,forms,1653,2339,4
+test,rp_as_000718_0.png,assamese,research papers,1700,2200,11
+test,mg_bn_000914_1.png,bengali,magazines,1814,2428,8
+test,mg_mr_000567.png,marathi,magazines,612,720,11
+test,mg_kn_000182_0.png,kannada,magazines,1152,1566,4
+test,np_kn_000472_1.png,kannada,newspapers,993,1633,74
+test,sy_kn_000709_1.png,kannada,syllabi,596,842,9
+test,nv_gu_000654_0.png,gujarati,novels,798,1241,9
+test,br_bn_000251_0.png,bengali,brochures,1158,1601,16
+test,br_mr_000374_0.png,marathi,brochures,1653,2339,19
+test,mn_ta_001086_0.png,tamil,manuals,1284,2196,4
+test,nv_as_000398_0.png,assamese,novels,1374,1818,11
+test,sy_ta_000496.jpeg,tamil,syllabi,612,792,9
+test,qp_bn_000768_1.png,bengali,question papers,1984,2806,13
+test,mg_or_000198_0.png,odia,magazines,1211,1625,24
+test,fm_gu_000494_1.png,gujarati,forms,612,792,31
+test,mn_kn_000061_0.png,kannada,manuals,1240,1653,7
+test,br_as_000166_0.png,assamese,brochures,1653,2339,9
+test,fm_ml_000873_1.png,malayalam,forms,596,842,63
+test,rp_mr_000676_0.png,marathi,research papers,1700,2200,4
+test,qp_as_000330_1.png,assamese,question papers,556,724,16
+test,qp_gu_000317_0.png,gujarati,question papers,1241,1754,44
+test,mg_pa_000497_0.png,punjabi,magazines,1123,1728,7
+test,br_pa_000366_0.png,punjabi,brochures,1830,2330,25
+test,ar_kn_000136_0.png,kannada,acts & rules,1240,1755,8
+test,mg_pa_001057_0.png,punjabi,magazines,1656,2339,11
+test,ar_ta_001210_0.png,tamil,acts & rules,1275,1757,11
+test,br_en_000194_0.png,english,brochures,1306,1733,1
+test,qp_bn_000215_0.png,bengali,question papers,1005,1419,15
+test,nv_ml_000804_1.png,malayalam,novels,1654,2481,18
+test,mn_bn_000773_0.png,bengali,manuals,749,1162,6
+test,rp_te_000572_0.png,telugu,research papers,909,1468,12
+test,mn_te_000740_0.png,telugu,manuals,875,1240,1
+test,nv_mr_000875_0.png,marathi,novels,1214,1948,12
+test,qp_hi_000813_0.png,hindi,question papers,596,842,18
+test,tb_kn_000037_0.png,kannada,textbooks,1200,1875,8
+test,tb_ta_000131_0.png,tamil,textbooks,1088,1425,7
+test,mn_pa_000243_0.png,punjabi,manuals,1675,2175,18
+test,nv_ml_000484_0.png,malayalam,novels,2480,3509,8
+test,nv_or_000485_0.png,odia,novels,798,1211,10
+test,nt_gu_000499_1.png,gujarati,notices,595,842,8
+test,nv_ml_000483_0.png,malayalam,novels,2480,3509,12
+test,ar_kn_000630_0.png,kannada,acts & rules,1240,1755,3
+test,ar_en_001344.png,english,acts & rules,596,842,4
+test,qp_hi_000304_0.png,hindi,question papers,1620,2159,9
+test,mg_or_000769_0.png,odia,magazines,886,1388,8
+test,nv_ml_000822_1.png,malayalam,novels,1654,2481,24
+test,sy_ml_000626_0.png,malayalam,syllabi,1241,1754,12
+test,nv_mr_000083_0.png,marathi,novels,900,1300,11
+test,mn_te_000636_0.png,telugu,manuals,552,853,6
+test,mn_ta_000848_0.png,tamil,manuals,1284,2196,7
+test,mg_en_000520.png,english,magazines,594,773,5
+test,tb_as_000157_0.png,assamese,textbooks,1048,1638,12
+test,np_pa_000460_0.png,punjabi,newspapers,4331,3110,86
+test,sy_ml_000056_0.png,malayalam,syllabi,1275,1650,9
+test,mg_ta_000764.jpeg,tamil,magazines,304,430,5
+test,nv_gu_000059_0.png,gujarati,novels,693,1050,9
+test,rp_as_001276_0.png,assamese,research papers,1653,2339,10
+test,np_mr_000174_1.png,marathi,newspapers,943,1500,63
+test,ar_bn_000532_0.png,bengali,acts & rules,728,1588,8
+test,nt_or_000431_0.png,odia,notices,596,842,5
+test,nt_gu_000281_1.png,gujarati,notices,792,612,1
+test,np_pa_000379_0.png,punjabi,newspapers,4331,3104,64
+test,nt_pa_000317_1.png,punjabi,notices,612,385,7
+test,tb_mr_000181_0.png,marathi,textbooks,900,1300,9
+test,ar_mr_000208_0.png,marathi,acts & rules,1350,2248,8
+test,mg_en_000386.png,english,magazines,2400,3200,7
+test,sy_ml_000261_0.png,malayalam,syllabi,1240,1755,12
+test,mg_gu_000179.png,gujarati,magazines,596,842,14
+test,rp_as_000903_0.png,assamese,research papers,1653,2339,9
+test,br_pa_000247_0.png,punjabi,brochures,1780,2280,19
+test,ar_en_000515.png,english,acts & rules,596,842,7
+test,ar_te_000363.jpeg,telugu,acts & rules,596,842,4
+test,sy_mr_000424_0.png,marathi,syllabi,1655,2339,10
+test,mg_pa_000397_0.png,punjabi,magazines,1656,2339,12
+test,tb_pa_000439_0.png,punjabi,textbooks,1656,2339,24
+test,nt_bn_000170_0.png,bengali,notices,1984,2806,5
+test,mn_hi_000511_0.png,hindi,manuals,1289,2084,11
+test,nv_mr_000656_0.png,marathi,novels,1700,2200,8
+test,rp_as_000957_0.png,assamese,research papers,1653,2339,6
+test,mg_en_000201.png,english,magazines,1800,2366,5
+test,nv_pa_000750_0.png,punjabi,novels,1654,2339,7
+test,np_pa_000122_0.png,punjabi,newspapers,4331,3126,60
+test,mn_en_000820_0.png,english,manuals,793,1260,7
+test,nt_bn_000312_0.png,bengali,notices,1240,1753,9
+test,nt_pa_000101_1.png,punjabi,notices,467,792,2
+test,np_or_000579_1.png,odia,newspapers,921,1466,59
+test,sy_as_000114_0.png,assamese,syllabi,2339,3309,4
+test,br_pa_000703_0.png,punjabi,brochures,1778,2278,22
+test,sy_te_000121_0.png,telugu,syllabi,698,1037,14
+test,sy_gu_000284_0.png,gujarati,syllabi,1275,1650,9
+test,nv_pa_000186_0.png,punjabi,novels,1178,1806,9
+test,nv_ta_000584_0.png,tamil,novels,1241,1755,10
+test,rp_mr_001053_0.png,marathi,research papers,1653,2339,6
+test,qp_ml_000717_0.png,malayalam,question papers,875,1241,12
+test,rp_kn_001059_0.png,kannada,research papers,1275,1650,8
+test,ar_as_000775_0.png,assamese,acts & rules,1414,2048,14
+test,nt_gu_000161_1.png,gujarati,notices,596,842,20
+test,mn_te_000202_0.png,telugu,manuals,828,1293,10
+test,sy_as_000027_0.png,assamese,syllabi,1653,2339,10
+test,mg_gu_000176.png,gujarati,magazines,596,842,19
+test,mn_ml_000748_0.png,malayalam,manuals,1275,1650,14
+test,ar_bn_000085_0.png,bengali,acts & rules,937,1334,13
+test,np_en_000505_1.png,english,newspapers,1786,2781,98
+test,br_hi_000083_0.png,hindi,brochures,1678,2342,0
+test,sy_gu_000405_0.png,gujarati,syllabi,1275,1650,7
+test,nt_gu_000138_1.png,gujarati,notices,596,842,9
+test,mg_en_000942.png,english,magazines,2263,3200,18
+test,ar_mr_000677_1.png,marathi,acts & rules,600,822,3
+test,nv_bn_000125_0.png,bengali,novels,755,1164,8
+test,nt_ta_000510.jpeg,tamil,notices,421,596,6
+test,nv_gu_000897_1.png,gujarati,novels,571,789,17
+test,qp_hi_000630_0.png,hindi,question papers,573,792,20
+test,tb_as_000409_0.png,assamese,textbooks,1092,1723,6
+test,fm_gu_000640_1.png,gujarati,forms,612,792,5
+test,rp_en_001203_0.png,english,research papers,1275,1650,58
+test,br_or_000644_1.png,odia,brochures,504,684,2
+test,sy_bn_000433_1.png,bengali,syllabi,2970,3690,12
+test,mg_bn_000821_0.png,bengali,magazines,1176,1320,17
+test,ar_kn_000384_0.png,kannada,acts & rules,1240,1755,5
+test,nt_or_000466_0.png,odia,notices,420,596,13
+test,br_bn_000119_0.png,bengali,brochures,1158,1601,12
+test,br_or_000074_0.png,odia,brochures,1276,1790,7
+test,fm_gu_000183_1.png,gujarati,forms,612,792,30
+test,fm_or_000027_0.png,odia,forms,596,842,17
+test,sy_kn_000353_0.png,kannada,syllabi,1241,1754,3
+test,br_ta_000191_0.png,tamil,brochures,1063,1447,21
+test,ar_en_001016.png,english,acts & rules,596,842,6
+test,tb_bn_000593_0.png,bengali,textbooks,825,1200,5
+test,ar_as_001032_0.png,assamese,acts & rules,1700,2342,14
+test,br_mr_000386_0.png,marathi,brochures,1653,2339,21
+test,sy_pa_000031_0.png,punjabi,syllabi,1653,2337,19
+test,ar_bn_000775_0.png,bengali,acts & rules,807,1623,13
+test,qp_mr_000136_0.png,marathi,question papers,1653,2339,16
+test,tb_as_000436_0.png,assamese,textbooks,1092,1723,11
+test,sy_kn_000416_0.png,kannada,syllabi,1241,1754,11
+test,nv_hi_000315_0.png,hindi,novels,987,1387,2
+test,ar_ta_000404_0.png,tamil,acts & rules,1240,1755,8
+test,fm_en_000128_0.png,english,forms,612,792,6
+test,mn_bn_000462_0.png,bengali,manuals,749,1162,6
+test,sy_bn_000521_1.png,bengali,syllabi,2970,3690,13
+test,mn_or_000515_0.png,odia,manuals,400,688,8
+test,mg_gu_000137.png,gujarati,magazines,596,842,5
+test,qp_gu_000582_0.png,gujarati,question papers,1240,1752,37
+test,ar_ml_000404_0.png,malayalam,acts & rules,1223,1715,10
+test,mn_ta_000183_0.png,tamil,manuals,934,1650,4
+test,fm_ml_000367_0.png,malayalam,forms,1241,1754,27
+test,rp_mr_000933_0.png,marathi,research papers,1653,2339,6
+test,mn_en_000887_1.png,english,manuals,842,596,14
+test,mn_hi_001074_1.png,hindi,manuals,595,842,12
+test,mn_bn_000785_0.png,bengali,manuals,749,1162,8
+test,nv_ml_000371_0.png,malayalam,novels,1772,2717,5
+test,qp_mr_000673_1.png,marathi,question papers,597,843,16
+test,mn_te_000119_0.png,telugu,manuals,1368,2082,10
+test,ar_hi_000532_1.png,hindi,acts & rules,596,842,9
+test,mg_kn_000185_0.png,kannada,magazines,1152,1566,13
+test,nv_mr_000927_0.png,marathi,novels,1214,1948,16
+test,ar_pa_000325_0.png,punjabi,acts & rules,1456,1945,8
+test,qp_ml_000549_0.png,malayalam,question papers,1240,1755,12
+test,rp_kn_000832_0.png,kannada,research papers,1275,1650,5
+test,sy_ta_000402.jpeg,tamil,syllabi,596,842,2
+test,mn_kn_000513_0.png,kannada,manuals,853,1259,16
+test,tb_kn_000860_1.png,kannada,textbooks,404,595,5
+test,nt_ta_000580.jpeg,tamil,notices,843,596,10
+test,qp_ml_000607_0.png,malayalam,question papers,1240,1755,12
+test,br_en_000553_1.png,english,brochures,596,842,12
+test,tb_mr_000538_0.png,marathi,textbooks,1700,2200,5
+test,nv_ta_000716_0.png,tamil,novels,1241,1755,7
+test,qp_or_000528_1.png,odia,question papers,595,842,18
+test,mg_pa_000171_0.png,punjabi,magazines,1642,2337,9
+test,qp_te_000063_0.png,telugu,question papers,1275,1650,9
+test,mn_kn_000368_0.png,kannada,manuals,2134,1600,5
+test,fm_ta_000360_0.png,tamil,forms,596,842,8
+test,qp_gu_000103_0.png,gujarati,question papers,1241,1754,26
+test,mg_bn_000381_0.png,bengali,magazines,1176,1320,18
+test,ar_ta_001582_1.png,tamil,acts & rules,510,768,10
+test,tb_mr_000357_0.png,marathi,textbooks,1700,2200,9
+test,sy_en_000601_0.png,english,syllabi,1241,1755,16
+test,tb_gu_000142_0.png,gujarati,textbooks,353,594,8
+test,fm_mr_000419_0.png,marathi,forms,1656,2339,19
+test,np_gu_000337_1.png,gujarati,newspapers,2800,3974,96
+test,ar_kn_000675_0.png,kannada,acts & rules,1240,1755,6
+test,sy_gu_000186_0.png,gujarati,syllabi,1241,1754,17
+test,mg_ta_000920.jpeg,tamil,magazines,307,433,5
+test,qp_pa_000381_1.png,punjabi,question papers,595,842,30
+test,fm_mr_000361_0.png,marathi,forms,1653,2339,6
+test,nv_pa_000535_0.png,punjabi,novels,1654,2339,10
+test,mn_pa_000332_0.png,punjabi,manuals,1700,2200,24
+test,mg_ml_000628_0.png,malayalam,magazines,1240,1754,15
+test,qp_or_000307_0.png,odia,question papers,1275,1650,4
+test,rp_en_000076_0.png,english,research papers,1275,1650,7
+test,nt_or_000050_0.png,odia,notices,1275,1650,3
+test,fm_ml_000680_1.png,malayalam,forms,596,842,63
+test,rp_te_000276_0.png,telugu,research papers,829,1326,11
+test,br_en_000813_1.png,english,brochures,596,842,9
+test,br_or_000528_1.png,odia,brochures,1078,553,22
+test,fm_ml_000535_0.png,malayalam,forms,1237,1742,23
+test,br_gu_000248_0.png,gujarati,brochures,1241,1755,17
+test,mn_ml_000047_0.png,malayalam,manuals,1275,1650,7
+test,mg_bn_000497_0.png,bengali,magazines,1176,1320,17
+test,sy_mr_000075_0.png,marathi,syllabi,1700,2200,8
+test,nv_en_000026_0.png,english,novels,573,975,11
+test,br_or_000549_1.png,odia,brochures,842,596,49
+test,nv_ta_000441_0.png,tamil,novels,1050,1500,0
+test,mn_ta_000102_0.png,tamil,manuals,934,1650,5
+test,ar_en_000665.png,english,acts & rules,596,842,8
+test,rp_as_000207_0.png,assamese,research papers,1654,2339,5
+test,br_kn_000461_1.png,kannada,brochures,420,596,4
+test,br_ml_000352_0.png,malayalam,brochures,3366,1299,12
+test,br_mr_000458_0.png,marathi,brochures,1653,2339,20
+test,mn_te_000490_0.png,telugu,manuals,634,942,7
+test,nv_en_001062_0.png,english,novels,675,1030,7
+test,br_gu_000048_0.png,gujarati,brochures,615,889,5
+test,nv_or_000506_0.png,odia,novels,798,1211,8
+test,mn_ml_000332_0.png,malayalam,manuals,1275,1650,2
+test,sy_en_000902_0.png,english,syllabi,748,1103,11
+test,nt_en_000272_1.png,english,notices,612,792,8
+test,fm_mr_000053_0.png,marathi,forms,1700,2200,5
+test,sy_pa_000531_1.png,punjabi,syllabi,612,792,1
+test,sy_gu_000047_0.png,gujarati,syllabi,1241,1754,11
+test,rp_as_001746_0.png,assamese,research papers,1653,2339,12
+test,mn_gu_000208_0.png,gujarati,manuals,1241,1755,12
+test,tb_or_000823_1.png,odia,textbooks,595,842,22
+test,qp_mr_000233_1.png,marathi,question papers,612,792,15
+test,nv_bn_000560_0.png,bengali,novels,2482,3509,22
+test,sy_or_000379_0.png,odia,syllabi,1241,1754,11
+test,tb_en_000031_0.png,english,textbooks,1275,1650,11
+test,br_te_000161_0.png,telugu,brochures,1323,1736,25
+test,nt_kn_000250_1.png,kannada,notices,612,864,5
+test,np_as_000613_1.png,assamese,newspapers,2953,4409,71
+test,fm_hi_000376_1.png,hindi,forms,596,842,39
+test,tb_pa_000348_0.png,punjabi,textbooks,1028,1578,10
+test,mg_or_000193_0.png,odia,magazines,1211,1625,30
+test,qp_bn_000662_1.png,bengali,question papers,1400,1983,23
+test,mg_te_000368.jpeg,telugu,magazines,595,843,10
+test,nv_or_000176_0.png,odia,novels,621,1004,4
+test,nv_gu_000852_1.png,gujarati,novels,571,789,12
+test,br_gu_000214_0.png,gujarati,brochures,1241,1755,9
+test,sy_mr_000439_0.png,marathi,syllabi,1655,2339,13
+test,br_as_000046_0.png,assamese,brochures,1656,2339,23
+test,sy_or_000357_0.png,odia,syllabi,1241,1754,10
+test,mg_gu_000974.png,gujarati,magazines,420,624,6
+test,tb_as_000961_0.png,assamese,textbooks,1262,1806,12
+test,br_te_000175_0.png,telugu,brochures,1313,1725,31
+test,br_mr_000595_0.png,marathi,brochures,1567,2067,20
+test,rp_or_000264_0.png,odia,research papers,1240,1755,7
+test,rp_te_000664_0.png,telugu,research papers,909,1468,26
+test,mn_en_000153_0.png,english,manuals,719,1286,20
+test,mn_ta_001123_0.png,tamil,manuals,1284,2196,7
+test,rp_or_000648_0.png,odia,research papers,1240,1755,8
+test,tb_or_000215_0.png,odia,textbooks,650,945,16
+test,nv_bn_000411_0.png,bengali,novels,2482,3509,16
+test,sy_as_000311_0.png,assamese,syllabi,1653,2339,14
+test,qp_gu_000684_0.png,gujarati,question papers,1240,1752,28
+test,ar_bn_000940_1.png,bengali,acts & rules,2640,3475,7
+test,mg_bn_000234_0.png,bengali,magazines,1176,1320,25
+test,nv_mr_000546_0.png,marathi,novels,1700,2200,8
+test,nt_kn_000140_1.png,kannada,notices,612,1008,9
+test,tb_mr_000237_0.png,marathi,textbooks,900,1300,11
+test,qp_or_000050_0.png,odia,question papers,1240,1755,6
+test,rp_as_000780_0.png,assamese,research papers,1653,2339,7
+test,mg_mr_000125.png,marathi,magazines,600,770,10
+test,tb_kn_000670_0.png,kannada,textbooks,1241,1755,29
+test,mg_gu_000638.png,gujarati,magazines,420,624,11
+test,ar_ml_000858_1.png,malayalam,acts & rules,595,842,12
+test,mg_gu_000295.png,gujarati,magazines,596,842,1
+test,mg_en_001456.png,english,magazines,2400,3103,6
+test,tb_as_000936_0.png,assamese,textbooks,1262,1806,11
+test,qp_te_000419_1.png,telugu,question papers,595,842,4
+test,mn_pa_000608_0.png,punjabi,manuals,1778,2278,19
+test,ar_bn_000841_0.png,bengali,acts & rules,1242,1755,10
+test,mn_ml_000341_0.png,malayalam,manuals,1275,1650,6
+test,tb_as_000733_0.png,assamese,textbooks,1262,1806,11
+test,rp_kn_000853_0.png,kannada,research papers,1275,1650,7
+test,fm_bn_000041_0.png,bengali,forms,1984,2806,105
+test,np_mr_000290_1.png,marathi,newspapers,943,1500,127
+test,qp_ta_000308_0.png,tamil,question papers,1755,1240,22
+test,ar_kn_000963_0.png,kannada,acts & rules,1225,1690,10
+test,rp_kn_000722_0.png,kannada,research papers,1275,1650,6
+test,mn_gu_001174_0.png,gujarati,manuals,1241,1754,4
+test,nv_kn_000061_0.png,kannada,novels,622,1031,7
+test,mg_pa_000973_0.png,punjabi,magazines,1656,2339,8
+test,sy_bn_000209_1.png,bengali,syllabi,2970,3690,7
+test,fm_en_000238_0.png,english,forms,574,792,12
+test,nv_bn_000463_0.png,bengali,novels,2482,3509,14
+test,mg_en_000876.png,english,magazines,2263,3200,23
+test,mg_ta_000802.jpeg,tamil,magazines,304,430,7
+test,mn_as_000132_0.png,assamese,manuals,1654,2339,7
+test,br_ta_000391_0.png,tamil,brochures,1063,1447,17
+test,br_mr_000653_0.png,marathi,brochures,1567,2067,16
+test,mg_mr_000456.png,marathi,magazines,497,672,6
+test,rp_as_001527_0.png,assamese,research papers,1653,2339,11
+test,ar_pa_000220_0.png,punjabi,acts & rules,1653,2339,11
+test,br_ta_000044_0.png,tamil,brochures,1063,1447,13
+test,tb_hi_000560_0.png,hindi,textbooks,1218,1787,19
+test,nv_kn_000060_0.png,kannada,novels,622,1031,6
+test,fm_ml_000084_0.png,malayalam,forms,1240,1754,35
+test,np_ta_000111_0.png,tamil,newspapers,1821,2654,20
+test,nt_bn_000404_0.png,bengali,notices,1984,2806,5
+test,nt_en_000145_1.png,english,notices,596,842,9
+test,tb_en_000854_0.png,english,textbooks,1275,1650,12
+test,br_mr_000921_0.png,marathi,brochures,2338,1654,6
+test,fm_pa_000373_1.png,punjabi,forms,612,1008,13
+test,np_as_000201_1.png,assamese,newspapers,2953,4409,92
+test,mn_pa_000269_0.png,punjabi,manuals,1675,2175,9
+test,rp_mr_001155_0.png,marathi,research papers,1653,2339,8
+test,mg_bn_000397_0.png,bengali,magazines,1176,1320,15
+test,sy_as_000143_0.png,assamese,syllabi,1656,2339,17
+test,sy_ml_000627_0.png,malayalam,syllabi,1241,1754,11
+test,br_pa_000131_0.png,punjabi,brochures,1700,2200,19
+test,sy_ml_000588_0.png,malayalam,syllabi,1241,1754,6
+test,np_te_000263_0.png,telugu,newspapers,2565,3450,107
+test,sy_kn_000364_0.png,kannada,syllabi,1241,1754,4
+test,mn_en_000220_0.png,english,manuals,852,1363,9
+test,nv_kn_000873_0.png,kannada,novels,3644,5478,18
+test,mg_ta_000866.jpeg,tamil,magazines,511,752,16
+test,br_ml_000049_0.png,malayalam,brochures,1418,1063,5
+test,nv_en_000736_0.png,english,novels,936,1271,7
+test,br_gu_000029_0.png,gujarati,brochures,1240,1755,37
+test,br_en_000643_1.png,english,brochures,324,576,1
+test,rp_mr_000280_0.png,marathi,research papers,1653,2339,13
+test,sy_en_000517_0.png,english,syllabi,1241,1754,15
+test,fm_ml_000025_0.png,malayalam,forms,1275,1650,20
+test,mg_ml_000681_0.png,malayalam,magazines,1240,1754,28
+test,br_hi_000788_1.png,hindi,brochures,510,709,13
+test,rp_mr_000450_0.png,marathi,research papers,1700,2200,9
+test,tb_kn_000041_0.png,kannada,textbooks,1200,1875,8
+test,mg_pa_000912_0.png,punjabi,magazines,1042,1667,10
+test,rp_as_000602_0.png,assamese,research papers,1700,2200,8
+test,rp_kn_001193_0.png,kannada,research papers,1275,1650,9
+test,rp_kn_000283_0.png,kannada,research papers,1275,1650,9
+test,rp_or_000076_0.png,odia,research papers,1240,1755,6
+test,br_as_000225_0.png,assamese,brochures,1653,2339,8
+test,nv_as_000822_0.png,assamese,novels,1374,1818,26
+test,rp_ml_000869_0.png,malayalam,research papers,2480,3509,5
+test,mg_ta_001053.jpeg,tamil,magazines,510,751,8
+test,mg_en_000024.png,english,magazines,823,1069,6
+test,mn_or_000282_0.png,odia,manuals,403,690,10
+test,nv_ml_000236_0.png,malayalam,novels,1772,2717,13
+test,ar_or_000749_1.png,odia,acts & rules,560,797,19
+test,qp_gu_000165_0.png,gujarati,question papers,1241,1754,36
+test,rp_mr_000184_0.png,marathi,research papers,1621,2354,8
+test,tb_en_000426_0.png,english,textbooks,1275,1650,16
+test,br_te_000001_0.png,telugu,brochures,2513,1725,14
+test,mg_or_000737_0.png,odia,magazines,886,1388,10
+test,rp_te_000240_0.png,telugu,research papers,829,1326,17
+test,fm_en_000007_0.png,english,forms,612,792,18
+test,nv_te_000201_0.png,telugu,novels,2355,3896,16
+test,np_kn_000126_0.png,kannada,newspapers,825,1233,40
+test,ar_kn_000024_0.png,kannada,acts & rules,1213,1757,7
+test,br_kn_000806_1.png,kannada,brochures,960,540,6
+test,rp_ml_000568_0.png,malayalam,research papers,2480,3509,4
+test,ar_ta_001093_0.png,tamil,acts & rules,1134,1388,15
+test,tb_ml_000428_0.png,malayalam,textbooks,2550,3300,7
+test,rp_kn_000285_0.png,kannada,research papers,1275,1650,9
+test,nv_as_000699_0.png,assamese,novels,1374,1818,17
+test,rp_ml_000396_0.png,malayalam,research papers,2480,3509,5
+test,mg_mr_000183.png,marathi,magazines,600,770,16
+test,ar_pa_000460_0.png,punjabi,acts & rules,1606,2159,12
+test,ar_kn_000942_0.png,kannada,acts & rules,1275,1800,7
+test,nt_pa_000263_1.png,punjabi,notices,592,981,29
+test,tb_or_000564_0.png,odia,textbooks,680,1063,5
+test,mn_en_000288_0.png,english,manuals,853,1360,17
+test,br_ml_000874_1.png,malayalam,brochures,397,624,9
+test,np_or_000239_0.png,odia,newspapers,973,1565,34
+test,br_kn_000901_1.png,kannada,brochures,576,576,15
+test,tb_as_000789_0.png,assamese,textbooks,1262,1806,9
+test,ar_te_000113.jpeg,telugu,acts & rules,596,842,9
+test,rp_as_001642_0.png,assamese,research papers,1653,2339,8
+test,tb_hi_001265_1.png,hindi,textbooks,504,720,11
+test,nv_te_000097_0.png,telugu,novels,2355,3896,11
+test,sy_pa_000080_0.png,punjabi,syllabi,1653,2337,17
+test,sy_pa_000160_0.png,punjabi,syllabi,1654,2339,24
+test,np_pa_000594_1.png,punjabi,newspapers,964,1503,80
+test,sy_hi_000308_0.png,hindi,syllabi,1700,2200,8
+test,nt_kn_000228_1.png,kannada,notices,612,1008,7
+test,br_te_000589_0.png,telugu,brochures,1313,1725,24
+test,ar_ta_000235_0.png,tamil,acts & rules,1275,1757,4
+test,mn_en_000393_0.png,english,manuals,836,1364,6
+test,mn_pa_000400_0.png,punjabi,manuals,1700,2200,12
+test,sy_or_000481_0.png,odia,syllabi,1275,1650,11
+test,fm_kn_000234_1.png,kannada,forms,595,841,15
+test,fm_ml_000818_1.png,malayalam,forms,612,792,44
+test,mn_te_001032_1.png,telugu,manuals,595,842,12
+test,br_as_000203_0.png,assamese,brochures,1653,2339,20
+test,ar_bn_000804_0.png,bengali,acts & rules,1200,1486,9
+test,mg_en_000896.png,english,magazines,2263,3200,9
+test,nv_or_000834_0.png,odia,novels,739,1152,7
+test,qp_bn_000517_1.png,bengali,question papers,1400,1983,21
+test,np_hi_000356_1.png,hindi,newspapers,1500,2384,24
+test,nv_te_000244_0.png,telugu,novels,2355,3896,16
+test,br_ml_000021_0.png,malayalam,brochures,1650,1225,20
+test,nv_te_000577_0.png,telugu,novels,2355,3896,16
+test,nv_pa_001080_0.png,punjabi,novels,840,1280,4
+test,tb_ml_000334_0.png,malayalam,textbooks,2550,3300,6
+test,ar_ml_000691_0.png,malayalam,acts & rules,1748,1238,8
+test,br_mr_000430_0.png,marathi,brochures,1653,2339,13
+test,tb_ta_000877_1.png,tamil,textbooks,655,882,21
+test,rp_gu_000634_0.png,gujarati,research papers,1240,1755,6
+test,sy_ta_000624.jpeg,tamil,syllabi,612,792,6
+test,mg_or_000670_0.png,odia,magazines,886,1388,9
+test,ar_en_001126.png,english,acts & rules,596,842,11
+test,br_gu_000502_1.png,gujarati,brochures,596,842,16
+test,rp_as_000911_0.png,assamese,research papers,1653,2339,8
+test,np_gu_000314_1.png,gujarati,newspapers,2800,3974,104
+test,fm_bn_000362_0.png,bengali,forms,1984,2805,8
+test,np_or_000053_0.png,odia,newspapers,971,1563,35
+test,ar_pa_000334_0.png,punjabi,acts & rules,1462,2028,9
+test,mg_or_000753_0.png,odia,magazines,886,1388,13
+test,np_pa_000345_0.png,punjabi,newspapers,4331,3120,68
+test,qp_or_000285_0.png,odia,question papers,1275,1650,6
+test,sy_ta_000291.jpeg,tamil,syllabi,612,792,7
+test,tb_bn_000540_0.png,bengali,textbooks,825,1200,6
+test,mn_ta_000154_0.png,tamil,manuals,934,1650,6
+test,nv_mr_000619_0.png,marathi,novels,1700,2200,13
+test,mn_as_000089_0.png,assamese,manuals,1656,2339,18
+test,tb_as_000708_0.png,assamese,textbooks,1262,1806,11
+test,tb_or_000124_0.png,odia,textbooks,650,945,15
+test,fm_ml_000177_0.png,malayalam,forms,1275,2100,18
+test,rp_te_000602_0.png,telugu,research papers,909,1468,22
+test,mn_or_000663_0.png,odia,manuals,419,671,29
+test,rp_te_000826_1.png,telugu,research papers,612,792,6
+test,mg_te_000282.jpeg,telugu,magazines,595,843,15
+test,tb_gu_000573_0.png,gujarati,textbooks,329,542,8
+test,rp_as_000420_0.png,assamese,research papers,1653,2339,8
+test,mg_pa_000423_0.png,punjabi,magazines,1700,2200,11
+test,rp_gu_000287_0.png,gujarati,research papers,1275,1650,5
+test,mg_or_000015_0.png,odia,magazines,1211,1625,23
+test,mg_ta_000612.jpeg,tamil,magazines,510,751,7
+test,mg_ta_000786.jpeg,tamil,magazines,304,430,5
+test,br_te_000468_0.png,telugu,brochures,1332,1744,12
+test,mn_gu_000868_0.png,gujarati,manuals,1241,1754,6
+test,nv_ta_000416_0.png,tamil,novels,1050,1500,3
+test,sy_or_000179_0.png,odia,syllabi,1241,1754,11
+test,mg_bn_000803_0.png,bengali,magazines,1176,1320,17
+test,mg_te_000340.jpeg,telugu,magazines,595,843,13
+test,mn_as_000006_0.png,assamese,manuals,1656,2339,13
+test,fm_mr_000329_0.png,marathi,forms,1699,2200,0
+test,ar_mr_000543_0.png,marathi,acts & rules,1653,2339,8
+test,mg_pa_001051_0.png,punjabi,magazines,1656,2339,13
+test,ar_ml_000044_0.png,malayalam,acts & rules,1241,1754,11
+test,ar_gu_000614_1.png,gujarati,acts & rules,589,843,10
+test,nv_as_000466_0.png,assamese,novels,1374,1818,20
+test,sy_as_000544_1.png,assamese,syllabi,612,792,6
+test,fm_ml_000523_0.png,malayalam,forms,1233,1743,12
+test,qp_ml_000492_0.png,malayalam,question papers,1241,1755,16
+test,nt_te_000196_0.png,telugu,notices,612,792,4
+test,rp_te_000621_0.png,telugu,research papers,909,1468,14
+test,tb_te_000076_0.png,telugu,textbooks,750,1275,8
+test,np_or_000196_0.png,odia,newspapers,971,1563,27
+test,mn_gu_000792_0.png,gujarati,manuals,1241,1754,6
+test,nt_gu_000482_1.png,gujarati,notices,596,842,11
+test,ar_te_000230.jpeg,telugu,acts & rules,596,842,8
+test,rp_gu_000735_0.png,gujarati,research papers,1240,1755,10
+test,mg_te_000273.jpeg,telugu,magazines,595,843,15
+test,br_ml_000574_1.png,malayalam,brochures,394,609,6
+test,rp_as_001370_0.png,assamese,research papers,1653,2339,7
+test,qp_ta_000305_0.png,tamil,question papers,1755,1240,20
+test,ar_bn_000262_0.png,bengali,acts & rules,1242,1755,7
+test,qp_gu_000371_0.png,gujarati,question papers,1241,1754,30
+test,rp_mr_000767_0.png,marathi,research papers,1700,2200,5
+test,br_or_000413_1.png,odia,brochures,612,792,21
+test,br_mr_000173_0.png,marathi,brochures,1653,2339,13
+test,nv_en_000889_0.png,english,novels,871,1253,16
+test,np_hi_000045_1.png,hindi,newspapers,1500,2384,90
+test,nv_kn_000467_0.png,kannada,novels,3644,5500,18
+test,rp_kn_001337_0.png,kannada,research papers,1241,1754,7
+test,mg_or_000294_0.png,odia,magazines,1211,1625,31
+test,ar_or_000341_0.png,odia,acts & rules,1128,1655,11
+test,br_ta_000347_0.png,tamil,brochures,1063,1447,8
+test,mn_ta_000764_0.png,tamil,manuals,1284,2196,7
+test,rp_te_000691_0.png,telugu,research papers,909,1468,19
+test,mg_bn_000643_0.png,bengali,magazines,1176,1320,26
+test,nv_hi_000796_0.png,hindi,novels,987,1387,4
+test,fm_ml_000131_0.png,malayalam,forms,1242,1758,34
+test,br_ta_000194_0.png,tamil,brochures,1063,1447,13
+test,nt_en_000175_1.png,english,notices,612,792,6
+test,nt_kn_000191_1.png,kannada,notices,612,1008,6
+test,tb_or_000450_0.png,odia,textbooks,680,1034,7
+test,mg_pa_000965_0.png,punjabi,magazines,1656,2339,8
+test,tb_mr_001173_0.png,marathi,textbooks,1656,2339,4
+test,np_as_000457_1.png,assamese,newspapers,2953,4409,151
+test,qp_or_000547_1.png,odia,question papers,596,842,13
+test,rp_as_001139_0.png,assamese,research papers,1653,2339,8
+test,mg_pa_000024_0.png,punjabi,magazines,1700,2200,8
+test,qp_te_000532_1.png,telugu,question papers,596,842,17
+test,mg_ta_000659.jpeg,tamil,magazines,510,751,5
+test,mn_ml_000549_0.png,malayalam,manuals,1275,1650,8
+test,nv_as_001191_1.png,assamese,novels,1983,2806,6
+test,mg_pa_000975_0.png,punjabi,magazines,1656,2339,9
+test,tb_ta_000581_0.png,tamil,textbooks,1088,1425,13
+test,fm_pa_000132_0.png,punjabi,forms,1700,2200,11
+test,fm_te_000615_0.png,telugu,forms,596,842,30
+test,tb_kn_000470_0.png,kannada,textbooks,720,1074,7
+test,fm_kn_000141_1.png,kannada,forms,596,842,69
+test,ar_as_000309_0.png,assamese,acts & rules,1653,2339,12
+test,nv_en_001000_0.png,english,novels,896,1271,7
+test,br_ta_001400_1.png,tamil,brochures,596,842,10
+test,mn_bn_000267_0.png,bengali,manuals,753,1267,6
+test,rp_en_000830_0.png,english,research papers,1275,1650,9
+test,rp_bn_000428_0.png,bengali,research papers,1240,1755,2
+test,mg_or_000266_0.png,odia,magazines,1211,1625,24
+test,sy_or_000318_0.png,odia,syllabi,1241,1754,8
+test,nv_pa_001106_0.png,punjabi,novels,854,1287,4
+test,np_ta_000057_0.png,tamil,newspapers,930,1362,26
+test,nv_kn_000351_0.png,kannada,novels,853,1298,7
+test,ar_gu_000813_1.png,gujarati,acts & rules,596,842,3
+test,ar_ta_000048_0.png,tamil,acts & rules,1059,1648,9
+test,rp_mr_000670_0.png,marathi,research papers,1700,2200,6
+test,nt_ta_000585.jpeg,tamil,notices,843,596,16
+test,ar_en_000173.png,english,acts & rules,596,842,5
+test,mn_or_000643_0.png,odia,manuals,419,671,19
+test,rp_en_000820_0.png,english,research papers,1240,1755,7
+test,mn_en_000909_1.png,english,manuals,842,596,13
+test,nv_bn_000907_1.png,bengali,novels,3194,4666,10
+test,mn_or_000230_0.png,odia,manuals,400,688,6
+test,nt_bn_000059_0.png,bengali,notices,2040,2640,12
+test,tb_te_000615_0.png,telugu,textbooks,750,1275,5
+test,tb_hi_000985_1.png,hindi,textbooks,522,720,10
+test,rp_as_000945_0.png,assamese,research papers,1653,2339,5
+test,nv_hi_000021_0.png,hindi,novels,1650,2334,6
+test,mg_kn_000965_1.png,kannada,magazines,618,834,8
+test,nt_ml_000508_0.png,malayalam,notices,2480,3508,23
+test,tb_pa_000931_1.png,punjabi,textbooks,612,792,16
+test,rp_as_001214_0.png,assamese,research papers,1653,2339,10
+test,rp_or_000710_0.png,odia,research papers,1240,1755,7
+test,nv_ml_000120_0.png,malayalam,novels,4167,6000,7
+test,nv_as_000599_0.png,assamese,novels,1374,1818,5
+test,ar_en_000581.png,english,acts & rules,596,842,11
+test,fm_mr_000216_0.png,marathi,forms,1700,2200,6
+test,ar_ta_001215_0.png,tamil,acts & rules,1275,1757,13
+test,tb_te_000544_0.png,telugu,textbooks,750,1275,8
+test,nt_pa_000358_1.png,punjabi,notices,612,454,5
+test,nt_kn_000186_1.png,kannada,notices,612,1008,9
+test,ar_bn_000264_0.png,bengali,acts & rules,1242,1678,3
+test,tb_pa_000553_0.png,punjabi,textbooks,1656,2339,11
+test,mn_gu_001070_0.png,gujarati,manuals,1241,1754,3
+test,sy_pa_000303_0.png,punjabi,syllabi,596,842,14
+test,qp_ta_000077_0.png,tamil,question papers,1188,1621,11
+test,ar_as_000355_0.png,assamese,acts & rules,1653,2339,10
+test,sy_ta_000222.jpeg,tamil,syllabi,612,792,16
+test,nv_en_001010_0.png,english,novels,907,1267,10
+test,np_or_000524_1.png,odia,newspapers,921,1466,48
+test,mn_te_000258_0.png,telugu,manuals,833,1291,8
+test,mn_te_000658_0.png,telugu,manuals,552,853,5
+test,nt_te_000130_0.png,telugu,notices,596,842,6
+test,tb_ta_000271_0.png,tamil,textbooks,1106,1461,8
+test,tb_te_000370_0.png,telugu,textbooks,750,1275,7
+test,mg_bn_000969_1.png,bengali,magazines,2040,2640,18
+test,nv_as_001078_1.png,assamese,novels,1219,1951,9
+test,fm_hi_000585_1.png,hindi,forms,612,792,8
+test,np_pa_000300_0.png,punjabi,newspapers,4331,3126,72
+test,mn_or_000466_0.png,odia,manuals,405,690,8
+test,tb_mr_001176_0.png,marathi,textbooks,1656,2339,5
+test,sy_mr_000498_0.png,marathi,syllabi,1655,2339,15
+test,rp_bn_000517_0.png,bengali,research papers,1240,1755,4
+test,mg_te_000535.jpeg,telugu,magazines,596,842,26
+test,ar_te_000568.jpeg,telugu,acts & rules,584,772,16
+test,mg_en_000575.png,english,magazines,774,1064,17
+test,br_bn_000124_0.png,bengali,brochures,1158,1601,9
+test,tb_as_001430_0.png,assamese,textbooks,326,554,7
+test,qp_bn_000458_1.png,bengali,question papers,1984,2806,8
+test,np_pa_000386_0.png,punjabi,newspapers,4331,3104,17
+test,ar_pa_000178_0.png,punjabi,acts & rules,1653,2339,19
+test,rp_en_001311_0.png,english,research papers,1275,1650,1
+test,fm_ta_000289_0.png,tamil,forms,596,842,32
+test,mg_te_000133.jpeg,telugu,magazines,596,752,22
+test,np_mr_000419_1.png,marathi,newspapers,943,1500,66
+test,sy_mr_000225_0.png,marathi,syllabi,1653,2339,13
+test,ar_kn_000270_0.png,kannada,acts & rules,1275,1800,6
+test,tb_pa_001007_1.png,punjabi,textbooks,612,792,14
+test,tb_te_000840_1.png,telugu,textbooks,539,780,12
+test,qp_hi_000186_0.png,hindi,question papers,1573,2100,16
+test,mn_te_000869_1.png,telugu,manuals,595,842,10
+test,br_kn_000059_0.png,kannada,brochures,1667,2084,6
+test,tb_en_000154_0.png,english,textbooks,1275,1650,22
+test,fm_or_000202_0.png,odia,forms,596,842,55
+test,nt_mr_000360.png,marathi,notices,612,792,6
+test,nv_pa_000809_0.png,punjabi,novels,1654,2339,6
+test,mg_gu_000312.png,gujarati,magazines,596,842,12
+test,mg_ml_000374_0.png,malayalam,magazines,1075,1518,19
+test,mg_ta_001346.jpeg,tamil,magazines,511,752,4
+test,mg_gu_001160.png,gujarati,magazines,596,842,13
+test,ar_bn_000019_0.png,bengali,acts & rules,937,1334,6
+test,nt_kn_000393_1.png,kannada,notices,612,864,11
+test,sy_mr_000376_0.png,marathi,syllabi,1653,2339,6
+test,qp_ml_000044_0.png,malayalam,question papers,1206,1635,22
+test,np_te_000210_0.png,telugu,newspapers,2565,3450,129
+test,nt_gu_000510_1.png,gujarati,notices,595,842,32
+test,mn_as_000017_0.png,assamese,manuals,1656,2339,3
+test,nv_ml_000024_0.png,malayalam,novels,4167,6000,7
+test,rp_gu_000556_0.png,gujarati,research papers,1240,1755,10
+test,fm_ta_000296_0.png,tamil,forms,596,842,40
+test,ar_kn_000336_0.png,kannada,acts & rules,1240,1755,8
+test,rp_mr_000336_0.png,marathi,research papers,1653,2339,6
+test,np_or_000461_1.png,odia,newspapers,921,1466,54
+test,np_en_000524_1.png,english,newspapers,1786,2781,1
+test,br_te_000322_0.png,telugu,brochures,1323,1736,22
+test,tb_pa_000945_1.png,punjabi,textbooks,612,792,12
+test,br_en_000093_0.png,english,brochures,2980,3840,18
+test,nv_bn_000417_0.png,bengali,novels,2482,3509,13
+test,mg_kn_000038_0.png,kannada,magazines,1152,1565,4
+test,rp_gu_000441_0.png,gujarati,research papers,1240,1755,5
+test,nt_ml_000100_0.png,malayalam,notices,2480,3508,14
+test,mg_ml_000109_0.png,malayalam,magazines,1058,1479,24
+test,rp_en_000676_0.png,english,research papers,1275,1650,15
+test,br_ml_000110_0.png,malayalam,brochures,1241,1241,14
+test,tb_or_000884_1.png,odia,textbooks,596,780,12
+test,br_te_000195_0.png,telugu,brochures,1323,1736,16
+test,np_te_000141_0.png,telugu,newspapers,2565,3450,95
+test,mg_bn_000463_0.png,bengali,magazines,1176,1320,15
+test,sy_te_000287_1.png,telugu,syllabi,595,842,12
+test,fm_bn_000221_0.png,bengali,forms,1276,1755,15
+test,rp_kn_000321_0.png,kannada,research papers,1275,1650,7
+test,mn_gu_000535_0.png,gujarati,manuals,1241,1754,8
+test,sy_as_000254_0.png,assamese,syllabi,1700,2200,6
+test,nv_bn_000503_0.png,bengali,novels,2482,3509,14
+test,fm_gu_000551_1.png,gujarati,forms,612,792,5
+test,mg_ta_000553.jpeg,tamil,magazines,510,751,10
+test,tb_ml_000238_0.png,malayalam,textbooks,1000,1492,5
+test,tb_kn_000868_1.png,kannada,textbooks,401,595,10
+test,nv_ta_000960_0.png,tamil,novels,1241,1755,13
+test,rp_bn_000053_0.png,bengali,research papers,1241,1754,11
+test,nt_mr_000497.png,marathi,notices,547,790,14
+test,fm_en_000538_0.png,english,forms,595,842,20
+test,ar_pa_000601_0.png,punjabi,acts & rules,1656,2339,11
+test,sy_or_000565_1.png,odia,syllabi,596,843,11
+test,sy_as_000260_0.png,assamese,syllabi,1700,2200,3
+test,br_kn_000464_1.png,kannada,brochures,420,596,6
+test,tb_ta_000161_0.png,tamil,textbooks,1088,1425,13
+test,fm_ml_000791_1.png,malayalam,forms,596,842,7
+test,rp_ml_000915_0.png,malayalam,research papers,2480,3509,4
+test,tb_bn_000714_0.png,bengali,textbooks,825,1200,5
+test,rp_mr_000681_0.png,marathi,research papers,1700,2200,4
+test,br_bn_000445_0.png,bengali,brochures,1158,1601,9
+test,mg_te_000006.jpeg,telugu,magazines,577,791,34
+test,rp_ml_000372_0.png,malayalam,research papers,2480,3509,5
+test,np_gu_000250_1.png,gujarati,newspapers,2800,3974,104
+test,fm_en_000017_0.png,english,forms,612,792,8
+test,tb_te_000794_1.png,telugu,textbooks,596,842,11
+test,sy_ml_000070_0.png,malayalam,syllabi,1275,1650,16
+test,ar_te_000398.jpeg,telugu,acts & rules,596,842,5
+test,rp_en_000288_0.png,english,research papers,1275,1650,10
+test,tb_as_000211_0.png,assamese,textbooks,1092,1723,10
+test,br_kn_000633_1.png,kannada,brochures,842,596,15
+test,nv_ta_001030_1.png,tamil,novels,255,340,4
+test,sy_or_000742_1.png,odia,syllabi,596,842,8
+test,nv_gu_000949_1.png,gujarati,novels,571,789,13
+test,fm_mr_000601_1.png,marathi,forms,612,792,16
+test,fm_te_000247_0.png,telugu,forms,596,842,32
+test,nt_gu_000236_1.png,gujarati,notices,595,842,38
+test,qp_ta_000078_0.png,tamil,question papers,1188,1621,11
+test,nv_as_000518_0.png,assamese,novels,1374,1818,18
+test,fm_ta_000062_0.png,tamil,forms,596,842,39
+test,ar_pa_000590_0.png,punjabi,acts & rules,1656,2339,15
+test,mg_gu_000412.png,gujarati,magazines,612,792,12
+test,nv_gu_000674_0.png,gujarati,novels,798,1241,9
+test,ar_bn_000984_1.png,bengali,acts & rules,2905,4086,14
+test,qp_as_000477_1.png,assamese,question papers,581,727,20
+test,ar_as_001003_0.png,assamese,acts & rules,1700,2342,13
+test,br_mr_000708_0.png,marathi,brochures,1567,2067,18
+test,np_ta_000119_0.png,tamil,newspapers,1777,2638,18
+test,fm_bn_000264_0.png,bengali,forms,549,776,8
+test,br_pa_000435_0.png,punjabi,brochures,1780,2280,22
+test,mg_bn_000029_0.png,bengali,magazines,1176,1320,11
+test,ar_en_000626.png,english,acts & rules,596,842,9
+test,tb_gu_000154_0.png,gujarati,textbooks,353,594,14
+test,ar_hi_000443_1.png,hindi,acts & rules,596,842,9
+test,qp_kn_000463_0.png,kannada,question papers,1241,1754,10
+test,ar_as_000061_0.png,assamese,acts & rules,1700,2342,8
+test,sy_bn_000538_1.png,bengali,syllabi,2975,4210,18
+test,fm_te_000529_0.png,telugu,forms,596,842,74
