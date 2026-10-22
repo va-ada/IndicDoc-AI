@@ -925,6 +925,15 @@ with tab_analyze:
                             with d2:
                                 st.download_button("Download JSON", data=json.dumps(doc, ensure_ascii=False, indent=2).encode("utf-8"),
                                                    file_name="indicdoc_text.json", mime="application/json", width="stretch")
+                            # Accessible formats for screen-reader users (headings, lists, tables, language tag)
+                            from ml.accessible import to_epub, to_html
+                            a1, a2 = st.columns(2)
+                            with a1:
+                                st.download_button("Accessible HTML", data=to_html(doc, "IndicDoc page").encode("utf-8"),
+                                                   file_name="indicdoc_accessible.html", mime="text/html", width="stretch")
+                            with a2:
+                                st.download_button("Accessible EPUB3", data=to_epub([doc], "IndicDoc page"),
+                                                   file_name="indicdoc_accessible.epub", mime="application/epub+zip", width="stretch")
             else:
                 st.image(image_rgb, caption="Original Document", width="stretch")
         else:
