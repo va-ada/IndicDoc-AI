@@ -114,10 +114,103 @@ def read_words(image: np.ndarray, languages: str) -> List[Dict]:
     return words
 
 
-def assign_words(regions: List[Dict], words: List[Dict], min_conf: float = 0.0) -> List[Dict]:
+# A token that is a number, possibly with brackets, punctuation and a short unit: '1947', '(1)', '24.', '8A', '120°C'
+_NUMERIC_TOKEN = re.compile(r'^[(\[]?[0-9][0-9.,:/%°\-]*[)\].,:;]?[A-Za-z°/]{0,4}[)\].,;]?$')
+NUMBER_PASS_MIN_CONF = 55
+_GLUED_MARKER = re.compile(r'^(?:\(?[^\s()0-9]{1,3}\)|\([0-9]\)|[A-Za-z])(?=[0-9])')
+_INDIC_DIGIT = re.compile(r'[\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF'
+                          r'\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F]')
+# Indic letters and vowel signs, without the Indian digits and the danda ('।' is how the Hindi model reads '1')
+_INDIC_LETTER = re.compile(r'[\u0900-\u0963\u0970-\u09E5\u09F0-\u0A65\u0A70-\u0AE5\u0AF0-\u0B65\u0B70-\u0BE5'
+                           r'\u0BF0-\u0C65\u0C70-\u0CE5\u0CF0-\u0D65\u0D70-\u0D7F]')
+_LATIN_UNIT = re.compile(r'^[A-Za-z°/%.]{1,4}$')
+_BARE_NUMBER = re.compile(r'^[0-9][0-9.,]*$')  # Latin digits only ('\d' also matches Indian digits)
+_HAS_DIGIT = re.compile(r'[0-9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF'
+                        r'\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F]')
+
+
+def _overlap(a: Dict, b: Dict) -> float:
+    """Intersection over the smaller of two word boxes."""
+    ix = min(a['left'] + a['width'], b['left'] + b['width']) - max(a['left'], b['left'])
+    iy = min(a['top'] + a['height'], b['top'] + b['height']) - max(a['top'], b['top'])
+    if ix <= 0 or iy <= 0:
+        return 0.0
+    return ix * iy / max(1.0, min(a['width'] * a['height'], b['width'] * b['height']))
+
+
+def _digits(text: str) -> str:
+    return ''.join(ch for ch in text if ch.isascii() and ch.isdigit())
+
+
+def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dict]:
+    """
+    Fix the numbers of an Indic-language reading with a second reading by the English model.
+    Indic Tesseract models misread Latin digits in mixed text (the Hindi model reads '1947' as '947' and '10' as
+    '70', and sometimes reads a letter as a digit); the English model reads Latin digits reliably but not Indic
+    letters. So for Latin digits the English reading decides:
+      - a numeric token of the English reading replaces the overlapping word of the main reading when that word is
+        a number with different digits (a bracket the main reading had, as in an option marker, is kept);
+      - it is inserted when the main reading has no word there;
+      - a bare Latin number of the main reading that no English numeric token confirms is dropped.
+    Indic words and Indian-script digits ('१२०') are never touched.
+    """
+    out = [dict(w) for w in words]
+    # An option marker run into the value is not part of the number: '(3)6A' -> '6A', 'M2A' ('(1) 2A') -> '2A'
+    latin_words = [{**lw, 'text': _GLUED_MARKER.sub('', lw['text'])} for lw in latin_words]
+    numeric_latin = [lw for lw in latin_words if _NUMERIC_TOKEN.match(lw['text'])]
+    # Pages printed with Indian digits ('१२०') keep them: the English model cannot read them. On pages printed with
+    # Latin digits, an Indian digit in the Indic reading is a misread ('1A' -> '८') and the English reading decides.
+    indic_digits = sum(bool(_INDIC_DIGIT.search(w['text'])) for w in out)
+    latin_digits = sum(bool(re.search('[0-9]', w['text'])) for w in out)
+    indic_page = indic_digits > latin_digits
+    # Any English token with the same digits confirms a number, even when it ran into a marker ('(m30' for '(ग) 30')
+    with_digits = [lw for lw in latin_words if _digits(lw['text'])]
+    for w in out:
+        if _BARE_NUMBER.match(w['text']) and not any(_overlap(w, lw) > 0.3 and _digits(w['text']) in _digits(lw['text'])
+                                                     for lw in with_digits):
+            w['text'] = '·'
+        # Latin units read by the Indic model as digits ('A' -> '८', '°C' -> '९६' or '“6'): a confident short Latin
+        # reading without digits at the same place wins
+        elif _HAS_DIGIT.search(w['text']) and not _BARE_NUMBER.match(w['text']) \
+                and not (indic_page and _INDIC_DIGIT.search(w['text'])):
+            near = [lw for lw in latin_words if _overlap(w, lw) > 0.5]
+            if len(near) == 1 and near[0].get('conf', 0) >= 80 and _LATIN_UNIT.match(near[0]['text']):
+                w['text'] = near[0]['text']
+    # Only confident English readings may change the text: where the English model "reads" digits into Indic
+    # letters its confidence is low (median 32 on the benchmark's development pages, against 93 for real digits)
+    for lw in numeric_latin:
+        confident = lw.get('conf', 100) >= NUMBER_PASS_MIN_CONF
+        hits = [w for w in out if _overlap(w, lw) > 0.3]
+        if not hits:
+            if not confident:
+                continue
+            same_line = [w for w in out if abs((w['top'] + w['height'] / 2) - (lw['top'] + lw['height'] / 2))
+                         < 0.6 * max(w['height'], lw['height'])]
+            ids = min(same_line, key=lambda w: abs(w['left'] - lw['left'])) if same_line else None
+            if ids is not None:
+                out.append({**lw, 'block_num': ids['block_num'], 'par_num': ids['par_num'], 'line_num': ids['line_num']})
+            continue
+        w = hits[0]
+        # A word of the Indic reading without Indic letters (a number, '।' for '1', a stray symbol) takes the
+        # English number; a word with Indic letters only when the English reading is confident or more confident
+        letters = bool(_INDIC_LETTER.search(w['text']))
+        if indic_page and _INDIC_DIGIT.search(w['text']):
+            continue
+        if len(hits) == 1 and (_HAS_DIGIT.search(w['text']) or not letters or len(w['text']) <= 2) \
+                and _digits(w['text']) != _digits(lw['text']) \
+                and (not letters or confident or lw.get('conf', 0) > w.get('conf', 0)):
+            # '(m2' (marker and number run together) + English '12' -> '(?) 12': the option marker survives
+            w['text'] = ('(?) ' + lw['text']) if w['text'].startswith('(') and not lw['text'].startswith('(') \
+                else lw['text']
+    return out
+
+
+def assign_words(regions: List[Dict], words: List[Dict], min_conf: float = 0.0,
+                 include_words: bool = False) -> List[Dict]:
     """
     Put each word into the smallest region containing its centre and build that region's text, line by line.
-    Returns copies of the regions with a 'text' field, in the same order.
+    Returns copies of the regions with a 'text' field, in the same order (and their 'words' with boxes when
+    include_words is set: verification uses the word positions to separate the options of a question).
     """
     per_region = defaultdict(list)
     for word in words:
@@ -138,6 +231,8 @@ def assign_words(regions: List[Dict], words: List[Dict], min_conf: float = 0.0) 
         ordered = sorted(lines.values(), key=lambda ws: np.mean([w['top'] for w in ws]))
         text = '\n'.join(' '.join(w['text'] for w in sorted(ws, key=lambda w: w['left'])) for ws in ordered)
         out.append({**region, 'text': text})
+        if include_words:
+            out[-1]['words'] = [{k: w[k] for k in ('text', 'left', 'top', 'width', 'height')} for w in per_region[i]]
     return out
 
 
@@ -215,20 +310,29 @@ def to_markdown(regions: List[Dict]) -> str:
     return md + '\n'
 
 
-def extract_document(image: np.ndarray, detections: Dict, languages: Optional[str] = 'auto') -> Dict:
+def extract_document(image: np.ndarray, detections: Dict, languages: Optional[str] = 'auto',
+                     number_pass: bool = False) -> Dict:
     """
     OCR a page given its layout detections (0-indexed labels, boxes as x1, y1, x2, y2 in page pixels).
     languages: a Tesseract language string such as 'hin+eng', or 'auto' to detect the script first.
+    number_pass: read the page a second time with the English model and use its digits (merge_number_reading);
+    verification needs every number exact, so it turns this on for Indic-language pages.
     """
     script = None
     if languages in (None, 'auto'):
         script = detect_script_by_probe(image, detections)
         languages = languages_for_script(script)
-    words = read_words(image, languages)
+    if number_pass and languages != 'eng':
+        # The Indic model alone reads Indic words best (with '+eng' Tesseract sometimes swaps a Hindi word for an
+        # English guess: 'पूर्णांक' -> 'guia'); the English number pass then supplies the Latin digits
+        indic = '+'.join(code for code in languages.split('+') if code != 'eng')
+        words = merge_number_reading(read_words(image, indic), read_words(image, 'eng'))
+    else:
+        words = read_words(image, languages)
     regions = [{'label': CLASS_NAMES[int(l)], 'box': [round(float(v), 1) for v in box], 'score': round(float(s), 3)}
                for box, l, s in zip(detections['boxes'], detections['labels'], detections['scores'])]
     regions = [{**r, 'detected': True} if r['label'] not in _NO_TEXT else {**r, 'text': '', 'detected': True}
-               for r in assign_words(regions, words)]
+               for r in assign_words(regions, words, include_words=number_pass)]
     # Words in no detected box are kept as 'unlabelled-text' regions, so no text is silently lost
     regions += leftover_regions(regions, words)
     ordered = reading_order(regions)

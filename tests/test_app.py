@@ -22,7 +22,7 @@ class TestStreamlitApp:
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
         assert not at.exception
-        assert [t.label for t in at.tabs] == ['Analyze', 'Dashboard', 'Model Insights', 'Evaluation', 'About']
+        assert [t.label for t in at.tabs] == ['Verify Paper', 'Analyze', 'Dashboard', 'Model Insights', 'Evaluation', 'About']
 
     def test_results_list_appears_right_after_analyze(self, no_models):
         """The detected-elements list must show on the same click, not one interaction later."""

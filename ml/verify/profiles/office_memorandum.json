@@ -1,0 +1,88 @@
+{
+  "name": "Office Memorandum (Government of India)",
+  "description": "Example profile modelled on the Office Memorandum format of the Central Secretariat Manual of Office Procedure (CSMOP). Customers write their own profiles in the same JSON form.",
+  "question_checks": false,
+  "elements": [
+    {
+      "id": "file_no",
+      "name": "File number",
+      "pattern": "(\\bNo\\.?\\s*[A-Z0-9][\\w\\-/().]*\\d|\\bF\\.\\s*No|सं(ख्या)?\\.\\s*\\S*\\d|फा\\.\\s*सं)",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "government",
+      "name": "Government of India",
+      "pattern": "(government\\s+of\\s+india|भारत\\s+सरकार)",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "ministry",
+      "name": "Ministry / Department",
+      "pattern": "(ministry|department|मंत्रालय|विभाग)",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "date",
+      "name": "Place and date",
+      "pattern": "(\\b\\d{1,2}(st|nd|rd|th)?\\s+\\w+,?\\s+\\d{4}|\\b\\d{1,2}[./-]\\d{1,2}[./-]\\d{2,4}|दिनांक|dated)",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "title",
+      "name": "Title 'OFFICE MEMORANDUM'",
+      "pattern": "(office\\s+memorandum|कार्यालय\\s+ज्ञापन)",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "subject",
+      "name": "Subject line",
+      "pattern": "(\\bsubject\\s*[:\\-]|\\bsub\\s*[:\\-]|विषय\\s*[:\\-])",
+      "where": "first_page",
+      "required": true
+    },
+    {
+      "id": "body",
+      "name": "Body text",
+      "labels": [
+        "paragraph",
+        "ordered-list"
+      ],
+      "required": true
+    },
+    {
+      "id": "signature",
+      "name": "Signature block (name and designation)",
+      "pattern": "(under\\s+secretary|deputy\\s+secretary|director|joint\\s+secretary|section\\s+officer|secretary|अवर\\s+सचिव|उप\\s+सचिव|निदेशक|संयुक्त\\s+सचिव|अनुभाग\\s+अधिकारी|सचिव)",
+      "where": "last_page",
+      "required": true
+    },
+    {
+      "id": "addressee",
+      "name": "Addressee ('To')",
+      "pattern": "(^\\s*to\\s*[,:]?\\s*$|^\\s*to\\b|सेवा\\s+में|प्रति(लिपि)?\\s*[:,]?)",
+      "required": false
+    }
+  ],
+  "order": [
+    "file_no",
+    "government",
+    "title",
+    "subject",
+    "body",
+    "signature"
+  ],
+  "bilingual": {
+    "scripts": [
+      "Devanagari",
+      "Latin"
+    ],
+    "min_share": 0.15,
+    "rule": "Official Languages Act, 1963, section 3(3): orders, notifications, rules, notices and similar documents are issued in Hindi and English."
+  },
+  "page_numbers": false
+}

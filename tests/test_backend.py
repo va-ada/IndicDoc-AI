@@ -296,3 +296,28 @@ class TestBackend:
         assert sorted(r['class_names']) == ['paragraph', 'section-title']
         r = client.post('/analyze', files={'file': ('p.png', page, 'image/png')}).json()['results']
         assert r['conf_threshold'] == 0.35 and r['class_names'] == ['paragraph']
+
+
+class TestVerifyEndpoint:
+    def test_profiles_listed(self, api):
+        client, _, _ = api
+        profiles = client.get('/verify/profiles').json()
+        assert {'question_paper', 'office_memorandum'} <= set(profiles)
+
+    def test_needs_model_and_ocr(self, api):
+        client, _, _ = api
+        r = client.post('/verify', files={'file': ('p.png', _encode(np.full((50, 50, 3), 255, np.uint8)), 'image/png')})
+        assert r.status_code == 503
+
+    def test_rejects_bad_parameters(self, api, monkeypatch):
+        client, main, tmp_path = api
+        ckpt = tmp_path / 'doclayout.pt'
+        ckpt.write_bytes(b'x')
+        monkeypatch.setitem(main.CHECKPOINTS, 'doclayout', ckpt)
+        monkeypatch.setattr(main, 'tesseract_available', lambda: True)
+        page = ('p.png', _encode(np.full((50, 50, 3), 255, np.uint8)), 'image/png')
+        assert client.post('/verify?profile=nope', files={'file': page}).status_code == 400
+        assert client.post('/verify?bilingual=Latin', files={'file': page}).status_code == 400
+        assert client.post('/verify?lang=xyz', files={'file': page}).status_code == 400
+        bad_bank = ('b.json', b'{"not": "a list"}', 'application/json')
+        assert client.post('/verify', files={'file': page, 'bank': bad_bank}).status_code == 400

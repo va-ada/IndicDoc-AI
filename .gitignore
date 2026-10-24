@@ -87,3 +87,8 @@ docs/report/loss_curves.png
 
 # study scratch (damaged test-page copies, logs)
 outputs/study/
+
+# Verification benchmark: generated pages and node packages
+data/verify_bench*/
+scripts/verify_bench/node_modules
+scripts/verify_bench/tessdata

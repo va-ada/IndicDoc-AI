@@ -658,7 +658,7 @@ with st.sidebar:
     <div class="sidebar-footer">
         IndicDoc AI v1.0<br>
         B.E. AI&ML Deep Learning Project<br>
-        SDG 9: Industry, Innovation & Infrastructure
+        SDG 4 &bull; SDG 9 &bull; SDG 16
     </div>
     """, unsafe_allow_html=True)
 
@@ -669,7 +669,7 @@ with st.sidebar:
 st.markdown("""
 <div style="text-align:center; padding:0.8rem 0 0.3rem;">
     <div class="hero-title">Indic<span>Doc</span> AI</div>
-    <div class="hero-subtitle">Understand Indian Documents. Digitally.</div>
+    <div class="hero-subtitle">Check question papers and official documents before they go out. 12 Indian languages, offline.</div>
     <div class="hero-divider"><span class="hero-divider-icon">&loz; &loz; &loz;</span></div>
 </div>
 """, unsafe_allow_html=True)
@@ -679,13 +679,131 @@ st.markdown("""
 #  NAVIGATION TABS
 # ══════════════════════════════════════════════════════════════
 # Analyze first: the app opens on the upload screen
-tab_analyze, tab_dash, tab_insights, tab_eval, tab_about = st.tabs([
+tab_verify, tab_analyze, tab_dash, tab_insights, tab_eval, tab_about = st.tabs([
+    "Verify Paper",
     "Analyze",
     "Dashboard",
     "Model Insights",
     "Evaluation",
     "About",
 ])
+
+
+# ══════════════════════════════════════════════════════════════
+#  TAB 0: VERIFY PAPER (IndicDoc Verify)
+# ══════════════════════════════════════════════════════════════
+def _pages_from_bytes(data: bytes, name: str):
+    """Every page of a PDF (200 dpi: every digit must be read exactly) or the one image, as RGB arrays."""
+    from ml.preprocessing.preprocess import decode_image, pdf_page_count, render_pdf_page
+    if name.lower().endswith(".pdf"):
+        return [cv2.cvtColor(render_pdf_page(data, i, dpi=200), cv2.COLOR_BGR2RGB) for i in range(pdf_page_count(data))]
+    return [cv2.cvtColor(decode_image(data), cv2.COLOR_BGR2RGB)]
+
+
+def _read_paper(images, languages, progress, offset, total):
+    """Layout model at its high-recall threshold, then OCR with the number pass, page by page."""
+    model, device = get_model("doclayout")
+    conf = load_metrics(METRICS_DIR).get("authors_metrics", {}).get("high_recall_conf", 0.15)
+    pages = []
+    for i, image_rgb in enumerate(images):
+        results = filter_results(run_inference_yolo(cv2.cvtColor(image_rgb, cv2.COLOR_RGB2BGR), model, conf,
+                                                    "doclayout", device), conf)
+        pages.append(extract_document(image_rgb, results, languages, number_pass=True))
+        progress.progress((offset + i + 1) / total, text=f"Reading page {offset + i + 1} of {total}")
+    return pages
+
+
+with tab_verify:
+    from ml.verify import list_profiles, verify
+    from ml.verify.report import annotate, to_html as verify_html
+    st.markdown('<div class="section-title">Pre-print check of a question paper</div>', unsafe_allow_html=True)
+    st.markdown("Upload the paper as it will be printed. IndicDoc Verify reads every page offline and flags "
+                "numbering gaps, repeated questions, missing options, marks that do not add up, questions repeated "
+                "from earlier papers and, against the source version, every number, option and mark that differs in "
+                "the translation. Each finding points to the question and page for the vetter to confirm.")
+    v_mode = st.radio("What to check", ["One paper", "Translation against its source", "One bilingual paper"],
+                      horizontal=True)
+    lang_names = ["Auto-detect"] + list(OCR_LANGUAGES)
+
+    def _codes(choice):
+        code = OCR_LANGUAGES.get(choice)
+        return "auto" if code is None else (code if code == "eng" else f"{code}+eng")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        v_file = st.file_uploader("Paper to check", type=["pdf", "png", "jpg", "jpeg", "tiff"], key="verify_file")
+        v_lang = st.selectbox("Language of this paper", lang_names, key="verify_lang")
+    v_src, v_src_lang, v_split = None, "auto", None
+    with c2:
+        if v_mode == "Translation against its source":
+            v_src = st.file_uploader("Source-language version", type=["pdf", "png", "jpg", "jpeg", "tiff"],
+                                     key="verify_src")
+            v_src_lang = _codes(st.selectbox("Language of the source", lang_names, key="verify_src_lang"))
+        elif v_mode == "One bilingual paper":
+            scripts = ["Latin", "Devanagari", "Bengali", "Gurmukhi", "Gujarati", "Oriya", "Tamil", "Telugu",
+                       "Kannada", "Malayalam"]
+            s1 = st.selectbox("Source script", scripts, index=0)
+            s2 = st.selectbox("Translation script", scripts, index=1)
+            v_split = {s1: s1.lower(), s2: s2.lower()} if s1 != s2 else None
+    with st.expander("More checks"):
+        v_bank = st.file_uploader("Question bank of earlier papers (JSON list of {text, source})", type=["json"])
+        profiles = list_profiles()
+        v_profile = st.selectbox("Format profile", ["None"] + list(profiles),
+                                 format_func=lambda k: "None" if k == "None" else profiles[k])
+
+    ready = AUTHORS_CHECKPOINT.exists() and tesseract_available()
+    if not ready:
+        st.info("Verification needs the DocLayout-YOLO model and Tesseract (python scripts/download_models.py).")
+    if st.button("Verify", type="primary", disabled=not (ready and v_file is not None)):
+        try:
+            images = _pages_from_bytes(v_file.getvalue(), v_file.name)
+            src_images = _pages_from_bytes(v_src.getvalue(), v_src.name) if v_src is not None else None
+            bank = json.loads(v_bank.getvalue()) if v_bank is not None else None
+        except Exception as e:
+            st.error(f"Could not read the files: {e}")
+            st.stop()
+        total = len(images) + len(src_images or [])
+        bar = st.progress(0.0, text="Reading pages")
+        pages = _read_paper(images, _codes(v_lang), bar, 0, total)
+        src_pages = _read_paper(src_images, v_src_lang, bar, len(images), total) if src_images else None
+        report = verify(pages, source_pages=src_pages, bank=bank, split_scripts=v_split,
+                        profile=None if v_profile == "None" else v_profile,
+                        meta={"File": v_file.name, "Pages": len(images)})
+        st.session_state["verify"] = (report, images, src_images)
+        bar.empty()
+
+    if st.session_state.get("verify"):
+        report, images, src_images = st.session_state["verify"]
+        s = report["summary"]
+        k1, k2, k3, k4 = st.columns(4)
+        k1.markdown(metric_card_html(str(s["questions"]), "Questions read"), unsafe_allow_html=True)
+        k2.markdown(metric_card_html(str(s["errors"]), "Errors"), unsafe_allow_html=True)
+        k3.markdown(metric_card_html(str(s["warnings"]), "Warnings"), unsafe_allow_html=True)
+        k4.markdown(metric_card_html(str(s["info"]), "Notes"), unsafe_allow_html=True)
+        if s["errors"]:
+            st.error("Do not print: errors found. Each one is listed below with its question and page.")
+        elif s["warnings"]:
+            st.warning("Check before printing: see the warnings below.")
+        else:
+            st.success("No problems found by the automatic checks.")
+        if report["issues"]:
+            import pandas as pd
+            st.dataframe(pd.DataFrame([{"severity": i["severity"], "check": i["code"].replace("_", " ").lower(),
+                                        "question": i["question"], "page": None if i["page"] is None else i["page"] + 1,
+                                        "version": i["version"], "finding": i["message"]} for i in report["issues"]]),
+                         hide_index=True, width="stretch")
+        numbered = list(enumerate(report["issues"], 1))
+        for p, image_rgb in enumerate(images):
+            on_page = [(n, i) for n, i in numbered if i.get("page") == p and i["version"] in ("paper", "target")]
+            if on_page:
+                st.image(annotate(image_rgb, on_page), caption=f"Page {p + 1}: {len(on_page)} finding(s) marked",
+                         width="stretch")
+        d1, d2 = st.columns(2)
+        imgs = {"paper": images, **({"source": src_images} if src_images else {})}
+        d1.download_button("Download report (HTML)", data=verify_html(report, imgs).encode("utf-8"),
+                           file_name="indicdoc_verify_report.html", mime="text/html", width="stretch")
+        d2.download_button("Download findings (JSON)", data=json.dumps(report, ensure_ascii=False, indent=2).encode("utf-8"),
+                           file_name="indicdoc_verify_report.json", mime="application/json", width="stretch")
 
 
 # ══════════════════════════════════════════════════════════════

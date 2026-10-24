@@ -158,3 +158,43 @@ class TestListItems:
     def test_lines_without_markers_stay_one_item_each(self):
         from ml.ocr import to_markdown
         assert to_markdown([{'label': 'unordered-list', 'text': 'alpha\nbeta'}]).strip() == '- alpha\n- beta'
+
+
+def _w(text, left, top=10, width=40, height=20):
+    return {'text': text, 'conf': 90.0, 'left': left, 'top': top, 'width': width, 'height': height,
+            'block_num': 1, 'par_num': 1, 'line_num': 1}
+
+
+class TestNumberPass:
+    """merge_number_reading: the English model's digits fix an Indic reading."""
+
+    def test_fixes_misread_latin_digits(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('भारत', 0), _w('947', 50), _w('में', 100)]
+        english = [_w('wea', 0), _w('1947', 50), _w('#', 100)]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['भारत', '1947', 'में']
+
+    def test_inserts_missing_and_drops_unconfirmed_numbers(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('प्रत्येक', 0), _w('प्रश्न', 50), _w('6', 150)]  # '1' missed, a letter read as '6'
+        english = [_w('wre', 0), _w('war', 50), _w('1', 100), _w('Fl', 150)]
+        texts = [w['text'] for w in merge_number_reading(hindi, english)]
+        assert '1' in texts and '6' not in texts
+
+    def test_keeps_markers(self):
+        from ml.ocr import merge_number_reading
+        tamil = [_w('(2)', 0), _w('(m2', 50), _w('40', 100)]
+        english = [_w('2)', 0), _w('12', 50), _w('40', 100)]
+        assert [w['text'] for w in merge_number_reading(tamil, english)] == ['(2)', '(?) 12', '40']
+
+    def test_page_printed_in_indian_digits_keeps_them(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('प्रश्न', 0), _w('१२०', 50), _w('४५', 100), _w('(क)', 150)]
+        english = [_w('Wee', 0), _w('R20', 50), _w('84', 100), _w('(a)', 150)]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['प्रश्न', '१२०', '४५', '(क)']
+
+    def test_latin_digit_page_corrects_indian_digit_misreads(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('पृष्ठ', 0), _w('120', 50), _w('2८0', 100), _w('45', 150)]  # '2A' read as '2८0'
+        english = [_w('wa', 0), _w('120', 50), _w('2A', 100), _w('45', 150)]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['पृष्ठ', '120', '2A', '45']

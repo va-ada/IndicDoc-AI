@@ -12,6 +12,7 @@ import cv2
 import numpy as np
 from fastapi import FastAPI, File, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
 from PIL import Image
 from starlette.concurrency import run_in_threadpool
 
@@ -21,8 +22,10 @@ sys.path.append(str(PROJECT_ROOT))
 
 from ml.config import AUTHORS_CHECKPOINT, BASELINE_CHECKPOINT, CLASS_NAMES, METRICS_DIR, PROPOSED_CHECKPOINT, get_device
 from ml.inference.predict import dedupe_boxes, demo_inference, load_model, predict_single
-from ml.preprocessing.preprocess import decode_image
+from ml.preprocessing.preprocess import decode_image, pdf_page_count, render_pdf_page
 from ml.ocr import OCR_LANGUAGES, extract_document, tesseract_available
+from ml.verify import list_profiles, verify
+from ml.verify.report import to_html as verify_report_html
 from ml.inference.predict import disable_runtime_installs
 
 disable_runtime_installs()  # serving must never pip-install packages (see the function's docstring)
@@ -37,6 +40,9 @@ MAX_PIXELS = int(float(os.environ.get('INDICDOC_MAX_MEGAPIXELS', '40')) * 1_000_
 # One lock per model: Ultralytics predictors are not safe to share between threads
 MODEL_LOCKS = {name: threading.Lock() for name in CHECKPOINTS}
 OCR_CODES = set(OCR_LANGUAGES.values())
+MAX_VERIFY_PAGES = int(os.environ.get('INDICDOC_MAX_VERIFY_PAGES', '60'))
+VERIFY_DPI = 200  # every digit must be read exactly, so papers are rendered finer than for layout analysis
+SCRIPTS = {'Latin', 'Devanagari', 'Bengali', 'Gurmukhi', 'Gujarati', 'Oriya', 'Tamil', 'Telugu', 'Kannada', 'Malayalam'}
 CORS_ORIGINS = [o.strip() for o in os.environ.get('INDICDOC_CORS_ORIGINS', 'http://localhost:5173').split(',') if o.strip()]
 
 
@@ -170,3 +176,97 @@ def get_metrics():
         "baseline": _read_metrics("baseline_metrics"),
         "proposed": _read_metrics("proposed_metrics"),
     }
+
+
+# ---------------------------------------------------------------------------------------------- verification
+async def _read_upload(file: UploadFile) -> bytes:
+    contents = await file.read(MAX_UPLOAD_BYTES + 1)
+    if len(contents) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail=f"File larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB")
+    return contents
+
+
+def _pages_rgb(contents: bytes) -> list:
+    """Every page of an uploaded PDF (or the one image) as RGB arrays."""
+    if contents[:5] == b'%PDF-':
+        n = pdf_page_count(contents)
+        if n > MAX_VERIFY_PAGES:
+            raise HTTPException(status_code=413, detail=f"At most {MAX_VERIFY_PAGES} pages per paper")
+        return [cv2.cvtColor(render_pdf_page(contents, i, dpi=VERIFY_DPI, max_pixels=MAX_PIXELS), cv2.COLOR_BGR2RGB)
+                for i in range(n)]
+    try:
+        return [cv2.cvtColor(decode_image(contents, max_pixels=MAX_PIXELS), cv2.COLOR_BGR2RGB)]
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+def _read_paper(images: list, lang: str) -> list:
+    """Layout (DocLayout-YOLO, high-recall threshold) + OCR with the number pass, page by page."""
+    conf = recommended_conf('doclayout', 'all')
+    pages = []
+    for image_rgb in images:
+        with MODEL_LOCKS['doclayout']:
+            model, device = get_model('doclayout')
+            out = predict_single(model, Image.fromarray(image_rgb), 'doclayout', device, conf=conf)
+        keep = out['scores'] >= conf
+        out = dedupe_boxes({**out, 'boxes': out['boxes'][keep], 'labels': out['labels'][keep],
+                            'scores': out['scores'][keep]})
+        pages.append(extract_document(image_rgb, out, lang, number_pass=True))
+    return pages
+
+
+@app.get("/verify/profiles")
+def verify_profiles():
+    """Format profiles available to POST /verify (ml/verify/profiles/*.json)."""
+    return list_profiles()
+
+
+@app.post("/verify")
+async def verify_paper(
+    file: UploadFile = File(..., description="The paper to check (PDF or image)"),
+    source: Optional[UploadFile] = File(None, description="The source-language version, for translation parity"),
+    bank: Optional[UploadFile] = File(None, description="Earlier papers' questions: JSON [{'text', 'source'}]"),
+    lang: str = Query('auto', pattern=r'^(auto|[a-z]{3}(\+[a-z]{3})*)$', description="OCR languages of `file`"),
+    source_lang: str = Query('auto', pattern=r'^(auto|[a-z]{3}(\+[a-z]{3})*)$'),
+    bilingual: Optional[str] = Query(None, description="One bilingual paper: its two scripts, e.g. 'Latin,Devanagari'"),
+    profile: Optional[str] = Query(None, description="Format profile id from GET /verify/profiles"),
+    output: Literal['json', 'html'] = Query('json'),
+):
+    """
+    Pre-print verification of a question paper: numbering, options, marks, duplicates; with `source`, parity with the
+    source-language version; with `bank`, repeats of earlier questions; with `profile`, the document's format.
+    """
+    if not CHECKPOINTS['doclayout'].exists() or not tesseract_available():
+        raise HTTPException(status_code=503, detail="Verification needs the layout model and OCR on this server")
+    for code in (lang, source_lang):
+        if code != 'auto' and not set(code.split('+')) <= OCR_CODES:
+            raise HTTPException(status_code=400, detail=f"OCR languages must be 'auto' or codes from {sorted(OCR_CODES)}")
+    if profile is not None and profile not in list_profiles():
+        raise HTTPException(status_code=400, detail=f"Unknown profile; choose from {sorted(list_profiles())}")
+    split = None
+    if bilingual:
+        scripts = [s.strip() for s in bilingual.split(',')]
+        if len(scripts) != 2 or not set(scripts) <= SCRIPTS or source is not None:
+            raise HTTPException(status_code=400, detail=f"bilingual takes two scripts from {sorted(SCRIPTS)}, without `source`")
+        split = {scripts[0]: scripts[0].lower(), scripts[1]: scripts[1].lower()}
+    bank_items = None
+    if bank is not None:
+        try:
+            bank_items = json.loads(await _read_upload(bank))
+            assert isinstance(bank_items, list) and all(isinstance(b, dict) and 'text' in b for b in bank_items)
+        except (ValueError, AssertionError):
+            raise HTTPException(status_code=400, detail="bank must be a JSON list of {'text', 'source'} objects")
+
+    images = _pages_rgb(await _read_upload(file))
+    src_images = _pages_rgb(await _read_upload(source)) if source is not None else None
+    pages = await run_in_threadpool(_read_paper, images, lang)
+    src_pages = await run_in_threadpool(_read_paper, src_images, source_lang) if src_images else None
+    meta = {'File': file.filename or 'paper', 'Pages': len(images)}
+    if source is not None:
+        meta['Checked against'] = source.filename or 'source'
+    report = verify(pages, source_pages=src_pages, bank=bank_items, profile=profile, split_scripts=split, meta=meta)
+    if output == 'html':
+        imgs = {'paper': images, **({'source': src_images} if src_images else {})}
+        return HTMLResponse(verify_report_html(report, imgs, title='IndicDoc Verify: pre-print report'))
+    return report
+
