@@ -1,8 +1,8 @@
 """
-IndicDoc AI - Build the Expt.-11 (SDG-based Deep Learning Mini Project) lab report in the SFIT format.
+IndicDoc AI - Build the Expt.-11 (SDG-based Deep Learning Mini Project) lab report.
 
-Layout follows the department's experiment-report template (SFIT header block, Aim, Lab Outcome, Methodology,
-Expected Outcomes, Deliverables, Evaluation Criteria); the body follows the Phase-2 content list (16 sections);
+Structure follows the Expt.-11 document (Aim, Lab Outcome, Methodology, Expected Outcomes, Deliverables,
+Evaluation Criteria); the body follows the Phase-2 content list (16 sections);
 tables, figures, citations and references follow IEEE style. Every number is read from files the pipeline wrote
 (dataset/*.csv, outputs/metrics); nothing is typed in by hand. The PDF is printed with headless Chrome/Chromium.
 
@@ -272,24 +272,16 @@ def build_html(tmp: Path) -> str:
     s = []  # body sections
     a = s.append
 
-    # ------------------------------------------------------------------ front matter (template, verbatim)
+    # ------------------------------------------------------------------ front matter (Expt.-11 structure)
     team_rows = ''.join(f'<tr><td>{n}</td><td>{r}</td></tr>' for n, r in TEAM)
+    name, subtitle = TITLE.split(': ', 1)
     a(f'''
-<header class="sfit">
-  <img class="logo" src="{uri(ASSETS / 'sfit_logo.png')}" alt="SFIT logo">
-  <div class="inst">
-    <div class="name">St Francis Institute of Technology</div>
-    <div class="auto">(Autonomous Institute)</div>
-    <div class="dept">Department of Artificial Intelligence and Machine Learning</div>
-    <div class="yr">Third Year AIML Engineering (SEM-V A.Y. 2026&ndash;27)</div>
-    <div class="lab">Deep Learning Lab. Experiment Report</div>
-  </div>
-</header>
+<div class="title">{name}</div>
+<div class="subtitle">{subtitle}</div>
 <div class="expt">Expt.-11: SDG-Based Deep Learning Mini Project</div>
 <div class="rule"></div>
 
 <table class="meta">
-<tr><th>Project title</th><td>{TITLE}</td></tr>
 <tr><th>Team</th><td><table class="team"><tr><th>Name</th><th>Roll No.</th></tr>{team_rows}</table></td></tr>
 <tr><th>Project guide</th><td>{GUIDE}</td></tr>
 <tr><th>SDGs addressed</th><td>SDG 4 (Quality Education), SDG 9 (Industry, Innovation and Infrastructure),
@@ -881,15 +873,9 @@ p {{ margin: 0 0 7pt; text-align: justify; hyphens: auto; }}
 b, strong, th, h2, h3 {{ font-weight: 700; }}
 .tt, pre {{ font-family: 'CMU Typewriter', monospace; }}
 .tt {{ font-size: 0.92em; }}
-header.sfit {{ position: relative; min-height: 1.15in; }}
-header.sfit .logo {{ position: absolute; left: 0.08in; top: 0.02in; width: 1.12in; height: 1.12in; object-fit: contain; }}
-header.sfit .inst {{ text-align: center; padding-left: 1.15in; }}
-.inst .name {{ font-size: 17.3pt; font-weight: 700; line-height: 1.15; }}
-.inst .auto {{ font-size: 9.5pt; }}
-.inst .dept {{ font-size: 12pt; font-weight: 700; margin-top: 5pt; }}
-.inst .yr {{ font-size: 12pt; margin-top: 4pt; }}
-.inst .lab {{ font-size: 12pt; font-weight: 700; }}
-.expt {{ text-align: center; font-size: 12pt; margin: 18pt 0 12pt; }}
+.title {{ text-align: center; font-size: 20.7pt; font-weight: 700; line-height: 1.15; }}
+.subtitle {{ text-align: center; font-size: 13pt; margin-top: 6pt; line-height: 1.3; }}
+.expt {{ text-align: center; font-size: 12pt; margin: 14pt 0 12pt; }}
 .rule {{ border-top: 1px solid #000; border-bottom: 1px solid #000; height: 3px; margin-bottom: 14pt; }}
 table.meta {{ width: 100%; border-collapse: collapse; font-size: 10pt; margin: 0 0 6pt; }}
 table.meta > tbody > tr > th {{ text-align: left; width: 1.35in; vertical-align: top; padding: 2.5pt 6pt 2.5pt 0; }}
