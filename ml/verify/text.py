@@ -90,12 +90,12 @@ _MARK_WORDS = r'(?:marks?|mks?|अंक|गुण|மதிப்பெண்[\
 _MARKS_BRACKETED = re.compile(rf'[\[(]\s*(\d{{1,2}}(?:\.5)?)\s*(?:{_MARK_WORDS}|M)\s*[\])]', re.IGNORECASE)
 _MARKS_EOL = re.compile(rf'(\d{{1,2}}(?:\.5)?)\s*{_MARK_WORDS}\s*[.)]?\s*$', re.IGNORECASE | re.MULTILINE)
 _MARKS_BRACKET_EOL = re.compile(r'\[\s*(\d{1,2}(?:\.5)?)\s*\]\s*$', re.MULTILINE)
-_TOTAL = re.compile(rf'(?:max(?:imum)?\.?\s*marks?|total\s*marks?|full\s*marks?|पूर्णांक|अधिकतम\s*अंक|कुल\s*अंक|'
+_TOTAL = re.compile(rf'(?:max(?:imum)?\.?\s*marks?|total\s*marks?|full\s*marks?|पूर्णा[ंँ]?क|अधिकतम\s*अंक|कुल\s*अंक|'
                     rf'மொத்த\s*மதிப்பெண்[\w\u0900-\u0DFF]*|அதிகபட்ச\s*மதிப்பெண்[\w\u0900-\u0DFF]*|পূর্ণমান|মোট\s*নম্বর|કુલ\s*ગુણ|ਕੁੱਲ\s*ਅੰਕ|'
                     rf'ମୋଟ\s*ନମ୍ବର|మొత్తం\s*మార్కులు|ಒಟ್ಟು\s*ಅಂಕ[\w\u0900-\u0DFF]*|ആകെ\s*മാർക്ക്[\w\u0900-\u0DFF]*)\s*[:\-–]?\s*(\d{{1,4}})',
                     re.IGNORECASE)
 _EACH = re.compile(rf'(?:each\s+question\s+carries|प्रत्येक\s+प्रश्न|ஒவ்வொரு\s+(?:கேள்விக்கும்|வினாவுக்கும்))\D{{0,20}}?'
-                   rf'(\d{{1,2}}(?:\.5)?)\s*{_MARK_WORDS}', re.IGNORECASE)
+                   rf'(\d{{1,2}}(?:\.5)?)[\s।|]*{_MARK_WORDS}', re.IGNORECASE)  # '1 । अंक': OCR adds a danda
 
 
 def marks_in(text: str) -> Optional[float]:

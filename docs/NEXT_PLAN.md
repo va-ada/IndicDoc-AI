@@ -1,4 +1,31 @@
-# Next plan: IndicDoc AI → **Sulabh Path** (accessible Indian-language study material)
+# Next plan: **IndicDoc Verify** (pre-print checking of question papers and their translations)
+
+> Status: direction changed 2026-10-24, on the guide's brief to build something used in the real world where it is
+> not yet used. Research summary and market: [PRODUCT.md](PRODUCT.md). The accessible-study-material plan below
+> (2026-10-22) is kept as a second use of the same pipeline; its HTML/EPUB3 export is built and stays in the app.
+
+## Why this direction
+- Exam papers are translated into up to 13 languages and vetted by hand; errors have led to grace marks, re-exams and
+  court cases (NEET 2018, KPSC 2024-25, APPSC, UGC-NET June 2026, MBBS 2026).
+- No product checks a paper against its translations: answer-sheet tools grade answers, translation-QA tools read
+  plain sentences, court-filing defect detection already exists (Supreme Court + IIT Madras; Nyaay.AI).
+- It uses exactly what the project already has: the IndicDLP layout model labels questions, options and answers.
+
+## Checklist
+- [x] `ml/verify`: question parsing, structure checks, translation parity, repeats, format profiles, HTML report
+- [x] Number pass in `ml/ocr` (English re-read of digits), layout-based option splitting
+- [x] `POST /verify`, Verify Paper tab in the app, tests
+- [x] Benchmark with injected errors (development + test sets), ablations, figures
+- [x] Phase-2 deck, Expt.-11 report, IEEE paper rewritten around IndicDoc Verify
+- [ ] Run the benchmark end to end with the real layout model on the Mac (`--layout` from detections instead of the
+      renderer's boxes) and add a `model` mode to `scripts/evaluate_verify.py`
+- [ ] Pilot: real pre-print papers from a university exam cell or a state board; minutes saved per paper
+- [ ] Meaning check with a cross-lingual sentence model (hook exists: `verify(..., semantic=...)`)
+- [ ] Number words, formulas, answer-key consistency
+
+---
+
+# Earlier plan (2026-10-22): **Sulabh Path** (accessible Indian-language study material)
 
 > Status: plan agreed 2026-10-22. Track progress in the checklist at the bottom.
 

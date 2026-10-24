@@ -1,10 +1,12 @@
 """
 IndicDoc AI - Build the Expt.-11 (SDG-based Deep Learning Mini Project) lab report.
 
-Structure follows the Expt.-11 document (Aim, Lab Outcome, Methodology, Expected Outcomes, Deliverables,
-Evaluation Criteria); the body follows the Phase-2 content list (16 sections);
-tables, figures, citations and references follow IEEE style. Every number is read from files the pipeline wrote
-(dataset/*.csv, outputs/metrics); nothing is typed in by hand. The PDF is printed with headless Chrome/Chromium.
+The project as delivered is IndicDoc Verify: offline, layout-aware pre-print checking of question papers and their
+translations in 12 Indian languages. Structure follows the Expt.-11 document (Aim, Lab Outcome, Methodology,
+Expected Outcomes, Deliverables, Evaluation Criteria); the body follows the Phase-2 content list (16 sections);
+tables, figures, citations and references follow IEEE style, with references mostly from 2021-2026. Every number is
+read from files the pipeline wrote (dataset/*.csv, outputs/metrics); nothing is typed in by hand. The PDF is printed
+with headless Chrome/Chromium.
 
 Usage:
     python scripts/build_lab_report.py        # -> docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf
@@ -29,14 +31,17 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 REPORT_DIR = PROJECT_ROOT / 'docs' / 'report'
 ASSETS = REPORT_DIR / 'assets'
 METRICS = PROJECT_ROOT / 'outputs' / 'metrics'
+FIGURES = PROJECT_ROOT / 'docs' / 'figures'
 PDF_PATH = REPORT_DIR / 'IndicDoc_AI_Expt11_Lab_Report.pdf'
 
-TITLE = 'IndicDoc AI: Where Do Layout Detectors Fail on Indian Documents? A Study of Script, Domain and Scan Quality'
+TITLE = ('IndicDoc Verify: Deep-Learning Layout Analysis for Pre-Print Checking of Indian Question Papers '
+         'and Their Translations')
 TEAM = [('Riddhi Patil', 39), ('Mariam Badure', 40), ('Prashant Jha', 41), ('Aditya Soni', 42)]
 GUIDE = 'Dr. Joanne Gomes'
 REPO = 'https://github.com/va-ada/IndicDoc-AI'
 MODEL_NAMES = {'authors': 'DocLayout-YOLO (IndicDLP authors)', 'proposed': 'YOLOv8s (ours)',
                'baseline': 'Faster R-CNN (ours)'}
+Q_LABELS = ['first-level-question', 'second-level-question', 'third-level-question', 'options', 'answer']
 
 
 # ----------------------------------------------------------------------------------------------- helpers
@@ -104,6 +109,25 @@ def load():
     return m, study, ocr, tests, langs, classes, base_hist, yolo_hist
 
 
+# ------------------------------------------------------------------------------------------------- data
+def jload(name: str) -> dict:
+    p = METRICS / name
+    return json.loads(p.read_text()) if p.exists() else {}
+
+
+def load():
+    m = {k: json.loads((METRICS / f'{k}_metrics.json').read_text()) for k in MODEL_NAMES}
+    study = json.loads((METRICS / 'study_summary.json').read_text())
+    ocr = json.loads((METRICS / 'ocr_evaluation.json').read_text())
+    tests = json.loads((METRICS / 'test_suite.json').read_text())
+    langs = pd.read_csv(PROJECT_ROOT / 'dataset' / 'language_split.csv')
+    classes = pd.read_csv(PROJECT_ROOT / 'dataset' / 'class_counts.csv')
+    base_hist = json.loads((METRICS / 'baseline_training_history.json').read_text())
+    yolo_hist = pd.read_csv(METRICS / 'proposed_training_history.csv')
+    yolo_hist.columns = [c.strip() for c in yolo_hist.columns]
+    return m, study, ocr, tests, langs, classes, base_hist, yolo_hist
+
+
 def training_figure(base_hist: dict, yolo_hist: pd.DataFrame, out: Path) -> Path:
     """Loss curves of both trained models and the YOLOv8s validation mAP per epoch (measured)."""
     plt.rcParams.update({'font.family': 'STIXGeneral', 'mathtext.fontset': 'stix', 'font.size': 9})
@@ -136,29 +160,6 @@ def training_figure(base_hist: dict, yolo_hist: pd.DataFrame, out: Path) -> Path
     return out
 
 
-def domain_figure(out: Path) -> Path:
-    """mAP@50 per document domain for DocLayout-YOLO and YOLOv8s on clean test pages (from the robustness study)."""
-    rob = json.loads((METRICS / 'study_robustness.json').read_text())
-    a, p = rob['doclayout']['clean']['per_domain'], rob['yolov8']['clean']['per_domain']
-    doms = sorted(a, key=lambda d: a[d]['map50'])
-    plt.rcParams.update({'font.family': 'STIXGeneral', 'font.size': 9})
-    fig, ax = plt.subplots(figsize=(6.0, 3.1))
-    y = range(len(doms))
-    ax.barh([i + 0.2 for i in y], [a[d]['map50'] for d in doms], 0.4, color='#1E2A5A', label='DocLayout-YOLO')
-    ax.barh([i - 0.2 for i in y], [p[d]['map50'] for d in doms], 0.4, color='#B8B8B8', label='YOLOv8s (ours)')
-    ax.set_yticks(list(y), [f"{d} (n={a[d]['images']})" for d in doms])
-    ax.set_xlabel('mAP@50 on clean test pages')
-    ax.set_xlim(0, 1)
-    ax.grid(axis='x', alpha=0.3, lw=0.5)
-    ax.legend(frameon=False, loc='lower right', fontsize=8)
-    for sp in ('top', 'right'):
-        ax.spines[sp].set_visible(False)
-    fig.tight_layout()
-    fig.savefig(out, dpi=220)
-    plt.close(fig)
-    return out
-
-
 # ---------------------------------------------------------------------------------------------- diagrams
 def svg_box(x, y, w, h, title, sub='', fill='#F4F4F4', bold=True):
     t = html.escape(title)
@@ -182,50 +183,49 @@ SVG_DEFS = ('<defs><marker id="ah" markerWidth="8" markerHeight="8" refX="7" ref
 
 
 def block_diagram() -> str:
-    W, bw, bh, gap = 684, 118, 58, 20
+    """IndicDoc Verify: two lanes of processing (paper, source version) meeting in the checks."""
+    W, bw, bh, gap = 684, 118, 66, 20
     xs = [6 + i * (bw + gap) for i in range(5)]
-    y1, y2 = 70, 178
-    g = [f'<svg viewBox="0 0 {W} 250" xmlns="http://www.w3.org/2000/svg" font-family="CMU Serif, serif">', SVG_DEFS]
-    # interface lane
-    g.append(svg_box(xs[0], 4, bw, 40, 'Streamlit web app', 'upload, view, download', '#FFFFFF'))
-    g.append(svg_box(xs[1], 4, bw, 40, 'REST API (FastAPI)', '/analyze, /metrics', '#FFFFFF'))
-    g.append(arrow(xs[0] + bw / 2, 44, xs[0] + bw / 2, y1, dashed=True))
-    g.append(arrow(xs[1] + bw / 2, 44, xs[0] + bw - 10, y1, dashed=True))
-    g.append(svg_box(xs[3], 4, bw, 40, 'Evaluation', 'mAP, P / R / F1, CI, RI', '#FFFFFF'))
-    g.append(arrow(xs[3] + bw / 2, y1, xs[3] + bw / 2, 44, dashed=True))
-    top = [('Input page', 'image / PDF page|12 languages'), ('Decode & check', 'PNG, JPG, TIFF, PDF|size limit'),
-           ('Pre-process', 'RGB, letterbox|1024 px (640 px ours)'),
-           ('Layout detector', 'DocLayout-YOLO | YOLOv8s|Faster R-CNN'),
-           ('Post-process', 'confidence mode|duplicate removal')]
+    y0, y1, y2 = 4, 74, 190
+    g = [f'<svg viewBox="0 0 {W} 272" xmlns="http://www.w3.org/2000/svg" font-family="CMU Serif, serif">', SVG_DEFS]
+    g.append(svg_box(xs[0], y0, bw, 46, 'Streamlit / REST API', 'Verify Paper · /verify', '#FFFFFF'))
+    g.append(svg_box(xs[1], y0, bw, 46, 'Source version', 'optional, any language', '#FFFFFF'))
+    g.append(svg_box(xs[2], y0, bw, 46, 'Question bank', 'earlier papers', '#FFFFFF'))
+    g.append(svg_box(xs[3], y0, bw, 46, 'Format profile', 'JSON rules', '#FFFFFF'))
+    top = [('Paper PDF / scans', 'rendered at 200 dpi|12 languages'), ('Layout detector', 'DocLayout-YOLO|questions, options'),
+           ('Indic OCR', 'Tesseract, the page|script\'s own model'), ('Number pass', 'English model; digits|must agree'),
+           ('Build questions', 'number, stem, options|(by layout gaps), marks')]
     for i, (t, s) in enumerate(top):
-        fill = '#E3E7F2' if i == 3 else '#F4F4F4'
-        g.append(svg_box(xs[i], y1, bw, bh + 8, t, s, fill))
+        g.append(svg_box(xs[i], y1, bw, bh, t, s, '#E3E7F2' if i == 1 else '#F4F4F4'))
         if i:
             g.append(arrow(xs[i - 1] + bw, y1 + 33, xs[i], y1 + 33))
-    bottom = [('Outputs', 'boxes + labels|Markdown / JSON|HTML / EPUB3'), ('Reading order', 'regions sorted|into columns'),
-              ('OCR', 'Tesseract 5, one|pass, words→regions'), ('Script probe', '12 script models|on one region')]
-    bx = [xs[1], xs[2], xs[3], xs[4]]
+    g.append(arrow(xs[0] + bw / 2, y0 + 46, xs[0] + bw / 2, y1, dashed=True))
+    g.append(arrow(xs[1] + bw / 2, y0 + 46, xs[1] + bw / 2, y1, dashed=True))
+    bottom = [('Report', 'verdict, findings|pages outlined, HTML/JSON'), ('Format check', 'required elements,|order, bilingual'),
+              ('Repeat check', 'similar to an|earlier question'), ('Parity check', 'align versions; numbers,|options, marks'),
+              ('Structure check', 'numbering, duplicates,|options, marks total')]
     for i, (t, s) in enumerate(bottom):
-        g.append(svg_box(bx[i], y2, bw, bh + 8, t, s))
-    g.append(arrow(xs[4] + bw / 2, y1 + bh + 8, xs[4] + bw / 2, y2))
-    for i in range(3, 0, -1):
-        g.append(arrow(bx[i], y2 + 33, bx[i - 1] + bw, y2 + 33))
-    g.append(f'<rect x="{xs[0]}" y="{y2 + 8}" width="12" height="10" fill="#E3E7F2" stroke="#222" stroke-width="0.7"/>')
-    g.append(f'<text x="{xs[0] + 17}" y="{y2 + 17}" font-size="9" font-style="italic">deep-learning stage</text>')
+        g.append(svg_box(xs[i], y2, bw, bh, t, s, '#F4F4F4'))
+    g.append(arrow(xs[4] + bw / 2, y1 + bh, xs[4] + bw / 2, y2))
+    for i in range(4, 0, -1):
+        g.append(arrow(xs[i], y2 + 33, xs[i - 1] + bw, y2 + 33))
+    g.append(f'<rect x="{xs[0]}" y="{y2 + bh + 8}" width="12" height="10" fill="#E3E7F2" stroke="#222" stroke-width="0.7"/>')
+    g.append(f'<text x="{xs[0] + 17}" y="{y2 + bh + 17}" font-size="9" font-style="italic">deep-learning stage; '
+             'the source version takes the same path; dashed: optional inputs</text>')
     g.append('</svg>')
     return ''.join(g)
 
 
 def architecture_diagram(params: dict) -> str:
     rows = [
-        (f"DocLayout-YOLO [9]  ({params['authors']:.1f} M params, used as released)",
+        (f"DocLayout-YOLO [11]  ({params['authors']:.1f} M params, used by IndicDoc Verify)",
          [('Input', '1024×1024×3'), ('Backbone', 'CSP + GL-CRM|global-to-local'), ('Neck', 'PAN pyramid|3 scales'),
           ('Head', 'YOLOv10-style|NMS-free'), ('Output', 'N × (box, 42 scores)')]),
-        (f"YOLOv8s [11]  ({params['proposed']:.1f} M params, fine-tuned here)",
+        (f"YOLOv8s [13]  ({params['proposed']:.1f} M params, fine-tuned here)",
          [('Input', '640×640×3'), ('Backbone', 'CSPDarknet|C2f + SPPF'), ('Neck', 'PAN-FPN|3 scales'),
           ('Head', 'decoupled|anchor-free'), ('Output', 'boxes + 42 classes')]),
-        (f"Faster R-CNN [10]  ({params['baseline']:.1f} M params, fine-tuned here)",
-         [('Input', 'short side 640–1024'), ('Backbone', 'ResNet-50 [15]|frozen BN'), ('Neck', 'FPN [16]|5 levels'),
+        (f"Faster R-CNN [12]  ({params['baseline']:.1f} M params, fine-tuned here)",
+         [('Input', 'short side 640–1024'), ('Backbone', 'ResNet-50|frozen BN'), ('Neck', 'FPN|5 levels'),
           ('RPN + RoIAlign', 'region proposals'), ('Box head', '43 outputs|(42 + background)')]),
     ]
     W, bw, bh, gap = 684, 118, 40, 20
@@ -244,32 +244,102 @@ def architecture_diagram(params: dict) -> str:
 
 
 # ------------------------------------------------------------------------------------------------- report
+REFS = [
+    # literature survey (Table II)
+    'O. Nath, S. Kukkala, M. Khapra, and R. K. Sarvadevabhatla, &ldquo;IndicDLP: A foundational dataset for '
+    'multi-lingual and multi-domain document layout parsing,&rdquo; in <i>Proc. Int. Conf. Document Analysis and '
+    'Recognition (ICDAR)</i>, 2025, pp. 23&ndash;39.',
+    'B. V. Kasuba <i>et al.</i>, &ldquo;PLATTER: A page-level handwritten text recognition system for Indic '
+    'scripts,&rdquo; arXiv:2502.06172, 2025.',
+    'A. Mondal <i>et al.</i>, &ldquo;UniTabBank: A large scale multi-lingual, multi-layout, multi-type, multi-format '
+    'dataset for table detection,&rdquo; in <i>Proc. IEEE/CVF Winter Conf. Applications of Computer Vision (WACV)</i>, 2026.',
+    'V. Pal, E. Kanoulas, A. Yates, and M. de Rijke, &ldquo;Table question answering for low-resourced Indic '
+    'languages,&rdquo; arXiv:2410.03576, 2024.',
+    'Y. Xu <i>et al.</i>, &ldquo;LayoutXLM: Multimodal pre-training for multilingual visually-rich document '
+    'understanding,&rdquo; arXiv:2104.08836, 2021.',
+    'B. V. Kasuba, P. Chaudhuri, and G. Ramakrishnan, &ldquo;DRISHTIKON: Visual grounding at multiple granularities '
+    'in documents,&rdquo; arXiv:2506.21316, 2025.',
+    'S. Bhattacharyya <i>et al.</i>, &ldquo;Adapting vision-language models for Hindi OCR,&rdquo; IIIT Hyderabad, 2025.',
+    'A. R. Dumada and S. G. Shah, &ldquo;Incorporate structure and content for Devanagari table extraction,&rdquo; '
+    '<i>Int. J. Sci. Adv. Technol. (IJSAT)</i>, vol. 17, no. 1, 2026.',
+    'M. Babayeva, J. Dunlap, M. Sn&#283;tinov&aacute;, and R. Widenhorn, &ldquo;Translating the Force Concept '
+    'Inventory in the age of AI,&rdquo; arXiv:2508.13908, 2025.',
+    'R. Rei <i>et al.</i>, &ldquo;CometKiwi: IST-Unbabel 2022 submission for the quality estimation shared '
+    'task,&rdquo; in <i>Proc. 7th Conf. Machine Translation (WMT)</i>, 2022, pp. 634&ndash;645.',
+    # models and tools
+    'Z. Zhao, H. Kang, B. Wang, and C. He, &ldquo;DocLayout-YOLO: Enhancing document layout analysis through '
+    'diverse synthetic data and global-to-local adaptive perception,&rdquo; arXiv:2410.12628, 2024.',
+    'S. Ren, K. He, R. Girshick, and J. Sun, &ldquo;Faster R-CNN: Towards real-time object detection with region '
+    'proposal networks,&rdquo; in <i>Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)</i>, 2015, pp. 91&ndash;99.',
+    'G. Jocher, A. Chaurasia, and J. Qiu, &ldquo;Ultralytics YOLOv8,&rdquo; 2023. [Online]. Available: '
+    '<span class="tt">https://github.com/ultralytics/ultralytics</span>',
+    'Y. Chen <i>et al.</i>, &ldquo;RoDLA: Benchmarking the robustness of document layout analysis models,&rdquo; in '
+    '<i>Proc. IEEE/CVF Conf. Comput. Vis. Pattern Recognit. (CVPR)</i>, 2024, pp. 15556&ndash;15566.',
+    'J. Ansel <i>et al.</i>, &ldquo;PyTorch 2: Faster machine learning through dynamic Python bytecode '
+    'transformation and graph compilation,&rdquo; in <i>Proc. ACM ASPLOS</i>, 2024.',
+    'S. Verma <i>et al.</i>, &ldquo;MILU: A multi-task Indic language understanding benchmark,&rdquo; in <i>Proc. '
+    'NAACL</i>, 2025.',
+    'AI4Bharat, &ldquo;IndicDLP dataset,&rdquo; Hugging Face, 2025. [Online]. Available: '
+    '<span class="tt">https://huggingface.co/datasets/ai4bharat/indicdlp</span>',
+    'O. Nath <i>et al.</i>, &ldquo;IndicDLP model checkpoints,&rdquo; Zenodo, record 15881917, 2025, CC-BY 4.0.',
+    'Tesseract OCR, version 5, tessdata_best models, 2021&ndash;2025. [Online]. Available: '
+    '<span class="tt">https://github.com/tesseract-ocr/tesseract</span>; tesseract.js 7, 2025.',
+    'United Nations General Assembly, &ldquo;Transforming our world: The 2030 Agenda for Sustainable '
+    'Development,&rdquo; Resolution A/RES/70/1, 2015.',
+    # evidence of the problem (news and official records)
+    '&ldquo;Madras HC orders CBSE to give 196 marks to Tamil medium students, for errors in 49 questions,&rdquo; '
+    '<i>The News Minute</i>, Jul. 2018; Supreme Court of India, judgment in CBSE v. T. K. Rangarajan, Nov. 2018.',
+    '&ldquo;NEET UG 2021: NTA to examine alleged error in Hindi translation of physics question,&rdquo; '
+    '<i>Careers360</i>, 2021.',
+    '&ldquo;When Kannada was lost in translation: KPSC forces a do-over,&rdquo; <i>The South First</i>, 2024; '
+    '&ldquo;Conduct KAS prelims examination again,&rdquo; <i>ETV Bharat</i>, Mar. 2025.',
+    '&ldquo;Supreme Court issues notice to Andhra Pradesh Public Service Commission over primacy to English '
+    'translation despite holding test in Telugu,&rdquo; <i>India Legal</i>.',
+    '&ldquo;NTA admits defects in 3 UGC-NET papers, orders re-tests in September,&rdquo; <i>The Week</i>, Aug. 2026; '
+    '&ldquo;UGC-NET re-exam for English, Commerce, Sociology on September 9-10,&rdquo; <i>SCC Online</i>, Aug. 2026.',
+    '&ldquo;HC grants relief to MBBS student, directs NTRUHS to give 1 compensatory mark for question paper '
+    'error,&rdquo; <i>Medical Dialogues</i>, Jul. 2026.',
+    'Rajya Sabha, Unstarred Question 2356 (AI tools in the Supreme Court e-filing system), Mar. 2025; DAKSH, '
+    '&ldquo;The silent gatekeeper,&rdquo; 2025.',
+    f'P. Jha, A. Soni, R. Patil, and M. Badure, &ldquo;IndicDoc AI,&rdquo; source code, 2026. [Online]. Available: '
+    f'<span class="tt">{REPO}</span>',
+]
+
+
 def build_html(tmp: Path) -> str:
     m, study, ocr, tests, langs, classes, base_hist, yolo_hist = load()
     A, P, B = m['authors'], m['proposed'], m['baseline']
+    V, VN = jload('verify_benchmark_oracle.json'), jload('verify_benchmark_noisy.json')
+    V_NP, V_NG = jload('verify_benchmark_oracle_no_number_pass.json'), jload('verify_benchmark_oracle_no_geometry.json')
+    VP = jload('verify_benchmark_oracle_posthoc.json')
     N = Numbering()
 
     pages = {s: int(langs[s].sum()) for s in ('train', 'val', 'test')}
     boxes = {s: int(classes[s].sum()) for s in ('train', 'val', 'test')}
     total_pages, total_boxes = sum(pages.values()), sum(boxes.values())
     para_share = classes.loc[classes.class_name == 'paragraph', 'total'].iloc[0] / total_boxes
-    rare = int((classes['train'] < 100).sum())
+    cnt = dict(zip(classes.class_name, classes.total))
+    pages_csv = pd.read_csv(PROJECT_ROOT / 'dataset' / 'pages.csv')
+    qp_pages = int((pages_csv.domain == 'question papers').sum())
     params = {k: m[k]['parameters'] / 1e6 for k in m}
     b_minutes = base_hist['epoch_end_seconds'][-1] / 60
     y_minutes = float(yolo_hist['time'].iloc[-1]) / 60
     y_epochs, b_epochs = len(yolo_hist), len(base_hist['train_losses'])
-    ci, ri, rmap = study['language_ci'], study['robustness_index'], study['robust_map50']
-    script_ok, script_n = ocr['script_detection_correct'], ocr['pages']
-    osd_ok = 70  # Tesseract OSD on the same 120 pages (scripts/evaluate_ocr.py, reported in the paper and slides)
+    qap = {k: A['per_class_ap50'].get(k, 0) for k in Q_LABELS}
+    vo, vq, vl = V['overall'], V['by_quality'], V['by_language']
+    cl, dg = vq['clean_render'], vq['scan_degraded']
+    n_pairs, n_err = vo['pairs'], vo['errors_injected']
+    labels = V['labels']
 
     loss_png = training_figure(base_hist, yolo_hist, tmp / 'fig_training.png')
-    F = PROJECT_ROOT / 'docs' / 'figures'
+    F = FIGURES
     PL = PROJECT_ROOT / 'outputs' / 'plots'
-    PR = PROJECT_ROOT / 'outputs' / 'predictions'
     SC = PROJECT_ROOT / 'docs' / 'screenshots'
-    DS = PROJECT_ROOT / 'dataset' / 'samples'
 
-    s = []  # body sections
+    def pct(x):
+        return f'{100 * x:.0f}%'
+
+    s = []
     a = s.append
 
     # ------------------------------------------------------------------ front matter (Expt.-11 structure)
@@ -302,9 +372,10 @@ performance.</p>
 <p>The project is carried out in multiple phases to ensure systematic development and implementation:</p>
 <ol class="phases">
 <li><b>Topic Selection (SDG Mapping):</b> Identify a real-world problem aligned with Sustainable Development Goals
-(SDGs). <i>Done:</i> layout understanding and text extraction for Indian-language documents (Section 1).</li>
+(SDGs). <i>Done:</i> errors in Indian exam papers and their translations, which reach lakhs of candidates
+(Section 1).</li>
 <li><b>Phase-1: Literature Survey:</b> Review 4&ndash;8 research papers and identify the research gap.
-<i>Done:</i> eight papers reviewed, three gaps identified (Sections 2&ndash;3).</li>
+<i>Done:</i> ten papers from 2021&ndash;2026 reviewed, four gaps identified (Sections 2&ndash;3).</li>
 <li><b>Phase-2: Final Project Implementation with Performance Analysis:</b> Develop system architecture, collect
 dataset, and implement DL model. Analyze results, improve performance, design front end, integrate the system.
 Demonstrate the finished project and submit the code along with final working project. <i>Done:</i>
@@ -313,67 +384,83 @@ Sections 4&ndash;16.</li>
 in <span class="tt">paper/</span>.</li>
 </ol>
 
-<div class="abstract"><b><i>Abstract</i></b>&mdash;Indian offices, schools and archives hold millions of scanned
-pages in a dozen scripts. Before such a page can be searched, read aloud or converted for a blind reader, a system
-must find its parts (paragraphs, headings, tables, figures, page numbers) and then read the text in the right
-order. We fine-tuned two convolutional object detectors, Faster R-CNN and YOLOv8s, on a language-balanced
-{pages['train']:,}-page subset of the IndicDLP dataset [1] and compared them with the DocLayout-YOLO model released
-by the dataset's authors on the same {pages['test']} held-out test pages covering 12 languages and 42 region
-labels. The released model reaches {f3(A['map50'])} mAP@50 ({f3(A['map50_95'])} mAP@50:95); our YOLOv8s reaches
-{f3(P['map50'])} and our Faster R-CNN {f3(B['map50'])} after about one hour of training each on a laptop GPU. We
-add two simple measures, a Consistency Index and a Robustness Index, and find that accuracy is fairly even across
-languages (CI {ci['authors']:.2f}) but not across document types (CI {study['domain_ci']['authors']:.2f}), and that
-the best model keeps {study['mean_ri']['authors']:.0%} of its accuracy on damaged scans. A region-based script probe
-picks the right OCR language on {script_ok}/{script_n} pages (Tesseract's own detector: {osd_ok}/{script_n}). The
-work is delivered as IndicDoc&nbsp;AI, a web app and REST API in one offline Docker image, with accessible HTML and
-EPUB3 export for screen-reader users.</div>
-<p class="kw"><b><i>Index Terms</i></b>&mdash;document layout analysis, Indian languages, object detection,
-transfer learning, robustness, OCR, accessibility.</p>
+<div class="abstract"><b><i>Abstract</i></b>&mdash;Indian exam papers are set in one language and translated into
+Hindi and regional languages; every version is checked by hand, and errors keep reaching candidates: 49 wrong
+questions in the Tamil NEET 2018 paper, 59 errors and a re-exam in the 2024 Karnataka civil-services paper, re-tests
+of three UGC-NET papers in 2026. We present IndicDoc&nbsp;Verify, an offline system that reads a printed paper in
+any of 12 Indian languages and flags structural and numerical errors, and every difference from its source version,
+before printing. A deep-learning layout detector finds the questions, sub-questions, options and answers on each
+page (DocLayout-YOLO, AP@50 {min(qap.values()):.2f}&ndash;{max(qap.values()):.2f} on these labels, chosen after
+comparing it with a YOLOv8s and a Faster R-CNN that we fine-tuned); Tesseract reads the text with an English
+<i>number pass</i> that must agree on every digit; the questions are then checked for numbering, duplicates,
+options, marks and repeats of earlier papers, and two language versions are compared question by question without
+any translation. On a benchmark of {n_pairs} English&ndash;Hindi and English&ndash;Tamil paper pairs with injected
+errors, read with real OCR, the system finds {pct(cl['found_at_place'])} of the errors at the right question on
+born-digital papers ({pct(dg['found_at_place'])} on scan-degraded pages) with
+{cl['false_alarms_per_clean_pair']:.1f} false alarms per clean pair. It ships as a web app, REST API and offline
+Docker image.</div>
+<p class="kw"><b><i>Index Terms</i></b>&mdash;document layout analysis, Indian languages, object detection, OCR,
+question paper verification, translation quality, examinations.</p>
 ''')
 
     # ------------------------------------------------------------------ 1. SDG mapping
     a('<h2>1. Topic Selection and SDG Mapping</h2>')
-    a('<p><b>Problem.</b> Most document-AI tools are built and tested on English. Indian documents use many scripts '
-      '(Devanagari, Bengali, Tamil, Telugu, Kannada, Malayalam, Gujarati, Gurmukhi, Odia, Latin) and dense formats '
-      '(multi-column newspapers, question papers with nested sub-questions, legal acts with numbered clauses). '
-      'If the layout step fails, OCR reads columns straight across and every later step fails with it. This hits '
-      'hardest the people who depend on machines to read for them: blind and low-vision students, who study from '
-      'state-board textbooks that are mostly available only as scans, and citizens who need government notices in '
-      'their own language. The mapping to the SDG targets of the 2030 Agenda [20] is given in Table I.</p>')
-    a(N.table('Mapping of the project to the Sustainable Development Goals', ['SDG', 'Target', 'How IndicDoc AI contributes'], [
-        ['SDG 4 Quality Education', '4.5: equal access to education for persons with disabilities',
-         'Turns scanned textbook and exam pages into structured, screen-reader-ready HTML / EPUB3 in their own language'],
-        ['SDG 9 Industry, Innovation &amp; Infrastructure', '9.5: enhance research and technological capability',
-         'Open, offline, reproducible document-AI pipeline for 12 Indian languages; measured study of its weak spots'],
-        ['SDG 10 Reduced Inequalities', '10.2: social inclusion irrespective of disability, ethnicity or origin',
-         'Serves speakers of 11 Indian languages besides English, which commercial tools cover unevenly'],
-        ['SDG 16 Strong Institutions', '16.10: public access to information',
-         'Makes scanned government circulars, acts and forms searchable and readable'],
+    a('<p><b>Problem.</b> National and state exams in India are bilingual or multilingual: NEET-UG is offered in 13 '
+      'languages, and UPSC, the state Public Service Commissions, school boards and universities print papers in '
+      'English and a regional language. Each version is checked by hand before printing. When the check fails, a '
+      'number, an option, a mark or a whole question differs between versions, and candidates who chose a regional '
+      'language are judged on a different paper. Table I lists recent cases; each ended in grace marks, a re-exam or '
+      'a court case. No tool checks a paper and its translations automatically, and a confidential pre-print paper '
+      'cannot be sent to a cloud service. The mapping to the SDG targets of the 2030 Agenda [20] is given in Table II.</p>')
+    a(N.table('Recent errors in Indian exam papers', ['Exam', 'What went wrong', 'Consequence', 'Ref.'], [
+        ['NEET-UG 2018', 'Errors in 49 questions of the Tamil version', 'HC ordered 196 grace marks; Supreme Court set '
+         'it aside and asked for bilingual subject experts', '[21]'],
+        ['NEET-UG 2021', 'A term dropped in the Hindi version of a physics question', 'NTA agreed to examine it before '
+         'the Supreme Court', '[22]'],
+        ['KPSC KAS 2024', '59 errors in the Kannada paper; machine translation suspected', 'Re-exam for about 2 lakh '
+         'candidates, errors again', '[23]'],
+        ['APPSC Group-I', '51 of 120 questions alleged mistranslated into Telugu', 'Supreme Court notice', '[24]'],
+        ['UGC-NET Jun 2026', 'Factual, typographical and translation errors; questions repeated from earlier papers',
+         'Re-test of three papers on 9&ndash;10 Sep 2026', '[25]'],
+        ['MBBS 2026 (NTRUHS)', 'The same MCQ printed twice', 'High Court ordered a compensatory mark', '[26]'],
+    ], align='llll', cls='split small'))
+    a(N.table('Mapping of the project to the Sustainable Development Goals', ['SDG', 'Target', 'How IndicDoc Verify contributes'], [
+        ['SDG 4 Quality Education', '4.3 equal access to tertiary education; 4.5 equal access for the vulnerable',
+         'Entrance and board exams in which a regional-language candidate gets the same paper as an English one'],
+        ['SDG 9 Industry, Innovation &amp; Infrastructure', '9.5 research and technological capability',
+         'Open, offline document-AI for 12 Indian languages, with a measured benchmark'],
+        ['SDG 10 Reduced Inequalities', '10.2 inclusion irrespective of ethnicity or origin',
+         'Removes a disadvantage that falls only on candidates writing in Indian languages'],
+        ['SDG 16 Strong Institutions', '16.6 effective, accountable institutions; 16.10 access to information',
+         'Exam bodies catch errors before they become litigation; bilingual circulars checked for compliance'],
     ], align='lll', cls='split small'))
 
-    # ------------------------------------------------------------------ 2. literature survey
+    # ------------------------------------------------------------------ 2. literature
     a('<h2>2. Literature Survey Summary Table</h2>')
-    a('<p>Eight recent papers on Indian-language document understanding were reviewed in Phase-1 (Table II). They '
-      'cover layout datasets [1], [3], text recognition [2], [7], table understanding [4], [8] and multimodal '
-      'document models [5], [6].</p>')
+    a('<p>Ten papers from 2021&ndash;2026 were reviewed (Table III): Indian-language document layout and recognition '
+      '[1]&ndash;[8], from Phase-1, and two works on checking translations [9], [10], added when the project turned to '
+      'exam papers.</p>')
     lit = [
-        ['[1]', 'Nath <i>et al.</i>, 2025', 'Layout parsing of Indian-language pages',
-         'IndicDLP: 119,806 pages, 12 languages, 12 domains, 42 labels',
-         'YOLOv10x, DocLayout-YOLO, RoDLA, DINO, DiT, Florence-2', 'Vision-only; 20&ndash;25 mAP drop on unseen scripts; no robustness test'],
+        ['[1]', 'Nath <i>et al.</i>, 2025', 'Layout parsing of Indian-language pages', 'IndicDLP: 119,806 pages, 12 languages, 42 labels incl. questions and options',
+         'YOLOv10x, DocLayout-YOLO, RoDLA, DINO, DiT, Florence-2', 'Regions only; question labels not used to check papers'],
         ['[2]', 'Kasuba <i>et al.</i>, 2025', 'Page-level handwritten Indic text recognition', 'CHIPS, ~25K pages, 10 languages',
-         'DBNet word detection + 6 recognisers (CRNN, PARSeq, ...)', 'Synthetic pages; user must name the language'],
-        ['[3]', 'Mondal <i>et al.</i>, 2026', 'Multilingual table detection', 'UniTabBank: 55K pages, 82K tables, 28 languages',
-         'Semi-automatic labelling; YOLOv11 detector', 'Borderless tables and degraded scans fail'],
+         'DBNet word detection + 6 recognisers', 'User must name the language; text only'],
+        ['[3]', 'Mondal <i>et al.</i>, 2026', 'Multilingual table detection', 'UniTabBank: 55K pages, 28 languages',
+         'Semi-automatic labelling; YOLOv11', 'Borderless tables and degraded scans fail'],
         ['[4]', 'Pal <i>et al.</i>, 2024', 'Table QA for low-resource Indic languages', 'BanglaTabQA 2M, HindiTabQA 643K',
-         'SQL-generated QA; fine-tuned mBART / M2M / Llama', 'Wikipedia tables only; small test sets'],
+         'Fine-tuned mBART / M2M / Llama', 'Wikipedia tables only'],
         ['[5]', 'Xu <i>et al.</i>, 2021', 'Multilingual document understanding', '30M documents; XFUND, 7 languages',
-         'LayoutXLM: text + layout + image transformer', 'No Indian language; needs good OCR'],
+         'LayoutXLM: text + layout + image', 'No Indian language'],
         ['[6]', 'Kasuba <i>et al.</i>, 2025', 'Grounding answers on the page', 'MGVG: 70 circulars, 509 QA pairs',
-         'OCR + Llama-3.1-8B + region matching', 'OCR-dependent; single page; small test set'],
-        ['[7]', 'Bhattacharyya <i>et al.</i>, 2025', 'Hindi OCR with vision-language models', '1.1M printed Hindi words + pages',
-         'LoRA-tuned GOT-OCR 2.0, progressive learning', 'Hindi only; mixed-language lines'],
-        ['[8]', 'Dumada &amp; Shah, 2026', 'Devanagari table extraction', '500+ Devanagari documents',
-         'Structure + Tesseract content, weighted fusion', 'Self-reported results; no ablation'],
+         'OCR + Llama-3.1-8B + region matching', 'OCR-dependent; single page'],
+        ['[7]', 'Bhattacharyya <i>et al.</i>, 2025', 'Hindi OCR with vision-language models', '1.1M printed Hindi words',
+         'LoRA-tuned GOT-OCR 2.0', 'Hindi only; mixed-language lines hard'],
+        ['[8]', 'Dumada &amp; Shah, 2026', 'Devanagari table extraction', '500+ documents',
+         'Structure + Tesseract, weighted fusion', 'No ablation'],
+        ['[9]', 'Babayeva <i>et al.</i>, 2025', 'Translating a test into other languages with an LLM', 'Force Concept Inventory',
+         'GPT-4o + back-translation + human review', 'Every item still checked by hand; no page structure'],
+        ['[10]', 'Rei <i>et al.</i>, 2022', 'Reference-free translation quality estimation', 'WMT 2022 QE task',
+         'CometKiwi: multilingual encoder scores sentences', 'Plain sentences: no numbers, options or marks'],
     ]
     a(N.table('Literature survey summary', ['Ref', 'Author', 'Problem', 'Dataset', 'Method', 'Limitation'], lit,
               align='llllll', cls='split small lit'))
@@ -381,476 +468,348 @@ transfer learning, robustness, OCR, accessibility.</p>
     # ------------------------------------------------------------------ 3. gaps
     a('<h2>3. Research Gaps</h2>')
     a('<ol class="gaps">'
-      '<li><b>Only clean pages are tested.</b> IndicDLP [1] benchmarks large detectors on clean pages; no study '
-      'measures how accuracy holds up on blurred, noisy, compressed, low-resolution or faded scans, which are '
-      'the norm in real archives and phone photos (addressed by RQ4).</li>'
-      '<li><b>Results are one overall number.</b> Papers report a single mAP. It is not known whether accuracy is '
-      'even across the 12 languages and 12 document types, or which labels fail and why (RQ2, RQ3).</li>'
-      '<li><b>OCR tools expect the user to name the language</b> [2], [7]. A multilingual tool needs to choose the '
-      'script automatically, page by page (RQ5).</li>'
-      '<li><b>No accessible output.</b> None of the surveyed systems produces structured, screen-reader-ready output '
-      '(headings, lists, tables, language tag) from a scanned Indian-language page.</li></ol>')
-    a('<p><b>Position.</b> Strong detectors already exist [1], [9]. We therefore do not claim a new detector: our '
-      'contribution is a careful study of where they fail on Indian documents, and a working, accessible tool built '
-      'on the best one.</p>')
+      '<li><b>G1: No automatic pre-print check.</b> Papers are translated into up to 13 languages and vetted by hand; '
+      'the cases in Table I show that this step fails.</li>'
+      '<li><b>G2: Translation tools ignore the page.</b> Quality estimation [10] and LLM back-translation [9] work on '
+      'plain sentences; they cannot see question numbers, options, marks or figures, they need clean text, and they '
+      'run in the cloud.</li>'
+      '<li><b>G3: Layout models are not used for checking.</b> IndicDLP [1] labels questions, options and answers in '
+      '12 languages, but detected structure has not been used to verify a document.</li>'
+      '<li><b>G4: Numbers are unreliable in Indic OCR.</b> Indic models misread Latin digits in mixed text [7]; a '
+      'checker of numbers needs every digit right.</li></ol>')
+    a('<p><b>Choice of problem.</b> We also examined court-filing scrutiny, where AI defect detection is already '
+      'deployed (the Supreme Court with IIT Madras, and a commercial tool in 16 High Courts [27]), and chose instead '
+      'the problem that no tool addresses yet.</p>')
 
     # ------------------------------------------------------------------ 4. problem statement
     a('<h2>4. Problem Statement and Objectives</h2>')
-    a('<p><b>Problem statement.</b> Given an image or PDF page in any of 12 Indian languages, detect and classify every '
-      'structural region into one of the 42 IndicDLP labels, read the text of each region in reading order, and '
-      'measure, in simple numbers, where deep-learning layout detectors work and where they fail.</p>')
-    a('<p><b>Main objective.</b> Build and evaluate a deep-learning layout-and-text pipeline for Indian-language '
-      'documents and deliver it as a usable tool.</p>')
+    a('<p><b>Problem statement.</b> Given the pages of a question paper in any of 12 Indian languages, and optionally '
+      'its source-language version, find every structural or numerical error and every difference between the '
+      'versions before the paper is printed, and show where each one is.</p>')
+    a('<p><b>Main objective.</b> Build an offline deep-learning system that verifies a question paper and its '
+      'translations, and measure how many real kinds of error it finds and how many false alarms it raises.</p>')
     a('<p><b>Specific objectives.</b></p><ol class="obj">'
-      '<li>Fine-tune two detectors (Faster R-CNN, YOLOv8s) with transfer learning and compare them with the published '
-      'IndicDLP model on the same held-out test pages.</li>'
-      '<li>Define two simple measures, a Consistency Index and a Robustness Index, and use them to answer five research '
-      'questions (RQ1&ndash;RQ5, Table III).</li>'
-      '<li>Add OCR with automatic script detection for 12 languages, and accessible HTML / EPUB3 export.</li>'
-      '<li>Ship a web app and REST API in one Docker image that works offline.</li></ol>')
+      '<li>Detect question-paper structure with a layout detector; fine-tune two detectors and compare them with the '
+      'released IndicDLP model.</li>'
+      '<li>Read text in 12 languages with reliable numbers (number pass).</li>'
+      '<li>Implement structure, translation-parity, repeat and format checks with a report that points to the page.</li>'
+      '<li>Evaluate on a benchmark with injected errors; deliver a web app, REST API and Docker image.</li></ol>')
     a(N.table('Research questions', ['RQ', 'Question'], [
-        ['RQ1', 'How far behind is a detector trained on a small budget, compared with one trained on the full dataset?'],
-        ['RQ2', 'Is accuracy even across the 12 languages and the 12 document domains?'],
-        ['RQ3', 'Which region types are hardest, and is that because they are rare in the training data?'],
-        ['RQ4', 'How much accuracy survives blur, noise, JPEG compression, low resolution and faded print?'],
-        ['RQ5', 'Can the detected regions be used to choose the right OCR language automatically?'],
+        ['RQ1', 'How well do deep-learning layout detectors recover the structure of Indian question papers?'],
+        ['RQ2', 'What share of real kinds of error does layout-aware checking find, at what false-alarm rate?'],
+        ['RQ3', 'What do the number pass and layout-based option splitting contribute?'],
+        ['RQ4', 'How robust is it to scanned pages and to layout-model mistakes?'],
     ], align='ll', cls='small'))
-    a('<p><b>Expected output.</b> A labelled box with a confidence score for every region; the page text in reading order '
-      'as Markdown, JSON and accessible HTML / EPUB3; and the measured study results.</p>')
+    a('<p><b>Expected output.</b> A verdict (ready / check / do not print), each finding with its question and page, '
+      'the pages with every problem outlined, as HTML and JSON.</p>')
 
     # ------------------------------------------------------------------ 5. proposed system
     a('<h2>5. Proposed System, Methodology and Novelty</h2>')
     a('<p><b>Workflow (input to output).</b></p><ol class="steps">'
-      '<li><b>Input:</b> a page image (PNG, JPG, TIFF) or a PDF page, rendered at 150 dpi.</li>'
-      '<li><b>Detect regions:</b> a convolutional object detector (DocLayout-YOLO by default) outputs a box, one of 42 '
-      'labels and a confidence for every region.</li>'
-      '<li><b>Clean up:</b> boxes below the chosen confidence are dropped; boxes covering the same region with '
-      'different labels (IoU &gt; 0.7) are merged.</li>'
-      '<li><b>Pick the script:</b> one detected text region is read with each of the 12 Tesseract script models; the '
-      'model that returns the most characters of its own script wins.</li>'
-      '<li><b>Read text:</b> Tesseract 5 [13] reads the page once; each word is assigned to the region that contains it, '
-      'so words outside every region are kept rather than lost.</li>'
-      '<li><b>Order:</b> regions are sorted into columns and reading order.</li>'
-      '<li><b>Output:</b> annotated image, Markdown / JSON, and accessible HTML / EPUB3 (semantic headings, lists, '
-      'tables, <span class="tt">lang</span> attribute).</li></ol>')
-    a('<p><b>How deep learning is used.</b> Layout detection is posed as object detection. Convolutional detectors '
-      'pre-trained on COCO [12] are fine-tuned on IndicDLP pages (transfer learning): the backbone learns visual '
-      'features of text blocks, rules and figures, the neck combines them across scales, and the head predicts boxes '
-      'and labels. The released DocLayout-YOLO [9], pre-trained on synthetic documents and fine-tuned on the full '
-      'IndicDLP training set, is used as the production model.</p>')
-    a('<p><b>Novelty.</b> (i) <i>Study:</i> two interpretable ratios reported next to mAP &mdash; the Consistency Index '
-      'CI&nbsp;=&nbsp;min<sub>g</sub>&nbsp;mAP<sub>50</sub>(g)&nbsp;/&nbsp;max<sub>g</sub>&nbsp;mAP<sub>50</sub>(g) over '
-      'languages or domains, and the Robustness Index RI<sub>c</sub>&nbsp;=&nbsp;mAP<sub>50</sub>(damaged by '
-      'c)&nbsp;/&nbsp;mAP<sub>50</sub>(clean) &mdash; and, to our knowledge, the first scan-damage robustness test on '
-      'IndicDLP. (ii) <i>Tool:</i> two operating modes whose thresholds are chosen on validation pages ("find every '
-      'part" and "balanced"); automatic script choice by probing detected regions; accessible EPUB3 output from '
-      'scanned pages; one offline app for 12 languages.</p>')
+      '<li><b>Input:</b> the paper as PDF (rendered at 200 dpi) or scans; optionally its source version, a question '
+      'bank of earlier papers and a format profile.</li>'
+      '<li><b>Find the structure:</b> DocLayout-YOLO [11] detects questions, sub-questions, options, answers, figures, '
+      'tables and page furniture on every page (high-recall threshold chosen on validation pages).</li>'
+      '<li><b>Read the text:</b> Tesseract [19] reads the page with its own script\'s model; an English <i>number '
+      'pass</i> re-reads it and fixes the Latin digits the Indic model misread. Words go to the region that contains '
+      'them.</li>'
+      '<li><b>Build the questions:</b> a question region starts a question; options are separated by the gaps between '
+      'words (layout), so garbled option markers do not matter; marks, figures, tables and formulas are attached.</li>'
+      '<li><b>Check:</b> numbering, duplicates, options, marks total; repeats of earlier questions; parity with the '
+      'source version; format rules.</li>'
+      '<li><b>Report:</b> verdict and findings, each outlined on its page.</li></ol>')
+    a('<p><b>How deep learning is used.</b> The structure of a page is found by a convolutional object detector '
+      'fine-tuned on Indian-language pages (transfer learning from COCO and synthetic documents). Its regions, and '
+      'the word positions inside them, turn a picture of a page in any script into structured questions; the checks '
+      'then work on that structure.</p>')
+    a('<p><b>Novelty.</b> (i) <i>Translation parity without translation:</i> numbers, option counts, marks, '
+      'sub-questions and figures are the same in every language, so two versions are aligned question by question '
+      '(Needleman&ndash;Wunsch on these language-independent features) and compared without a translation model. '
+      '(ii) <i>Layout-aware checking:</i> detected question and option regions plus word geometry, instead of plain '
+      'text. (iii) <i>Number pass:</i> two OCR models must agree on every digit, with page-level detection of '
+      'whether the paper prints Latin or Indian digits. (iv) <i>Offline and general:</i> one Docker image, 12 '
+      'languages, and JSON format profiles for other documents (e.g. bilingual government circulars).</p>')
 
     # ------------------------------------------------------------------ 6. block diagram
     a('<h2>6. System Block Diagram</h2>')
-    a('<p>Fig. 1 shows the major components and the flow of data. The same Python modules serve the web app, the REST '
-      'API and the evaluation scripts, so the numbers in this report are produced by the code the user runs.</p>')
-    a(N.figure(block_diagram(), 'System block diagram of IndicDoc AI. Solid arrows: data flow for one page; dashed '
-               'arrows: requests from the two interfaces and the evaluation path. The deep-learning stage is shaded.'))
+    a('<p>Fig. 1 shows the components and the flow of data. The app, the API and the benchmark run the same code.</p>')
+    a(N.figure(block_diagram(), 'System block diagram of IndicDoc Verify. The paper flows left to right through '
+               'the deep-learning layout stage and OCR, then right to left through the checks to the report. The '
+               'question bank feeds the repeat check and the profile the format check.'))
 
     # ------------------------------------------------------------------ 7. dataset
     a('<h2>7. Dataset Description and Pre-processing</h2>')
-    a(f'<p><b>Dataset.</b> IndicDLP [1], [18] (AI4Bharat, IIT Madras and IIIT Hyderabad; ICDAR 2025; also listed on '
-      f'India\'s AIKosh platform): 119,806 human-annotated pages, 12 languages, 12 document domains, 42 region labels. '
-      f'The full dataset is about 91 GB, so for our own two models we built a language-balanced subset of '
-      f'{total_pages:,} pages and {total_boxes:,} boxes, taken from the <i>official</i> train / validation / test splits '
-      f'so that no test page was seen in training (Table IV). The subset is released as CSV files in '
-      f'<span class="tt">dataset/</span> (pages, boxes, class counts, language split) with one sample page per '
-      f'language (Fig. 2).</p>')
+    a(f'<p><b>Layout data.</b> IndicDLP [1], [17]: 119,806 human-annotated pages, 12 languages, 12 domains, 42 labels, '
+      f'including first-, second- and third-level questions, options and answers. Our language-balanced subset has '
+      f'{total_pages:,} pages and {total_boxes:,} boxes from the <i>official</i> splits (Table V); {qp_pages} pages are '
+      f'question papers, with {cnt.get("first-level-question", 0):,} question and {cnt.get("options", 0):,} option '
+      f'boxes. It is released as CSV files in <span class="tt">dataset/</span>.</p>')
     rows = [[r.language.capitalize(), r.train, r.val, r.test, r.total] for r in langs.itertuples()]
     rows += ['---', ['<b>Total pages</b>', f"<b>{pages['train']:,}</b>", f"<b>{pages['val']}</b>",
                      f"<b>{pages['test']}</b>", f'<b>{total_pages:,}</b>'],
              ['Labelled boxes', f"{boxes['train']:,}", f"{boxes['val']:,}", f"{boxes['test']:,}", f'{total_boxes:,}']]
-    a(N.table('IndicDLP subset used in this project (pages per split)', ['Language', 'Train', 'Validation', 'Test', 'Total'],
+    a(N.table('IndicDLP subset used for the layout models (pages per split)', ['Language', 'Train', 'Validation', 'Test', 'Total'],
               rows, width='72%', cls='small'))
-    samples = ['hindi_newspapers', 'tamil_forms', 'bengali_forms', 'punjabi_brochures']
-    grid = ''.join(f'<div>{img(DS / (n + ".jpg"))}<span>{n.replace("_", " · ")}</span></div>' for n in samples)
-    a(N.figure(f'<div class="grid4">{grid}</div>', 'Sample pages from the dataset (one per language is shipped in '
-               '<span class="tt">dataset/samples/</span>).'))
+    by_type_n = {t: V['by_type'][t]['errors_injected'] for t in labels}
+    a(f'<p><b>Verification benchmark.</b> No exam body publishes erroneous pre-print papers, so we built one. Each of '
+      f'the {n_pairs} pairs is an English source and its Hindi or Tamil version: 18 questions (15 MCQs from numeric '
+      f'templates and fixed questions, 3 short-answer questions with marks), set like a state-board model paper and '
+      f'rendered at 200 dpi with Noto fonts. {n_err} pairs carry one injected error of the kinds in Table I (Table VI); '
+      f'{n_pairs - n_err} are clean, to count false alarms. Half of the pairs are degraded like scans (Gaussian blur '
+      f'0.7 px, noise &sigma; = 8, JPEG quality 55). A separate <i>development</i> set (48 pairs, other random seed) '
+      f'was used to build the parser; the test set was run once. Fig. 2 shows sample pages.</p>')
+    a(N.table('Injected errors in the verification benchmark (test set)', ['Error', 'How it is made', 'Pairs'], [
+        [labels['number_changed'], 'one value in a translated stem changed', by_type_n['number_changed']],
+        [labels['option_number_changed'], 'one option value changed in the translation', by_type_n['option_number_changed']],
+        [labels['option_dropped'], 'one option removed from the translation', by_type_n['option_dropped']],
+        [labels['question_dropped'], 'a question removed (numbers renumbered or left with a gap)', by_type_n['question_dropped']],
+        [labels['question_duplicated'], 'an MCQ printed again in place of another (both versions)', by_type_n['question_duplicated']],
+        [labels['marks_changed'], 'marks of a short-answer question changed in the translation', by_type_n['marks_changed']],
+        [labels['total_wrong'], 'maximum marks changed in the translation', by_type_n['total_wrong']],
+        [labels['numbering_error'], 'a question printed with the previous number', by_type_n['numbering_error']],
+        [labels['bank_repeat'], 'a question copied from a "previous year" paper (both versions)', by_type_n['bank_repeat']],
+    ], align='llr', cls='small'))
+    grid = ''.join(f'<div>{img(F / f"bench_{k}.jpg")}<span>{c}</span></div>' for k, c in
+                   (('en', 'English source'), ('hi', 'Hindi version'), ('ta', 'Tamil version, scan-degraded')))
+    grid += f'<div>{img(PROJECT_ROOT / "dataset" / "samples" / "hindi_newspapers.jpg")}<span>IndicDLP page (Hindi)</span></div>'
+    a(N.figure(f'<div class="grid4">{grid}</div>', 'Sample pages: the verification benchmark (left three) and IndicDLP.'))
     a(N.table('Pre-processing and augmentation', ['Step', 'What was done'], [
-        ['Loading', 'Only the needed Parquet row groups are streamed from Hugging Face (fsspec); images saved as PNG, '
-                    'annotations as COCO JSON'],
-        ['Cleaning', 'Boxes clipped to the page; boxes smaller than 1 px dropped (0.5% of training boxes)'],
-        ['Format conversion', 'COCO JSON &rarr; YOLO text labels for YOLOv8s'],
-        ['Resizing', 'Letterbox to 640 px (our models) or 1024 px (DocLayout-YOLO); Faster R-CNN short side 640&ndash;1024'],
-        ['Augmentation (YOLOv8s)', 'Mosaic, HSV colour jitter, scale and translate; horizontal flips off (a mirrored page '
-                                   'is not a realistic document)'],
-        ['Augmentation (Faster R-CNN)', 'Colour jitter and mild blur; no flips'],
-        ['Inference input', 'PDF pages rendered at 150 dpi; RGB conversion; optional deskew and CLAHE contrast enhancement'],
+        ['Layout data', 'Parquet row groups streamed from Hugging Face; PNG + COCO JSON; boxes clipped, &lt;1 px boxes dropped; COCO &rarr; YOLO labels'],
+        ['Resizing', 'Letterbox to 640 px (our models) or 1024 px (DocLayout-YOLO)'],
+        ['Augmentation', 'YOLOv8s: mosaic, HSV, scale, translate; Faster R-CNN: colour jitter, blur; no mirror flips'],
+        ['Verification input', 'PDF pages rendered at 200 dpi so every digit is legible; images used as they are'],
+        ['Scan degradation', 'Gaussian blur 0.7 px, Gaussian noise &sigma; = 8, JPEG quality 55, on half of the benchmark'],
     ], align='ll', cls='split small'))
-    a(f'<p><b>Challenges in the data.</b> Heavy class imbalance: <i>paragraph</i> alone is {para_share:.0%} of all '
-      f'boxes and {rare} of the 42 labels have fewer than 100 training boxes (Fig. 3); two labels have almost no examples '
-      f'in the subset. Hindi has only {int(langs.loc[langs.language == "hindi", "test"].iloc[0])} test pages in the '
-      f'official split, so its numbers are less certain. IndicDLP provides no text ground truth, so OCR character '
-      f'accuracy cannot be measured on it.</p>')
-    a(N.figure(img(PL / 'class_distribution.png', '92%'), f'Number of ground-truth boxes per label in the '
-               f'{pages["test"]} test pages: a long-tailed distribution dominated by <i>paragraph</i>.'))
+    a(f'<p><b>Challenges.</b> Class imbalance (<i>paragraph</i> is {para_share:.0%} of boxes); no OCR ground truth in '
+      f'IndicDLP; no public data of real erroneous papers, hence the benchmark; Indic OCR of Latin digits (Section 15).</p>')
 
-    # ------------------------------------------------------------------ 8. model architecture
+    # ------------------------------------------------------------------ 8. models
     a('<h2>8. Deep Learning Model Architecture</h2>')
-    a('<p>Three detectors are compared (Fig. 4, Table VI). All follow the backbone&ndash;neck&ndash;head structure of '
-      'modern object detectors.</p>')
+    a('<p>Three detectors were compared (Fig. 3, Table VIII). All follow the backbone&ndash;neck&ndash;head design. '
+      'The released DocLayout-YOLO is used by IndicDoc Verify; its AP@50 on the question-paper labels is in Table XIII.</p>')
     a(N.figure(architecture_diagram(params), 'Architectures of the three detectors with input and output dimensions. '
                'Shaded blocks are the learned feature extractor and prediction layers.'))
     a(N.table('Model details', ['', 'DocLayout-YOLO', 'YOLOv8s', 'Faster R-CNN'], [
-        ['Role', 'production model', 'proposed (ours)', 'baseline (ours)'],
+        ['Role', 'used by IndicDoc Verify', 'fine-tuned (proposed)', 'fine-tuned (baseline)'],
         ['Type', 'one-stage, NMS-free', 'one-stage, anchor-free', 'two-stage'],
         ['Parameters', f"{params['authors']:.1f} M", f"{params['proposed']:.1f} M", f"{params['baseline']:.1f} M"],
-        ['Model size', f"{A['model_size_mb']:.1f} MB", f"{P['model_size_mb']:.1f} MB", f"{B['model_size_mb']:.1f} MB"],
         ['Input', '1024 &times; 1024 &times; 3', '640 &times; 640 &times; 3', 'short side 640&ndash;1024'],
         ['Output', 'N &times; (box, 42 scores)', 'N &times; (box, 42 scores)', 'N &times; (box, 43 scores)'],
-        ['Pre-training', 'DocSynth-300K, then full IndicDLP by its authors [19]', 'COCO [12]', 'COCO [12]'],
-        ['Modification', 'none (used as released)', '80-class head replaced by 42-class head',
-         'predictor replaced (FastRCNNPredictor, 43 classes)'],
-        ['Loss', '&mdash;', 'CIoU + DFL (box) + BCE (class)', 'RPN + cross-entropy + smooth-L1'],
+        ['Pre-training', 'synthetic documents, then full IndicDLP [18]', 'COCO', 'COCO'],
+        ['Modification', 'none', '80-class head &rarr; 42 classes', 'predictor &rarr; 43 classes'],
+        ['Loss', '&mdash;', 'CIoU + DFL + BCE', 'RPN + cross-entropy + smooth-L1'],
     ], align='llll', cls='small'))
-    a('<p><b>Major components.</b> <i>Backbone</i> (CSPDarknet / ResNet-50 [15]) extracts visual features of strokes, '
-      'text lines and rules at several resolutions. <i>Neck</i> (PAN / FPN [16]) fuses fine and coarse features so that '
-      'both a folio number and a full-page table can be detected. <i>Head</i> predicts the box coordinates and a score '
-      'for each of the 42 labels; Faster R-CNN first proposes candidate regions (RPN) and then classifies each '
-      'RoIAligned region. DocLayout-YOLO adds a global-to-local controllable receptive module (GL-CRM) suited to '
-      'document elements whose sizes vary greatly [9].</p>')
 
     # ------------------------------------------------------------------ 9. tools
     a('<h2>9. Tools, Technologies and Environment</h2>')
     a(N.table('Tools, technologies and environment', ['Component', 'Details'], [
-        ['Programming language', 'Python 3.11 (ML, app, API); JavaScript only for an experimental React prototype'],
-        ['DL framework', 'PyTorch 2 [17] with torchvision; Ultralytics 8 (YOLOv8) [11]; doclayout-yolo 0.0.4'],
-        ['Development environment', 'VS Code and terminal, Git + GitHub, pytest'],
-        ['Libraries', 'pycocotools (COCO mAP), OpenCV, Pillow, NumPy, pandas, Matplotlib, Plotly, PyMuPDF, Tesseract 5 '
-                      '(tessdata_best, 12 scripts)'],
-        ['Hardware', 'Apple M1 Pro laptop, 16-core GPU via PyTorch MPS (training and evaluation); CPU inside Docker'],
-        ['Dataset tools', 'Hugging Face Hub + fsspec (partial Parquet reads); custom COCO / YOLO converters'],
-        ['Interface / deployment', 'Streamlit web app + FastAPI REST API; Docker + docker-compose (works offline)'],
+        ['Programming language', 'Python 3.11 (models, checks, app, API); JavaScript (Node) for the benchmark renderer'],
+        ['DL framework', 'PyTorch 2 [15] with torchvision; Ultralytics 8 (YOLOv8) [13]; doclayout-yolo 0.0.4'],
+        ['Development environment', 'VS Code and terminal, Git + GitHub, pytest (unit tests for every check)'],
+        ['Libraries', 'pycocotools, OpenCV, Pillow, NumPy, pandas, Matplotlib, PyMuPDF; Tesseract 5 (tessdata_best, 12 scripts) [19]'],
+        ['Hardware', 'Apple M1 Pro GPU (MPS) for training and layout evaluation; CPU container for the verification benchmark'],
+        ['Dataset tools', 'Hugging Face Hub + fsspec; COCO / YOLO converters; Playwright and Noto fonts to render benchmark papers; tesseract.js'],
+        ['Interface / deployment', 'Streamlit app (Verify Paper tab), FastAPI (POST /verify), Docker + docker-compose, offline'],
     ], align='ll', cls='split small'))
 
     # ------------------------------------------------------------------ 10. implementation
     a('<h2>10. Implementation Details</h2>')
-    a('<p>The repository is organised as reusable modules (<span class="tt">ml/</span>) with thin entry points '
-      '(<span class="tt">app/</span>, <span class="tt">backend/</span>, <span class="tt">scripts/</span>).</p>')
     a(N.table('Implementation summary', ['Part', 'Implementation (file)'], [
-        ['Data loading', 'Language-balanced sampling from the official splits; COCO JSON + YOLO labels '
-                         '(<span class="tt">scripts/prepare_indicdlp.py</span>, <span class="tt">ml/datasets/</span>)'],
-        ['Model construction', 'COCO-pretrained YOLOv8s and Faster R-CNN with new 42-class heads; released DocLayout-YOLO '
-                               'loaded as is (<span class="tt">ml/models/</span>)'],
-        ['Loss / optimiser', 'Faster R-CNN: SGD, lr 0.005, momentum 0.9, weight decay 5&times;10<sup>&minus;4</sup>, cosine '
-                             'schedule. YOLOv8s: Ultralytics automatic optimiser, CIoU + DFL + BCE'],
-        ['Batch / epochs', f'Faster R-CNN batch {base_hist["batch_size"]}, {b_epochs} epochs ({b_minutes:.0f}-min budget); '
-                           f'YOLOv8s batch 8, {y_epochs} epochs ({y_minutes:.0f}-min budget); seed 42'],
-        ['Validation', f'Best checkpoint chosen on {pages["val"]} validation pages; operating thresholds chosen on '
-                       f'validation, never on test (<span class="tt">ml/training/</span>)'],
-        ['Inference', 'One page at a time, duplicates removed, two modes (<span class="tt">ml/inference/predict.py</span>)'],
-        ['OCR and output', 'Script probe, word-to-region assignment, reading order, Markdown / JSON '
-                           '(<span class="tt">ml/ocr/</span>); accessible HTML / EPUB3 (<span class="tt">ml/accessible.py</span>, '
-                           '<span class="tt">scripts/pdf_to_epub.py</span>)'],
-        ['Interface', 'Streamlit app (<span class="tt">app/streamlit_app.py</span>), FastAPI (<span class="tt">backend/main.py</span>), '
-                      'Dockerfile + docker-compose'],
-        ['Quality', f'{tests["passed"]} automated tests passed in the last recorded run ({tests["python_tests"]} Python, '
-                    f'{tests["frontend_tests"]} front-end); fixes logged in <span class="tt">docs/FINAL_AUDIT.md</span>'],
+        ['Layout training', f'COCO-pretrained YOLOv8s (batch 8, {y_epochs} epochs, {y_minutes:.0f} min) and Faster R-CNN '
+         f'(SGD lr 0.005, momentum 0.9, weight decay 5&times;10<sup>&minus;4</sup>, cosine, batch {base_hist["batch_size"]}, '
+         f'{b_epochs} epochs, {b_minutes:.0f} min); best checkpoint on {pages["val"]} validation pages '
+         '(<span class="tt">ml/training/</span>)'],
+        ['Inference', 'DocLayout-YOLO at its high-recall threshold, duplicate boxes merged (<span class="tt">ml/inference/predict.py</span>)'],
+        ['OCR + number pass', 'Indic model + English re-read; digits replaced only where the Indic word has no Indic letters or the '
+         'English reading is more confident; page-level Latin / Indian digit decision (<span class="tt">ml/ocr/</span>)'],
+        ['Question parsing', 'question regions, layout-gap option splitting, marker stripping, marks, figures; merged '
+         'numbers ("5.16" &rarr; 5, 16) split by sequence (<span class="tt">ml/verify/paper.py</span>)'],
+        ['Checks', 'structure, parity (global alignment), repeats (character 3-gram cosine), format profiles '
+         '(<span class="tt">ml/verify/checks.py, profiles.py</span>)'],
+        ['Report and interface', 'HTML / JSON report with outlined pages; Streamlit tab; <span class="tt">POST /verify</span>'],
+        ['Benchmark', '<span class="tt">scripts/verify_bench/</span> (generate, render, degrade, OCR), '
+         '<span class="tt">scripts/evaluate_verify.py</span>'],
     ], align='ll', cls='split small'))
-    a('<p>Listing 1 shows the core inference path used by the app, the API and the evaluation scripts.</p>')
-    a('''<div class="listing"><div class="lcap">Listing 1. One page in, labelled boxes and text out.</div><pre>
-<span class="c"># ml/inference/predict.py — layout detection</span>
-model = load_model(ckpt, "doclayout", device)          <span class="c"># DocLayout-YOLO, YOLOv8s or Faster R-CNN</span>
-out = predict_single(model, page, "doclayout", device, conf=0.15)
-out = dedupe_boxes(out, iou_threshold=0.7)             <span class="c"># merge same-region boxes</span>
+    a('''<div class="listing"><div class="lcap">Listing 1. Verifying a Hindi paper against its English source.</div><pre>
+<span class="c"># every page: layout model, then OCR with the number pass</span>
+out = predict_single(model, page, "doclayout", device, conf=high_recall)
+doc = extract_document(page, out, "hin", number_pass=True)
 
-<span class="c"># ml/ocr — read the text inside the regions</span>
-doc = extract_document(page, out, languages="auto")    <span class="c"># script probe + Tesseract</span>
-print(doc["markdown"])                                 <span class="c"># text in reading order</span>
+<span class="c"># ml/verify: questions, checks, parity, repeats, report</span>
+report = verify(hindi_pages, source_pages=english_pages, bank=earlier_questions)
+print(report["summary"])            <span class="c"># {'questions': 18, 'errors': 1, 'warnings': 0, ...}</span>
+html = to_html(report, {"paper": page_images})</pre></div>''')
 
-<span class="c"># ml/accessible.py — screen-reader-ready output</span>
-html = to_html(doc, title="Chapter 1")                 <span class="c"># headings, lists, tables, lang tag</span></pre></div>''')
-    a('''<div class="listing"><div class="lcap">Listing 2. YOLOv8s fine-tuning call (ml/training/train_yolo.py, abridged).</div><pre>
-model = get_proposed_model(model_size="s")             <span class="c"># COCO-pretrained YOLOv8s</span>
-model.train(data=yaml_path, imgsz=640, batch=8,
-            seed=SEED, fliplr=0.0,                     <span class="c"># no mirror flips</span>
-            time=args.hours)                           <span class="c"># schedule fitted to a 1-hour budget</span></pre></div>''')
-    a('<p><b>REST API.</b> <span class="tt">POST /analyze</span> accepts an image or PDF and returns the boxes, labels and '
-      'scores as JSON; <span class="tt">?ocr=true</span> adds the text with the script detected automatically. '
-      '<span class="tt">GET /metrics</span> returns the saved evaluation results.</p>')
-
-    # ------------------------------------------------------------------ 11. experimental setup
+    # ------------------------------------------------------------------ 11. setup
     a('<h2>11. Experimental Setup and Training</h2>')
-    a(N.table('Experimental setup', ['Item', 'Setting'], [
-        ['Data sizes', f'train {pages["train"]:,} &middot; validation {pages["val"]} &middot; test {pages["test"]} pages '
-                       f'(test = {boxes["test"]:,} boxes)'],
-        ['Faster R-CNN', f'ResNet-50 FPN, 640&ndash;1024 px, batch {base_hist["batch_size"]}, SGD 0.005, '
-                         f'{b_epochs} epochs, {b_minutes:.0f} min'],
-        ['YOLOv8s', f'640 px, batch 8, mosaic on, no flips, {y_epochs} epochs, {y_minutes:.0f} min'],
-        ['DocLayout-YOLO', '1024 px, released checkpoint, evaluated only'],
-        ['Hardware', 'Apple M1 Pro GPU (MPS); timing measured one page at a time'],
-        ['Metrics', 'COCO mAP@50, mAP@50:95, mAP@75 (pycocotools, up to 300 boxes per page); precision, recall, F1 at '
-                    'a fixed confidence; average IoU; seconds per page'],
-        ['E1 (RQ1&ndash;RQ3)', f'All three detectors on the {pages["test"]} clean test pages, broken down by language, '
-                              f'domain and label'],
-        ['E2 (RQ4)', 'DocLayout-YOLO and YOLOv8s on the same pages under five kinds of scan damage (Table XII)'],
-        ['E3 (RQ5)', f'OCR script choice on {script_n} test pages (10 per language): region probe vs. Tesseract OSD'],
+    a(N.table('Experimental setup', ['Experiment', 'Setting'], [
+        ['E1 Layout', f'3 detectors on {pages["test"]} held-out IndicDLP pages ({A["num_ground_truth"]:,} boxes): COCO mAP, P / R / F1, per label'],
+        ['E2 Robustness of layout', 'blur, noise, JPEG, half resolution, faded print; Robustness Index = damaged / clean mAP@50'],
+        ['E3 Verification', f'{n_pairs} paper pairs; layout boxes from the renderer, real Tesseract OCR; an error is found '
+         'only if a finding of the matching kind points at the right question (&plusmn;1) or, for paper-level errors, at the paper'],
+        ['E4 Ablations', 'without the number pass; without layout-based option splitting; noisy layout (boxes shifted by '
+         'up to 8 px, 10% of question / option labels changed to "paragraph")'],
+        ['Protocol', 'parser developed on a separate development set; test set run once'],
     ], align='ll', cls='split small'))
-    a(f'<p>Fig. 5 shows the measured training curves. Both losses fall steadily and the validation loss follows the '
-      f'training loss, so neither model over-fits within its budget; the YOLOv8s validation mAP@50 is still rising '
-      f'at epoch {y_epochs} ({yolo_hist["metrics/mAP50(B)"].iloc[-1]:.3f}), which shows that the budget, not the '
-      f'architecture, limits our models. Within the one-hour budget, the one-stage YOLOv8s completed {y_epochs} '
-      f'epochs while the two-stage Faster R-CNN completed {b_epochs}.</p>')
-    a(N.figure(img(loss_png), 'Training curves (measured): (a) Faster R-CNN training and validation loss; (b) YOLOv8s '
+    a(N.figure(img(loss_png), 'Training curves of our two detectors (measured): (a) Faster R-CNN loss; (b) YOLOv8s '
                'loss; (c) YOLOv8s validation mAP per epoch.'))
 
     # ------------------------------------------------------------------ 12. results
     a('<h2>12. Results and Performance Evaluation</h2>')
-    a(f'<p>All results are measured by <span class="tt">scripts/evaluate.py</span> on the same {pages["test"]} '
-      f'held-out test pages ({A["num_ground_truth"]:,} ground-truth boxes) that none of the models was trained on '
-      f'(Table X). Precision, recall and F1 are reported at the "balanced" confidence threshold chosen on validation '
-      f'pages for each model.</p>')
 
     def at(mm, key):
         return mm['at_recommended_conf'][key]
-    a(N.table(f'Overall results on {pages["test"]} test pages', ['Metric', 'DocLayout-YOLO', 'YOLOv8s (ours)', 'Faster R-CNN (ours)'], [
+    a(f'<p><b>RQ1: structure.</b> Table XII gives the layout results on the same {pages["test"]} test pages; Table XIII the '
+      f'question-paper labels. The released model finds questions and options reliably '
+      f'(AP@50 {min(qap.values()):.2f}&ndash;{max(qap.values()):.2f}; question-paper domain mAP@50 '
+      f'{study["per_domain_authors"]["question papers"]:.2f}), which is why the checker is built on it.</p>')
+    a(N.table(f'Layout results on {pages["test"]} test pages', ['Metric', 'DocLayout-YOLO', 'YOLOv8s (ours)', 'Faster R-CNN (ours)'], [
         ['mAP@50', f'<b>{f3(A["map50"])}</b>', f3(P['map50']), f3(B['map50'])],
         ['mAP@50:95', f'<b>{f3(A["map50_95"])}</b>', f3(P['map50_95']), f3(B['map50_95'])],
-        ['mAP@75', f'<b>{f3(A["map75"])}</b>', f3(P['map75']), f3(B['map75'])],
-        ['Balanced threshold (from validation)', A['recommended_conf'], P['recommended_conf'], B['recommended_conf']],
-        ['Precision', f'<b>{f3(at(A, "precision"))}</b>', f3(at(P, 'precision')), f3(at(B, 'precision'))],
-        ['Recall', f'<b>{f3(at(A, "recall"))}</b>', f3(at(P, 'recall')), f3(at(B, 'recall'))],
-        ['F1', f'<b>{f3(at(A, "f1"))}</b>', f3(at(P, 'f1')), f3(at(B, 'f1'))],
-        ['Recall, "find every part" mode', f'<b>{f3(A["at_high_recall_conf"]["recall"])}</b>',
+        ['Precision (balanced threshold)', f'<b>{f3(at(A, "precision"))}</b>', f3(at(P, 'precision')), f3(at(B, 'precision'))],
+        ['Recall (balanced threshold)', f'<b>{f3(at(A, "recall"))}</b>', f3(at(P, 'recall')), f3(at(B, 'recall'))],
+        ['F1 (balanced threshold)', f'<b>{f3(at(A, "f1"))}</b>', f3(at(P, 'f1')), f3(at(B, 'f1'))],
+        ['Recall, high-recall threshold', f'<b>{f3(A["at_high_recall_conf"]["recall"])}</b>',
          f3(P['at_high_recall_conf']['recall']), f3(B['at_high_recall_conf']['recall'])],
-        ['Average IoU of correct boxes', f'<b>{f3(A["avg_iou"])}</b>', f3(P['avg_iou']), f3(B['avg_iou'])],
-        ['Inference time (s / page, M1 Pro GPU)', f3(A['inference_time']), f'<b>{f3(P["inference_time"])}</b>',
-         f3(B['inference_time'])],
+        ['Inference time (s / page)', f3(A['inference_time']), f'<b>{f3(P["inference_time"])}</b>', f3(B['inference_time'])],
     ], align='lrrr', cls='small'))
-    a(f'<p><b>RQ1 (budget gap).</b> The released model, trained on about 42&times; more pages, is far ahead '
-      f'({f3(A["map50"])} vs. {f3(P["map50"])} mAP@50). In "find every part" mode it finds '
-      f'{A["at_high_recall_conf"]["recall"]:.0%} of all regions at {A["at_high_recall_conf"]["precision"]:.0%} precision. '
-      f'YOLOv8s is the fastest model ({P["inference_time"]:.3f} s per page) and 7&times; smaller than Faster R-CNN.</p>')
-
-    lang_rows = [[lg.capitalize(), A['per_group'][lg]['images'], f3(A['per_group'][lg]['map50']),
-                  f3(P['per_group'][lg]['map50']), f3(B['per_group'][lg]['map50'])] for lg in A['per_group']]
-    lang_rows += ['---', ['<b>Consistency Index (CI)</b>', '', f'<b>{ci["authors"]:.2f}</b>', f'{ci["proposed"]:.2f}',
-                          f'{ci["baseline"]:.2f}']]
-    a(N.table('mAP@50 per language and language Consistency Index', ['Language', 'Pages', 'DocLayout-YOLO', 'YOLOv8s', 'Faster R-CNN'],
-              lang_rows, width='80%', cls='small'))
-    dom = study['per_domain_authors']
-    a(f'<p><b>RQ2 (languages and domains).</b> Accuracy is fairly even across languages for the full-data model '
-      f'(CI {ci["authors"]:.2f}; Table XI) and less even for our smaller models ({ci["proposed"]:.2f}, '
-      f'{ci["baseline"]:.2f}). Across document domains it is much less even: CI {study["domain_ci"]["authors"]:.2f} '
-      f'for DocLayout-YOLO, from {f3(max(dom.values()))} on research papers to {f3(min(dom.values()))} on forms '
-      f'(Fig. 6). <i>The type of document matters more than the script</i> once the script has been seen in training.</p>')
-    a(N.figure(img(domain_figure(tmp / 'fig_domain.png'), '82%'), 'mAP@50 per document domain (n = number of test '
-               'pages). Forms and magazines are the hardest domains for both models.'))
-    hard = ', '.join(f'<i>{k}</i> ({v:.2f})' for k, v in list(study['hardest_classes'].items())[:4])
-    easy = ', '.join(f'<i>{k}</i> ({v:.2f})' for k, v in list(study['easiest_classes'].items())[:4])
-    a(f'<p><b>RQ3 (rare labels).</b> For DocLayout-YOLO the easiest labels are {easy} AP@50 and the hardest are {hard}. '
-      f'The Spearman rank correlation between a label\'s training frequency and its AP is '
-      f'{study["class_freq_spearman"]["proposed"]:.2f} for our YOLOv8s but only '
-      f'{study["class_freq_spearman"]["authors"]:.2f} for the full-data model (Fig. 7): with enough data, rarity stops '
-      f'deciding accuracy, and what remains hard are labels that look alike (quote vs. paragraph, nested list levels).</p>')
-    a(N.figure(img(F / 'fig_class_frequency.png'), 'AP@50 of each label against its number of training boxes (log '
-               'scale). Rare labels are hard for the small-data model (&rho; = 0.75), much less so for the full-data model '
-               '(&rho; = 0.40).'))
-    dmg = [('blur', 'Blur', 'Gaussian blur, radius 2 px (out of focus)'),
-           ('noise', 'Noise', 'Gaussian noise, &sigma; = 20 grey levels'),
-           ('jpeg', 'JPEG', 'JPEG quality 15 (forwarded phone image)'),
-           ('low_res', 'Half resolution', 'down to 50% and back up (low-dpi scan)'),
-           ('faded', 'Faded print', 'contrast &times; 0.45, brightness &times; 1.25')]
-    rrows = [['Clean', '&mdash;', f3(rmap['authors']['clean']), '1.00', f3(rmap['proposed']['clean']), '1.00']]
-    rrows += [[n, d, f3(rmap['authors'][k]), f'{ri["authors"][k]:.2f}', f3(rmap['proposed'][k]),
-               f'{ri["proposed"][k]:.2f}'] for k, n, d in dmg]
-    rrows += ['---', ['<b>Mean RI</b>', '', '', f'<b>{study["mean_ri"]["authors"]:.2f}</b>', '',
-                      f'<b>{study["mean_ri"]["proposed"]:.2f}</b>']]
-    a(N.table('Robustness to scan damage (E2): mAP@50 and Robustness Index',
-              ['Condition', 'How it is made', 'DocLayout-YOLO', 'RI', 'YOLOv8s', 'RI'], rrows, align='llrrrr', cls='small'))
-    a(f'<p><b>RQ4 (damaged scans).</b> The released model keeps {study["mean_ri"]["authors"]:.0%} of its accuracy on '
-      f'average and YOLOv8s {study["mean_ri"]["proposed"]:.0%} (Table XII, Fig. 8). Blur hurts the released model most '
-      f'(RI {ri["authors"]["blur"]:.2f}); noise and faded print hurt the small model most '
-      f'(RI {ri["proposed"]["noise"]:.2f} and {ri["proposed"]["faded"]:.2f}). Each damaged copy is made once with a fixed '
-      f'seed and the ground-truth boxes are unchanged.</p>')
-    a(N.figure(img(F / 'fig_robustness.png'), 'Robustness Index per damage type (left) and absolute mAP@50 of '
-               'DocLayout-YOLO under each condition (right).'))
-    a(f'<p><b>RQ5 (choosing the OCR script).</b> The region probe picks the right script on {script_ok} of {script_n} '
-      f'pages ({ocr["script_detection_accuracy"]:.0%}) against {osd_ok}/{script_n} for Tesseract\'s built-in detector '
-      f'(OSD). It is perfect on Assamese, Bengali and Punjabi and weakest on Marathi (6/10), where pages are '
-      f'sometimes mistaken for Latin or Telugu (Fig. 9).</p>')
-    a(N.figure(img(F / 'fig_script_detection.png', '70%'), f'Share of pages per language on which the region probe '
-               f'chose the right OCR script ({script_ok}/{script_n} overall).'))
+    a(N.table('AP@50 on the question-paper labels', ['Label', 'DocLayout-YOLO', 'YOLOv8s', 'Faster R-CNN'],
+              [[k, f3(qap[k]), f3(P['per_class_ap50'].get(k, 0)), f3(B['per_class_ap50'].get(k, 0))] for k in Q_LABELS],
+              align='lrrr', width='75%', cls='small'))
+    a(f'<p><b>RQ2: verification.</b> Table XIV summarises the test set. On born-digital papers (the normal pre-print '
+      f'case) {pct(cl["found_at_place"])} of the {cl["errors_injected"]} injected errors are found at the right '
+      f'question, with {cl["false_alarms_per_clean_pair"]:.1f} false alarms per clean pair; on scan-degraded pages '
+      f'{pct(dg["found_at_place"])} with {dg["false_alarms_per_clean_pair"]:.1f}. Fig. 5 breaks the result down by '
+      f'error type. The questions were recovered from the pages in {pct(vo["questions_read_ratio"])} of cases. The '
+      f'only misses were two Hindi papers whose "maximum marks" line OCR read as "पूर्णाक" (anusvara dropped). After '
+      f'the test run we widened that pattern; re-running the unchanged test set then finds '
+      f'{pct(VP["overall"]["found_at_place"])} with {VP["overall"]["false_alarms_per_clean_pair"]:.2f} false alarms '
+      f'per clean pair. We report the frozen numbers above and this post-hoc result separately.</p>')
+    a(N.table(f'Verification results on the test set ({n_pairs} paper pairs)',
+              ['Condition', 'Errors', 'Found at right question', 'Clean pairs', 'False alarms / clean pair'], [
+        ['Born-digital (clean render)', cl['errors_injected'], pct(cl['found_at_place']), cl['clean_pairs'],
+         f"{cl['false_alarms_per_clean_pair']:.2f}"],
+        ['Scan-degraded', dg['errors_injected'], pct(dg['found_at_place']), dg['clean_pairs'],
+         f"{dg['false_alarms_per_clean_pair']:.2f}"],
+        '---',
+        ['English &rarr; Hindi', vl['hi']['errors_injected'], pct(vl['hi']['found_at_place']), vl['hi']['clean_pairs'],
+         f"{vl['hi']['false_alarms_per_clean_pair']:.2f}"],
+        ['English &rarr; Tamil', vl['ta']['errors_injected'], pct(vl['ta']['found_at_place']), vl['ta']['clean_pairs'],
+         f"{vl['ta']['false_alarms_per_clean_pair']:.2f}"],
+        '---',
+        ['<b>All</b>', vo['errors_injected'], f"<b>{pct(vo['found_at_place'])}</b>", vo['clean_pairs'],
+         f"<b>{vo['false_alarms_per_clean_pair']:.2f}</b>"],
+    ], align='lrrrr', cls='small'))
+    a(N.figure(img(F / 'fig_verify_by_type.png', '88%'), 'Share of injected errors found at the right question, per '
+               'error type, on born-digital and scan-degraded papers (test set).'))
+    abl = [('Full system', V), ('Without number pass', V_NP), ('Without layout-based options', V_NG), ('Noisy layout', VN)]
+    a(f'<p><b>RQ3 and RQ4: ablations and robustness.</b> Without the number pass, false alarms rise from '
+      f'{vo["false_alarms_per_clean_pair"]:.1f} to {V_NP.get("overall", {}).get("false_alarms_per_clean_pair", 0):.1f} '
+      f'per clean pair (Table XV, Fig. 6): Indic OCR of Latin digits is the main source of noise. With a noisy layout, '
+      f'{pct(VN.get("overall", {}).get("found_at_place", 0))} of errors are still found, because the parser recovers '
+      f'questions from their text when a label is wrong. The layout model itself keeps '
+      f'{study["mean_ri"]["authors"]:.0%} of its accuracy on damaged scans (E2).</p>')
+    a(N.table('Ablations on the test set', ['System', 'Found at right question', 'False alarms / clean pair'],
+              [[n, pct(r['overall']['found_at_place']), f"{r['overall']['false_alarms_per_clean_pair']:.2f}"]
+               for n, r in abl if r], align='lrr', width='75%', cls='small'))
+    a(N.figure(img(F / 'fig_verify_ablation.png', '88%'), 'Ablations: errors found (left) and false alarms (right).'))
 
     # ------------------------------------------------------------------ 13. comparison
     a('<h2>13. Comparison with Baseline / Existing Methods</h2>')
-    a(N.table('Comparison with the baseline and published results', ['Method', 'Training data', 'mAP@50', 'mAP@50:95'], [
+    a(N.table('Layout detectors and published results', ['Method', 'Training data', 'mAP@50', 'mAP@50:95'], [
         ['Faster R-CNN (ours, baseline)', f'{pages["train"]:,} pages, {b_minutes:.0f} min', f3(B['map50']), f3(B['map50_95'])],
         ['YOLOv8s (ours, proposed)', f'{pages["train"]:,} pages, {y_minutes:.0f} min', f3(P['map50']), f3(P['map50_95'])],
-        ['DocLayout-YOLO (released by [1])', '~96K pages (80% of 119,806)', f'<b>{f3(A["map50"])}</b>',
-         f'<b>{f3(A["map50_95"])}</b>'],
+        ['DocLayout-YOLO (released by [1])', '~96K pages', f'<b>{f3(A["map50"])}</b>', f'<b>{f3(A["map50_95"])}</b>'],
         '---',
         ['Published: DocLayout-YOLO [1]', 'full IndicDLP test set', '&asymp; 0.735', '0.545'],
-        ['Published: YOLOv10x [1] (best in paper)', 'full IndicDLP test set', '&mdash;', '0.550'],
     ], align='llrr', cls='small'))
-    a(f'<p><b>Metrics used.</b> COCO mAP@50 and mAP@50:95, precision / recall / F1 and seconds per page, all on the same '
-      f'{pages["test"]} test pages (rows above the line); published numbers are on the authors\' full test set and are '
-      f'shown for reference. Our measurement of the released model ({f3(A["map50_95"])} mAP@50:95) agrees with the '
-      f'published 0.545, which confirms that our evaluation pipeline is correct.</p>')
-    a(f'<p><b>One-stage vs. two-stage.</b> With the same data and a similar time budget, YOLOv8s beats Faster R-CNN on '
-      f'every metric ({f3(P["map50"])} vs. {f3(B["map50"])} mAP@50; precision {f3(at(P, "precision"))} vs. '
-      f'{f3(at(B, "precision"))}) and is {B["inference_time"] / P["inference_time"]:.0f}&times; faster with a quarter of '
-      f'the parameters. The proposed model therefore improves on the baseline.</p>')
-    a('<p><b>Did we beat the state of the art?</b> No. Our own models saw about 42&times; less data and one hour of laptop '
-      'training, and do not reach the published model. The application therefore uses the released DocLayout-YOLO, and '
-      'the contribution of this project is the study (RQ1&ndash;RQ5), the OCR and script-selection pipeline, and the '
-      'accessible, offline tool. We report this openly in the paper as well.</p>')
-    a(N.figure(img(PL / 'model_comparison.png', '72%'), 'Precision, recall, F1 (confidence &ge; 0.5) and mAP of the '
-               'three models on the same test pages.'))
+    a(f'<p>With the same data and a similar budget, YOLOv8s beats the Faster R-CNN baseline on every metric and is '
+      f'{B["inference_time"] / P["inference_time"]:.0f}&times; faster; the released model, trained on about 42&times; '
+      f'more pages, is best and agrees with the published result, so IndicDoc Verify uses it. Table XVII compares the '
+      f'system with existing ways of checking papers; none of them compares language versions of a paper question by '
+      f'question, offline.</p>')
+    a(N.table('IndicDoc Verify and existing approaches', ['Approach', 'Checks the paper', 'Compares versions', 'Indic, offline'], [
+        ['Manual vetting (status quo)', 'yes, by hand', 'by hand', 'yes'],
+        ['Answer-sheet evaluation tools', 'no (grades answers)', 'no', 'partly'],
+        ['MT quality estimation [10]', 'no structure', 'sentence by sentence', 'GPU / cloud'],
+        ['LLM back-translation [9]', 'no structure', 'with human review', 'cloud'],
+        ['<b>IndicDoc Verify</b>', '<b>numbering, options, marks, repeats</b>', '<b>question by question</b>', '<b>12 languages, offline</b>'],
+    ], align='llll', cls='small'))
 
-    # ------------------------------------------------------------------ 14. sample outputs
+    # ------------------------------------------------------------------ 14. samples
     a('<h2>14. Sample Outputs and Demonstration</h2>')
-    a('<p>Figs. 11&ndash;15 give evidence that the implementation works end to end: the running application, a correct '
-      'and an incorrect prediction, and the confusion matrix.</p>')
-    a(N.figure(f'<div class="grid2">{img(SC / "02_detection_tamil.png")}{img(SC / "03_ocr.png")}</div>',
-               'Running Streamlit application. Left: a Tamil textbook page with the detected regions and confidences. '
-               'Right: OCR with the script detected automatically (Tamil), text in reading order, Markdown / JSON download.'))
-    a(N.figure(img(PR / 'authors_prediction_1.png', '88%'), 'Correct prediction: Kannada newspaper page, ground truth '
-               '(green, left) vs. DocLayout-YOLO prediction (red, right).'))
-    a(N.figure(img(PR / 'errors' / 'authors_most_missed.png', '88%'), 'Incorrect prediction: the dense Bengali form '
-               'with the most missed regions in the test set (90 of 105 regions missed). Forms with many tiny fields are '
-               'the hardest domain.'))
-    a(N.figure(img(PL / 'authors_confusion_matrix.png', '74%'), 'Confusion matrix of DocLayout-YOLO for the most '
-               'frequent labels (IoU &ge; 0.5, confidence &ge; 0.5). The last row counts missed regions; most errors are '
-               'misses rather than wrong labels.'))
-    a(N.figure(img(SC / '04_dashboard.png', '80%'), 'Dashboard tab of the application showing the measured metrics of '
-               'the three models.'))
+    a(N.figure(f'<div class="grid2">{img(SC / "08_verify_page.png")}{img(SC / "07_verify_report.png")}</div>',
+               'Correct output. Left: a number changed in the Hindi version, found and outlined on the page. Right: '
+               'the report with the verdict and the findings.'))
+    a(N.figure(img(SC / '09_false_alarm.png', '80%'), 'Incorrect output: a false alarm on a scan-degraded page, where '
+               'OCR lost part of an option value so the versions appear to differ.'))
+    a(N.figure(f'<div class="grid2">{img(SC / "02_detection_tamil.png")}{img(PL / "authors_confusion_matrix.png")}</div>',
+               'Layout model in the running app (Tamil page) and its confusion matrix: most errors are missed regions.'))
 
     # ------------------------------------------------------------------ 15. challenges
     a('<h2>15. Challenges and Limitations</h2>')
     a('<ol class="chal">'
-      f'<li><b>Data size and compute.</b> The full dataset is about 91 GB; a laptop GPU could train on '
-      f'{pages["train"]:,} pages for about an hour per model. Our models stay far below the published one '
-      f'({f3(P["map50"])} vs. {f3(A["map50"])} mAP@50), and each was trained once with one seed.</li>'
-      '<li><b>Dense forms and rare labels.</b> Forms, with many tiny fields, score lowest; labels such as '
-      '<i>quote</i> and <i>sub-unordered-list</i> score below 0.2 AP even for the best model.</li>'
-      '<li><b>OCR quality.</b> Tesseract misreads small print and mis-orders vowel signs in some scripts; IndicDLP has no '
-      'text ground truth, so character accuracy could not be measured. Scan damage in E2 is simulated.</li>'
-      '<li><b>Engineering.</b> The initial code base had crashes, a wrong label list and plots not backed by data; every '
-      'fix is logged in <span class="tt">docs/FINAL_AUDIT.md</span>. Timings were spoiled twice by jobs sharing the '
-      'GPU and had to be re-measured.</li></ol>')
+      '<li><b>OCR of numbers.</b> The Hindi model reads "1947" as "947", "1" as "&#2404;" and units as Indian digits; '
+      'markers run into values. The number pass, layout-based options and the page-level digit decision were needed; '
+      'scan-degraded pages still give more false alarms.</li>'
+      '<li><b>No real error data.</b> Erroneous pre-print papers are not public; the benchmark injects realistic '
+      'errors into rendered papers, with oracle layout boxes (the noisy-layout run tests the layout dependence).</li>'
+      '<li><b>Meaning.</b> Changes of meaning without a change of number or structure need a cross-lingual sentence '
+      'model; the hook exists but is not evaluated. Number words and formulas are not compared yet.</li>'
+      f'<li><b>Compute.</b> Our own detectors trained on {pages["train"]:,} pages for about an hour and stay below the '
+      'released model; the product uses the released model.</li></ol>')
 
     # ------------------------------------------------------------------ 16. conclusion
     a('<h2>16. Conclusion and Future Scope</h2>')
-    a(f'<p><b>Conclusion.</b> We implemented a complete pipeline: data preparation from IndicDLP, two fine-tuned detectors, '
-      f'a controlled evaluation of three detectors, OCR with automatic script choice for 12 languages, accessible '
-      f'HTML / EPUB3 export, a web app, a REST API and an offline Docker image. The best model reaches '
-      f'{f3(A["map50"])} mAP@50 on {pages["test"]} test pages, finds {A["at_high_recall_conf"]["recall"]:.0%} of regions in '
-      f'"find every part" mode and runs at {A["inference_time"]:.2f} s per page; the script is chosen correctly on '
-      f'{script_ok}/{script_n} pages. The study shows that accuracy is fairly even across languages '
-      f'(CI {ci["authors"]:.2f}) but not across document types (CI {study["domain_ci"]["authors"]:.2f}); that data size, '
-      f'not the script, decides how well rare labels work; and that the best model keeps '
-      f'{study["mean_ri"]["authors"]:.0%} of its accuracy on damaged scans, with blur hurting most.</p>')
-    a('<p><b>Objectives met.</b> All four specific objectives (Section 4) were met. Our own detectors did not reach the '
-      'published accuracy, which we report openly; the proposed YOLOv8s did improve on the Faster R-CNN baseline.</p>')
+    a(f'<p><b>Conclusion.</b> IndicDoc Verify checks an Indian question paper and its translations before printing. '
+      f'A deep-learning layout detector recovers the questions and options (AP@50 '
+      f'{min(qap.values()):.2f}&ndash;{max(qap.values()):.2f}); OCR with a number pass reads them; structure, parity, '
+      f'repeat and format checks find {pct(cl["found_at_place"])} of injected errors at the right question on '
+      f'born-digital papers ({pct(dg["found_at_place"])} on degraded scans) with {cl["false_alarms_per_clean_pair"]:.1f} '
+      f'false alarms per clean pair. All four objectives were met; our own detectors did not reach the released model, '
+      f'which we report openly.</p>')
+    a('<p><b>Product.</b> Buyers are national exam agencies, UPSC and state commissions, school boards, university exam '
+      'cells and test-series publishers. Because pre-print papers are confidential, the product is an offline licence '
+      'per exam body; a hosted plan suits only non-confidential mock tests.</p>')
     a('<p><b>Future scope.</b></p><ul class="fut">'
-      '<li><i>Model and data:</i> train longer on a cloud GPU with blur and noise augmentation; more labelled forms; a '
-      'controlled unseen-script experiment.</li>'
-      '<li><i>OCR:</i> replace Tesseract with an Indic OCR model behind the same interface and build a small text '
-      'ground-truth set to measure character accuracy.</li>'
-      '<li><i>Features:</i> exam-paper mode (questions, options and marks as structured items), multi-page books, Braille '
-      '(.brf) and offline text-to-speech, and a review screen to correct OCR before export; table structure and question '
-      'answering on detected tables [3], [4].</li>'
-      '<li><i>Real-world validation:</i> a pilot on state-board textbooks and government circulars with screen-reader '
-      'users, measuring reading-order accuracy and time saved over manual conversion.</li></ul>')
+      '<li>Pilot with a university exam cell or a state board on real pre-print papers; measure minutes saved.</li>'
+      '<li>A cross-lingual meaning check (sentence embeddings or quality estimation [10]) as a warning for the vetter.</li>'
+      '<li>Better Indic OCR behind the same interface; number words, formulas and answer-key consistency.</li>'
+      '<li>More format profiles: bilingual circulars, forms, certificates; a question bank built from MILU-style data [16].</li></ul>')
 
-    # ------------------------------------------------------------------ template closing sections
+    # ------------------------------------------------------------------ closing sections
     a('<h2>Expected Outcomes</h2>')
     a(N.table('Expected outcomes and their status', ['Expected outcome', 'Status', 'Evidence'], [
         ['Development of a working Deep Learning model addressing a real-world problem', 'Achieved',
-         'Two fine-tuned detectors + released model in a working app and API (Sections 8&ndash;10, 14)'],
+         'Layout detectors + IndicDoc Verify in a working app and API (Sections 8&ndash;10, 14)'],
         ['Performance evaluation of implemented model', 'Achieved',
-         'mAP, P / R / F1, IoU, speed, per-language / domain / label results, robustness, OCR script choice (Sections 12&ndash;13)'],
+         'Layout mAP and per-label AP; errors found and false alarms on a benchmark; ablations (Sections 12&ndash;13)'],
         ['Improved understanding of research methodology and problem-solving skills', 'Achieved',
-         'Five research questions, held-out test set, thresholds chosen on validation only, audit log of fixes'],
-        ['Preparation of a research paper suitable for submission', 'Achieved',
-         'IEEE conference-format paper in <span class="tt">paper/</span>'],
+         'Research questions, separate development and test sets, honest failure cases'],
+        ['Preparation of a research paper suitable for submission', 'Achieved', 'IEEE-format paper in <span class="tt">paper/</span>'],
     ], align='lll', cls='small'))
     a('<h2>Deliverables</h2>')
     a(N.table('Deliverables and their location in the repository', ['Deliverable', 'Location', 'Contents'], [
-        ['Dataset (CSV / image dataset)', '<span class="tt">dataset/</span>',
-         f'pages.csv ({total_pages:,} rows), boxes.csv ({total_boxes:,} rows), class_counts.csv, language_split.csv, '
-         f'12 sample pages'],
+        ['Dataset (CSV / image dataset)', '<span class="tt">dataset/, scripts/verify_bench/</span>',
+         f'IndicDLP subset as CSV ({total_pages:,} pages, {total_boxes:,} boxes); generator of the verification benchmark'],
         ['Project code with complete implementation', '<span class="tt">ml/ app/ backend/ scripts/</span>',
-         'Training, evaluation, inference, OCR, accessible export, web app, REST API, Docker'],
+         'Training, evaluation, OCR, verification, web app, REST API, Docker'],
         ['GitHub repository with organized code and documentation', '<span class="tt">README.md, docs/</span>',
-         'Dataset, architecture, methodology, evaluation, results, deployment and audit documents; tests'],
-        ['Presentation slides (Phase-1 and Phase-2)', '<span class="tt">docs/presentation/</span>',
-         'Phase-1 literature survey (PDF); Phase-2 implementation (PDF + PPTX)'],
-        ['Final research paper', '<span class="tt">paper/</span>', 'IEEE-format paper (PDF + LaTeX source)'],
-        ['Experiment report (this document)', '<span class="tt">docs/report/</span>',
-         'Expt.-11 report; generated by <span class="tt">scripts/build_lab_report.py</span>'],
+         'Product, dataset, architecture, evaluation and results documents; tests'],
+        ['Presentation slides (Phase-1 and Phase-2)', '<span class="tt">docs/presentation/</span>', 'PDF and PPTX'],
+        ['Final research paper', '<span class="tt">paper/</span>', 'IEEE-format paper'],
+        ['Experiment report (this document)', '<span class="tt">docs/report/</span>', 'generated by <span class="tt">scripts/build_lab_report.py</span>'],
     ], align='lll', cls='split small'))
     a('<h2>Evaluation Criteria</h2>')
     a(N.table('Evaluation criteria and where each is addressed', ['Criterion', 'Marks', 'Where addressed'], [
-        ['Relevance of problem to SDG', '2', 'Section 1, Table I (SDG 4, 9, 10, 16 with targets)'],
-        ['Quality of literature survey and research gap identification', '2', 'Sections 2&ndash;3; Phase-1 slides'],
-        ['Implementation of deep learning models', '2', 'Sections 7&ndash;11 (data, three detectors, training)'],
-        ['Performance evaluation and Frontend development', '2', 'Sections 12&ndash;14 (metrics, study, app, API)'],
+        ['Relevance of problem to SDG', '2', 'Section 1, Tables I&ndash;II (SDG 4, 9, 10, 16)'],
+        ['Quality of literature survey and research gap identification', '2', 'Sections 2&ndash;3'],
+        ['Implementation of deep learning models', '2', 'Sections 7&ndash;11'],
+        ['Performance evaluation and Frontend development', '2', 'Sections 12&ndash;14; Streamlit Verify tab, REST API'],
         ['Documentation and presentation quality', '2', 'Repository docs, Phase-1 / Phase-2 slides, this report'],
-        ['Innovation and Research Paper', '5', 'CI / RI measures, robustness test, script probe, accessible output; '
-                                              'IEEE paper'],
+        ['Innovation and Research Paper', '5', 'Translation parity without translation, number pass, layout-based checking; IEEE paper'],
     ], align='lcl', cls='small'))
-
-    # ------------------------------------------------------------------ references (IEEE)
-    refs = [
-        'O. Nath, S. Kukkala, M. Khapra, and R. K. Sarvadevabhatla, &ldquo;IndicDLP: A foundational dataset for '
-        'multi-lingual and multi-domain document layout parsing,&rdquo; in <i>Proc. Int. Conf. Document Analysis and '
-        'Recognition (ICDAR)</i>, 2025, pp. 23&ndash;39, arXiv:2512.20236.',
-        'B. V. Kasuba <i>et al.</i>, &ldquo;PLATTER: A page-level handwritten text recognition system for Indic '
-        'scripts,&rdquo; arXiv:2502.06172, 2025.',
-        'A. Mondal <i>et al.</i>, &ldquo;UniTabBank: A large scale multi-lingual, multi-layout, multi-type, multi-format '
-        'dataset for table detection,&rdquo; in <i>Proc. IEEE/CVF Winter Conf. Applications of Computer Vision (WACV)</i>, 2026.',
-        'V. Pal, E. Kanoulas, A. Yates, and M. de Rijke, &ldquo;Table question answering for low-resourced Indic '
-        'languages,&rdquo; arXiv:2410.03576, 2024.',
-        'Y. Xu <i>et al.</i>, &ldquo;LayoutXLM: Multimodal pre-training for multilingual visually-rich document '
-        'understanding,&rdquo; arXiv:2104.08836, 2021.',
-        'B. V. Kasuba, P. Chaudhuri, and G. Ramakrishnan, &ldquo;DRISHTIKON: Visual grounding at multiple granularities '
-        'in documents,&rdquo; arXiv:2506.21316, 2025.',
-        'S. Bhattacharyya <i>et al.</i>, &ldquo;Adapting vision-language models for Hindi OCR,&rdquo; IIIT Hyderabad, 2025.',
-        'A. R. Dumada and S. G. Shah, &ldquo;Incorporate structure and content for Devanagari table extraction,&rdquo; '
-        '<i>Int. J. Sci. Adv. Technol. (IJSAT)</i>, vol. 17, no. 1, 2026.',
-        'Z. Zhao, H. Kang, B. Wang, and C. He, &ldquo;DocLayout-YOLO: Enhancing document layout analysis through '
-        'diverse synthetic data and global-to-local adaptive perception,&rdquo; arXiv:2410.12628, 2024.',
-        'S. Ren, K. He, R. Girshick, and J. Sun, &ldquo;Faster R-CNN: Towards real-time object detection with region '
-        'proposal networks,&rdquo; in <i>Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)</i>, 2015, pp. 91&ndash;99.',
-        'G. Jocher, A. Chaurasia, and J. Qiu, &ldquo;Ultralytics YOLOv8,&rdquo; 2023. [Online]. Available: '
-        '<span class="tt">https://github.com/ultralytics/ultralytics</span>',
-        'T.-Y. Lin <i>et al.</i>, &ldquo;Microsoft COCO: Common objects in context,&rdquo; in <i>Proc. Eur. Conf. '
-        'Comput. Vis. (ECCV)</i>, 2014, pp. 740&ndash;755.',
-        'R. Smith, &ldquo;An overview of the Tesseract OCR engine,&rdquo; in <i>Proc. 9th Int. Conf. Document Analysis '
-        'and Recognition (ICDAR)</i>, 2007, pp. 629&ndash;633.',
-        'D. Hendrycks and T. Dietterich, &ldquo;Benchmarking neural network robustness to common corruptions and '
-        'perturbations,&rdquo; in <i>Proc. Int. Conf. Learn. Represent. (ICLR)</i>, 2019.',
-        'K. He, X. Zhang, S. Ren, and J. Sun, &ldquo;Deep residual learning for image recognition,&rdquo; in <i>Proc. '
-        'IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)</i>, 2016, pp. 770&ndash;778.',
-        'T.-Y. Lin, P. Doll&aacute;r, R. Girshick, K. He, B. Hariharan, and S. Belongie, &ldquo;Feature pyramid networks '
-        'for object detection,&rdquo; in <i>Proc. IEEE Conf. Comput. Vis. Pattern Recognit. (CVPR)</i>, 2017, '
-        'pp. 2117&ndash;2125.',
-        'A. Paszke <i>et al.</i>, &ldquo;PyTorch: An imperative style, high-performance deep learning library,&rdquo; in '
-        '<i>Proc. Adv. Neural Inf. Process. Syst. (NeurIPS)</i>, 2019, pp. 8024&ndash;8035.',
-        'AI4Bharat, &ldquo;IndicDLP dataset,&rdquo; Hugging Face, 2025. [Online]. Available: '
-        '<span class="tt">https://huggingface.co/datasets/ai4bharat/indicdlp</span>',
-        'O. Nath <i>et al.</i>, &ldquo;IndicDLP model checkpoints,&rdquo; Zenodo, record 15881917, 2025, CC-BY 4.0. '
-        '[Online]. Available: <span class="tt">https://zenodo.org/records/15881917</span>',
-        'United Nations General Assembly, &ldquo;Transforming our world: The 2030 Agenda for Sustainable Development,&rdquo; '
-        'Resolution A/RES/70/1, 2015.',
-        'W3C, &ldquo;EPUB Accessibility 1.1,&rdquo; W3C Recommendation, 2023. [Online]. Available: '
-        '<span class="tt">https://www.w3.org/TR/epub-a11y-11/</span>',
-        'Streamlit, FastAPI and Docker, official documentation. [Online]. Available: '
-        '<span class="tt">https://docs.streamlit.io</span>, <span class="tt">https://fastapi.tiangolo.com</span>, '
-        '<span class="tt">https://docs.docker.com</span>',
-        f'P. Jha, A. Soni, R. Patil, and M. Badure, &ldquo;IndicDoc AI,&rdquo; source code, 2026. [Online]. Available: '
-        f'<span class="tt">{REPO}</span>',
-    ]
-    a('<h2>References</h2><ol class="refs">' + ''.join(f'<li>{r}</li>' for r in refs) + '</ol>')
-
+    a('<h2>References</h2><ol class="refs">' + ''.join(f'<li>{r}</li>' for r in REFS) + '</ol>')
     return page_html(''.join(s))
 
 

@@ -1,21 +1,53 @@
-# IndicDoc AI
+# IndicDoc AI · IndicDoc Verify
 
-**Deep-learning layout detection for multilingual Indian documents.**
+**Check an Indian question paper and its translations before it is printed.** Offline, 12 Indian languages.
 
-Give it a photo, scan or PDF page in any of 12 Indian languages. It draws a box around every structural
-element (paragraphs, headings, tables, figures, page numbers, lists, questions...), labels each one with one of
-the 42 layout classes of the IndicDLP dataset, and then **reads the text** of every box (OCR), returning the page as
-an organised Markdown/JSON document.
+Indian exams are set in one language and translated into Hindi and regional languages; every version is checked
+by hand, and errors keep reaching candidates (NEET 2018: 49 wrong questions in Tamil; KPSC 2024: 59 errors and a
+re-exam; UGC-NET June 2026: three papers re-tested). IndicDoc Verify reads the printed paper and reports:
 
-Three layout models are compared on the same real IndicDLP test pages:
-- **DocLayout-YOLO (IndicDLP authors)**: trained by the dataset's authors on the full dataset, downloaded from their
-  public release (Zenodo, CC-BY 4.0). Best by far; the app's default.
-- **YOLOv8s (proposed)** and **Faster R-CNN (baseline)**: trained in this project on a language-balanced subset.
+- **Structure:** numbering gaps and repeats, the same question printed twice, a question with a missing or repeated
+  option, marks that do not add up to the printed maximum, page numbering
+- **Translation parity:** a question missing in a version, and every number, option, mark, sub-question or figure that
+  differs from the source version, question by question, **without translating anything**
+- **Repeats:** questions copied from earlier papers (a question bank)
+- **Format:** any document type described as a JSON profile (e.g. an Office Memorandum, bilingual circulars)
 
-Text is read with Tesseract (12 Indian languages), with the page's script detected automatically.
-The product is a Streamlit web app plus a REST API, shipped as one Docker image that works offline.
+Each finding points to the question and page and is outlined on the page (HTML / JSON report). It runs in one Docker
+image with no internet access, because a pre-print paper must never leave the exam body.
 
-## Results
+**How it works.** A deep-learning layout detector (DocLayout-YOLO, fine-tuned on IndicDLP by its authors) finds the
+questions, sub-questions, options and answers on each page; Tesseract reads the text, with an English *number pass*
+that must agree on every digit; the questions are built from the layout and checked. Three layout detectors are
+compared on the same IndicDLP test pages (DocLayout-YOLO, and a YOLOv8s and a Faster R-CNN we fine-tuned).
+
+Product, evidence and market: [docs/PRODUCT.md](docs/PRODUCT.md). Benchmark: [Verification results](#verification-results).
+
+<!-- VERIFY:START -->
+## Verification results
+
+Measured by `scripts/evaluate_verify.py` on the benchmark's test set: 132 paper pairs (English source +
+Hindi or Tamil version, 18 questions each, rendered at 200 dpi), 108 with one injected error of 9
+kinds that have happened in real exams, 24 clean; half degraded like scans; read with Tesseract.
+An error counts as found only when a matching finding points at the right question. The parser was developed on a
+separate development set; the test set was run once.
+
+| | Errors found at the right question | False alarms per clean pair |
+|---|---|---|
+| Born-digital papers | 98% | 3.0 |
+| Scan-degraded papers | 98% | 5.5 |
+| **All** | **98%** | **4.5** |
+| Ablation: no number pass | 77% | 13.8 |
+| Ablation: options split by markers, not layout | 98% | 11.5 |
+| Noisy layout (boxes shifted, 10% of question/option labels wrong) | 98% | 7.5 |
+
+The two misses were Hindi maximum-marks lines read by OCR as "पूर्णाक"; after widening that pattern the same test set
+gives 100% and 4.4 false alarms per clean pair (post-hoc). Layout boxes come from the
+renderer; the layout model's AP@50 on question-paper labels (first-level question 0.85, options
+0.84, answer 0.81) is in the table below.
+<!-- VERIFY:END -->
+
+## Layout results
 
 Measured by `scripts/evaluate.py` on held-out IndicDLP test pages that neither model saw during training:
 
@@ -60,6 +92,8 @@ docker compose up --build -d
 curl -F file=@page.png "http://localhost:8000/analyze"                    # layout (DocLayout-YOLO)
 curl -F file=@page.png "http://localhost:8000/analyze?ocr=true"           # layout + text, language auto-detected
 curl -F file=@page.png "http://localhost:8000/analyze?ocr=true&ocr_lang=hin+eng"
+curl -F file=@paper_hi.pdf -F source=@paper_en.pdf "http://localhost:8000/verify?lang=hin&source_lang=eng"
+curl -F file=@paper_hi.pdf -F source=@paper_en.pdf "http://localhost:8000/verify?lang=hin&source_lang=eng&output=html" > report.html
 ```
 
 Configuration, health checks and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
@@ -108,7 +142,23 @@ python -m pytest tests/               # test suite
    python scripts/evaluate_ocr.py     # script detection, OCR coverage and speed
    ```
 
-4. **Report:** `python scripts/build_report.py`
+4. **Verification benchmark** (rendered English/Hindi and English/Tamil paper pairs with injected errors, read with
+   Tesseract; needs Node.js):
+
+   ```bash
+   (cd scripts/verify_bench && npm install && python generate.py --out ../../data/verify_bench --per_type 6 --clean 12 --seed 42)
+   node scripts/verify_bench/render.js data/verify_bench          # pages at 200 dpi + region boxes
+   python scripts/verify_bench/degrade.py data/verify_bench       # half of the pairs look scanned
+   node scripts/verify_bench/ocr.js data/verify_bench             # Tesseract (tesseract.js) + number pass
+   python scripts/evaluate_verify.py --bench data/verify_bench    # + --layout noisy, --no_number_pass, --no_geometry
+   python scripts/verify_figures.py
+   ```
+   Copy the language models into `scripts/verify_bench/tessdata/` (eng, hin, tam `.traineddata.gz`, from the
+   `@tesseract.js-data/*` packages). The development set used to build the parser: `--seed 7 --per_type 2 --clean 6`.
+
+5. **Documents:** `python scripts/build_slides.py && python scripts/slides_to_pptx.py` (Phase-2 deck),
+   `python scripts/build_lab_report.py` (Expt.-11 report), `python scripts/build_verify_paper.py` (IEEE paper),
+   `python scripts/build_report.py` (plain-language report)
 
 No real data? `python scripts/run_sample_training.py` runs the whole pipeline on 30 synthetic pages
 (outputs go to `outputs/sample_run/`; the numbers are meaningless, it only checks the plumbing).
@@ -127,7 +177,9 @@ ml/
   training/                 train_baseline.py, train_yolo.py
   evaluation/coco_eval.py   COCO mAP (pycocotools), P/R/F1, confusion matrix, per-language
   inference/predict.py      load a checkpoint (Faster R-CNN, YOLOv8, DocLayout-YOLO), predict
-  ocr/                      Tesseract OCR of detected regions, script detection, reading order, Markdown
+  ocr/                      Tesseract OCR of detected regions, script detection, number pass, reading order
+  verify/                   IndicDoc Verify: question parsing, checks, translation parity, repeats,
+                            format profiles (profiles/*.json), HTML report
 scripts/
   prepare_indicdlp.py       build the IndicDLP subset from Hugging Face
   download_models.py        fetch the authors' DocLayout-YOLO and the Tesseract language models
@@ -135,6 +187,10 @@ scripts/
   evaluate.py               evaluate a checkpoint, write metrics + plots
   build_report.py           PDF project report + docs/RESULTS.md
   build_lab_report.py       Expt.-11 lab report (IEEE tables/figures/references)
+  build_slides.py           Phase-2 deck (PDF); slides_to_pptx.py makes the PPTX
+  build_verify_paper.py     IEEE research paper on IndicDoc Verify
+  evaluate_verify.py        verification benchmark: errors found, false alarms, ablations
+  verify_bench/             benchmark generator (questions in English/Hindi/Tamil), renderer, OCR
   run_sample_training.py    pipeline smoke run on synthetic pages
 outputs/                    trained models, metrics, plots, example predictions
 docs/                       dataset, architecture, methodology, evaluation, results, deployment, audit
@@ -148,6 +204,10 @@ Dockerfile, docker-compose.yml
 
 | Document | Contents |
 |---|---|
+| [docs/PRODUCT.md](docs/PRODUCT.md) | IndicDoc Verify: evidence of the problem, competitors, USP, customers |
+| [paper/IndicDoc_Verify_Research_Paper.pdf](paper/IndicDoc_Verify_Research_Paper.pdf) | IEEE paper on IndicDoc Verify |
+| [docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf](docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf) | Expt.-11 lab report |
+| [docs/presentation/](docs/presentation/) | Phase-1 and Phase-2 slides (Phase-2 as PDF and PPTX) |
 | [docs/DATASET.md](docs/DATASET.md) | IndicDLP, the 42 labels, the subset used |
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Pipeline, models, code layout, deployment architecture |
 | [docs/METHODOLOGY.md](docs/METHODOLOGY.md) | Data selection, preprocessing, training, evaluation protocol |

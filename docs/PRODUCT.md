@@ -85,5 +85,12 @@ The comparison that matters to a buyer is not another tool but the cost of one r
   catches a change of meaning only through the optional cross-lingual model; every finding goes to a human vetter.
 - Number words ("two" vs "three") and mathematics inside formulas are not compared yet.
 - OCR on badly scanned pages adds false alarms; born-digital PDFs (the normal pre-print case) work best.
-- Measured so far on a controlled benchmark (rendered papers with injected errors, real OCR); a pilot with real
-  pre-print papers of an exam body is the next step.
+- Measured so far on a controlled benchmark (rendered papers with injected errors, real OCR, layout boxes from the
+  renderer); a pilot with real pre-print papers of an exam body is the next step.
+
+## 6. Measured results (benchmark test set)
+
+132 English-Hindi and English-Tamil paper pairs, 108 injected errors of 9 kinds, 24 clean pairs:
+**98% of errors found at the right question** (98% born-digital, 98% scan-degraded),
+**3.0 false alarms per clean pair** on born-digital papers (5.5 scan-degraded). Without the number pass:
+77% found and 13.8 false alarms. Details: README "Verification results", `outputs/metrics/verify_benchmark_*.json`.

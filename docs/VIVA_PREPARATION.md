@@ -105,3 +105,36 @@ model and the most confident reading wins (88% right on test pages; Tesseract's 
 **22. Why is this genuinely deep learning and not an API wrapper?**
 We build the dataset pipeline, fine-tune two CNN detectors with backpropagation on real annotated pages,
 and evaluate them with standard detection metrics on held-out data. No external AI API is called.
+
+
+## IndicDoc Verify (the product)
+
+**What does the product do?** It checks a question paper and its translations before printing: numbering, repeated
+questions, options, marks, repeats of earlier papers, and every number, option and mark that differs between the
+language versions. Each finding points to the question and page.
+
+**Where is deep learning?** The layout detector (DocLayout-YOLO; we also fine-tuned YOLOv8s and Faster R-CNN to
+compare) finds questions, sub-questions, options and answers on each page (AP@50 0.81-0.90). Without that structure the text is
+one long string and the checks cannot tell which number belongs to which question.
+
+**How do you compare Hindi with English without translating?** Numbers, option counts, marks, sub-questions and
+figures are the same in every language. Questions are aligned (Needleman-Wunsch on those features) and compared.
+
+**Why is this a real need?** NEET 2018 (49 wrong Tamil questions), KPSC 2024 (59 errors, re-exam), APPSC (51
+questions), UGC-NET June 2026 (re-test), MBBS 2026 (MCQ printed twice). Today vetting is manual.
+
+**Does anything like it exist?** Answer-sheet evaluation tools grade answers; translation-quality tools read plain
+sentences; court e-filing defect AI exists (so we did not pick that). We found no tool that compares versions of a
+paper question by question, offline.
+
+**What is the number pass?** The Hindi Tesseract model misreads Latin digits ("1947" as "947"). An English re-read
+fixes them; the two must agree. Without it, errors found drop to 77% and false alarms rise to 13.8 per clean pair.
+
+**How did you evaluate it?** 132 rendered paper pairs with injected errors, real OCR; separate development set;
+98% found at the right question, 3.0 false alarms per clean born-digital pair.
+
+**Limitations?** Meaning changes without a number change need a cross-lingual model (hook exists, not evaluated);
+oracle layout boxes in the benchmark; no real erroneous papers yet; degraded scans give more false alarms.
+
+**Who buys it?** NTA, UPSC and state PSCs, boards, university exam cells, test-series publishers; offline licence,
+because pre-print papers cannot go to the cloud.

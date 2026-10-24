@@ -91,7 +91,8 @@ def inject(paper, kind, rng, bank_questions):
     gt = {'type': kind}
     if kind == 'number_changed':
         q = rng.choice([q for q in qs if q['kind'] == 'tmpl'])
-        key = rng.choice(sorted(q['v']))
+        # only a value that is printed in the stem (some templates keep a hidden value, e.g. the marked price)
+        key = rng.choice(sorted(k for k in q['v'] if '{' + k + '}' in TEMPLATES[q['t']]['stem']['en']))
         old = q['v'][key]
         used = set(q['v'].values()) | set(q['opts'])
         new = next(x for x in rng.sample(range(2, 3 * old + 20), 3 * old + 18) if x not in used and x != old)

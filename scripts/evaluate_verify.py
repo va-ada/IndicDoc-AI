@@ -16,6 +16,7 @@ Usage:
 import argparse
 import json
 import random
+import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
@@ -46,7 +47,7 @@ LABELS = {'number_changed': 'Number changed in stem', 'option_number_changed': '
           'bank_repeat': 'Repeated from a past paper'}
 
 
-def build_pages(name, layout, ocr, mode, rng):
+def build_pages(name, layout, ocr, mode, rng, number_pass=True, geometry=True):
     """extract_document()-style page dicts from rendered boxes + Tesseract words."""
     pages = []
     for pg in layout[name]:
@@ -59,12 +60,25 @@ def build_pages(name, layout, ocr, mode, rng):
                     label = 'paragraph'
             regions.append({'label': label, 'box': [round(v, 1) for v in box], 'score': 1.0})
         words = ocr[pg['image']]
-        if pg['image'] + '#eng' in ocr:  # number pass (ml.ocr.extract_document(number_pass=True))
+        if number_pass and pg['image'] + '#eng' in ocr:  # number pass (ml.ocr.extract_document(number_pass=True))
             words = merge_number_reading(words, ocr[pg['image'] + '#eng'])
-        regions = [{**r, 'detected': True} for r in assign_words(regions, words, include_words=True)]
+        regions = [{**r, 'detected': True} for r in assign_words(regions, words, include_words=geometry)]
         regions += leftover_regions(regions, words)
         pages.append({'regions': reading_order(regions), 'script': None})
     return pages
+
+
+def printed_numbers_changed(root, case):
+    """For 'number_changed': did the injected change reach the printed question? (Early benchmark versions could
+    change a hidden template value, leaving both versions' printed numbers identical; such cases are excluded.)"""
+    from ml.verify.text import numerals
+    q = case['gt']['question']
+    stems = []
+    for side in ('src', 'tgt'):
+        page = (root / 'html' / f"{case['id']}_{side}.html").read_text()
+        m = re.search(rf'data-label="first-level-question"><b>{q}\.</b> (.*?)</div>', page)
+        stems.append(numerals(m.group(1)) if m else None)
+    return stems[0] != stems[1]
 
 
 def found(issues, gt):
@@ -82,6 +96,8 @@ def main():
     ap.add_argument('--layout', choices=['oracle', 'noisy'], default='oracle')
     ap.add_argument('--out', default=None)
     ap.add_argument('--report_example', default=None, help='write the HTML report of this case id')
+    ap.add_argument('--no_number_pass', action='store_true', help='ablation: Indic reading only, no English digits')
+    ap.add_argument('--no_geometry', action='store_true', help='ablation: split options by their markers only')
     args = ap.parse_args()
     root = Path(args.bench)
     cases = json.loads((root / 'cases.json').read_text())
@@ -90,10 +106,13 @@ def main():
     bank = json.loads((root / 'bank.json').read_text())
     rng = random.Random(0)
 
+    excluded = [c['id'] for c in cases if c['gt']['type'] == 'number_changed' and not printed_numbers_changed(root, c)]
+    cases = [c for c in cases if c['id'] not in excluded]
     per_case, spurious = [], Counter()
     for case in cases:
-        src = build_pages(f"{case['id']}_src", layout, ocr, args.layout, rng)
-        tgt = build_pages(f"{case['id']}_tgt", layout, ocr, args.layout, rng)
+        opts = dict(number_pass=not args.no_number_pass, geometry=not args.no_geometry)
+        src = build_pages(f"{case['id']}_src", layout, ocr, args.layout, rng, **opts)
+        tgt = build_pages(f"{case['id']}_tgt", layout, ocr, args.layout, rng, **opts)
         report = verify(tgt, source_pages=src, bank=bank[case['lang']])
         issues = [i for i in report['issues'] if i['severity'] in (ERROR, WARNING)]
         gt = case['gt']
@@ -138,7 +157,8 @@ def main():
 
     by_type = {t: summarize([r for r in per_case if r['type'] == t]) for t in EXPECTED}
     result = {
-        'layout': args.layout, 'ocr': 'Tesseract 5 (tesseract.js, tessdata_best int models eng/hin/tam)',
+        'excluded_invisible_injections': excluded,
+        'layout': args.layout, 'number_pass': not args.no_number_pass, 'geometry': not args.no_geometry, 'ocr': 'Tesseract 5 (tesseract.js, tessdata_best int models eng/hin/tam)',
         'overall': summarize(per_case),
         'by_type': by_type,
         'by_language': {lg: summarize([r for r in per_case if r['lang'] == lg]) for lg in ('hi', 'ta')},
@@ -150,7 +170,8 @@ def main():
         'labels': LABELS,
         'cases': per_case,
     }
-    out = Path(args.out or PROJECT_ROOT / 'outputs' / 'metrics' / f'verify_benchmark_{args.layout}.json')
+    suffix = args.layout + ('_no_number_pass' if args.no_number_pass else '') + ('_no_geometry' if args.no_geometry else '')
+    out = Path(args.out or PROJECT_ROOT / 'outputs' / 'metrics' / f'verify_benchmark_{suffix}.json')
     out.write_text(json.dumps(result, indent=1, ensure_ascii=False))
     o = result['overall']
     print(f"{args.layout}: {o['errors_injected']} injected errors, found {o['found']:.1%} "
