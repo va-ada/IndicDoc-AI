@@ -72,6 +72,7 @@ def card(title, text, color='#2563EB', icon=''):
 
 vo, vq = V.get('overall', {}), V.get('by_quality', {})
 clean_q, deg_q = vq.get('clean_render', {}), vq.get('scan_degraded', {})
+n_exact = sum(c['questions_read'] == 18 - (c['type'] == 'question_dropped') for c in V.get('cases', []))
 q_labels = ['first-level-question', 'second-level-question', 'third-level-question', 'options', 'answer']
 q_ap = [QAP.get(k, 0) for k in q_labels]
 
@@ -137,8 +138,8 @@ gaps = [('Exam papers are translated into up to 13 languages and vetted only by 
          'A "number pass": two OCR models must agree on every number', 'G4')]
 g = ''.join(f'<div class="gap"><div class="gl">⚠ {a}</div><div class="arrow">→</div><div class="gr">✓ {b}<span class="rq">{c}</span></div></div>' for a, b, c in gaps)
 slide('WHAT IS MISSING', 'Research Gaps', f'''<div class="gaps tightgaps">{g}</div>
-<div class="note">We also looked at court-filing defect checks: the Supreme Court (with IIT Madras) and 16 High Courts already
-use AI there, so we chose the problem <b>nobody automates yet</b>: checking a question paper and its translations.</div>''')
+<div class="note">We also looked at court-filing defect checks: the Supreme Court already uses an AI tool built with IIT Madras, and a
+commercial tool is reported in 16 High Courts, so we chose the problem <b>nobody automates yet</b>: checking a question paper and its translations.</div>''')
 
 # ---------------------------------------------------------------- 5. Problem & objectives
 cases = [('NEET-UG 2018', '49 questions wrong in the Tamil version; HC ordered 196 grace marks, SC set it aside'),
@@ -171,7 +172,7 @@ slide('OUR APPROACH', 'Proposed System, Methodology and Novelty', f'''<div class
 <div class="three">
 {card('How deep learning is used', f'A convolutional object detector finds every question, sub-question, option and answer on the page (AP@50 {min(q_ap):.2f}–{max(q_ap):.2f} on these labels). Its regions and the word positions inside them turn a picture of a page into structured questions, in any script.', '#2563EB')}
 {card('What is new', '<b>Translation parity without translation:</b> numbers, option counts, marks, sub-questions and figures must be the same in every language, so versions are compared question by question with no MT model.<br><b>Number pass:</b> two OCR models must agree on every digit.', '#D9A441')}
-{card('Why it sells', '<b>USP:</b> the only offline tool that checks an Indian question paper and its translations question by question, in 12 languages, before printing. Confidential papers never leave the exam body. Same engine checks any document format via JSON profiles (e.g. bilingual circulars).', '#2E7D32')}
+{card('Why it sells', '<b>USP:</b> no tool we found checks an Indian question paper against its translations question by question; IndicDoc Verify does, offline, in 12 languages, before printing. Confidential papers never leave the exam body. Same engine checks any document format via JSON profiles (e.g. bilingual circulars).', '#2E7D32')}
 </div>''')
 
 # ---------------------------------------------------------------- 7. Block diagram
@@ -305,9 +306,9 @@ slide('RESULTS (1/2) · LAYOUT', 'Results and Performance Evaluation', f'''
 slide('RESULTS (2/2) · VERIFICATION', 'Results and Performance Evaluation', f'''<div class="two w45">
 <div class="kpis">
 <div class="kpi"><b>{pct(clean_q.get('found_at_place', 0))}</b><span>of injected errors found <em>at the right question</em> on born-digital papers ({clean_q.get('errors_injected', 0)} errors); {pct(deg_q.get('found_at_place', 0))} on scan-degraded pages</span></div>
-<div class="kpi"><b>{clean_q.get('false_alarms_per_clean_pair', 0):.1f}</b><span>false alarms per clean paper pair, born-digital ({deg_q.get('false_alarms_per_clean_pair', 0):.1f} when scan-degraded); each takes a vetter seconds to dismiss</span></div>
+<div class="kpi"><b>{clean_q.get('false_alarms_per_clean_pair', 0):.1f}</b><span>false alarms per clean paper pair, born-digital ({deg_q.get('false_alarms_per_clean_pair', 0):.1f} when scan-degraded); each is shown on the page for the vetter to dismiss</span></div>
 <div class="kpi"><b>{pct(VN.get('overall', {}).get('found_at_place', 0))}</b><span>still found with a noisy layout (boxes shifted, 10% of question / option labels wrong)</span></div>
-<div class="kpi"><b>{pct(vo.get('questions_read_ratio', 0))}</b><span>of questions recovered from the pages (all languages)</span></div>
+<div class="kpi"><b>{n_exact}/{n_pairs}</b><span>papers with every question recovered from the pages (Hindi and Tamil)</span></div>
 </div>
 <div>{img(FIG / 'fig_verify_by_type.png', 'wide')}<p class="cap">Share of injected errors found at the right question, per error type ({n_pairs} paper pairs, Hindi and Tamil).</p></div></div>''')
 
@@ -321,7 +322,7 @@ slide('COMPARISON', 'Comparison with Baseline / Existing Methods', f'''<div clas
 <tr><td><b>DocLayout-YOLO (authors)</b></td><td>~96K pages</td><td><b>{f3(A['map50'])}</b></td><td><b>{f3(A['map50_95'])}</b></td></tr>
 <tr class="pub"><td>Published: DocLayout-YOLO [1]</td><td>full test set</td><td>≈0.735</td><td>0.545</td></tr></table>
 <p class="cap">YOLOv8s beats the Faster R-CNN baseline at {B['inference_time'] / P['inference_time']:.0f}× the speed; the released full-data model is best and is used.</p>
-<table class="res small" style="margin-top:8px"><tr><th>Verification ablation (test set)</th><th>found</th><th>false alarms / clean pair</th></tr>{abr}</table></div>
+<table class="res small" style="margin-top:8px"><tr><th>Verification ablation (test set)</th><th>found</th><th>false alarms / clean pair (all pages)</th></tr>{abr}</table></div>
 <div><table class="res small cmp"><tr><th>Existing approach</th><th>Checks the paper?</th><th>Compares versions?</th><th>Indic, offline?</th></tr>
 <tr><td>Manual vetting (status quo)</td><td>yes, by hand</td><td>by hand</td><td>yes</td></tr>
 <tr><td>Answer-sheet AI (Eklavvya, GradeLab)</td><td>no, grades answers</td><td>no</td><td>partly</td></tr>
@@ -351,7 +352,7 @@ slide('LESSONS', 'Challenges and Limitations', f'''<div class="grid2">
 slide('WRAP-UP', 'Conclusion and Future Scope', f'''<div class="two">
 <div><div class="sub">CONCLUSION</div><ul class="tight">
 <li><b>Implemented:</b> IndicDoc Verify — layout detection (3 detectors compared), OCR for 12 scripts with a number pass, question parsing, structure / parity / repeat / format checks, report, web app, REST API, Docker.</li>
-<li><b>Results:</b> {pct(clean_q.get('found_at_place', 0))} of injected errors found at the right question on born-digital papers ({pct(deg_q.get('found_at_place', 0))} on degraded scans), {clean_q.get('false_alarms_per_clean_pair', 0):.1f} false alarms per clean pair; best layout model {f3(A['map50'])} mAP@50.</li>
+<li><b>Results:</b> {pct(clean_q.get('found_at_place', 0))} of injected errors found at the right question on born-digital papers ({pct(deg_q.get('found_at_place', 0))} on degraded scans), {clean_q.get('false_alarms_per_clean_pair', 0):.1f} false alarms per clean born-digital pair; best layout model {f3(A['map50'])} mAP@50.</li>
 <li><b>Objectives:</b> all four met. Our own detectors did not reach the released model, which we report openly.</li></ul>
 <div class="sub">SELLING IT</div><ul class="tight">
 <li><b>Buyers:</b> NTA, UPSC and state PSCs, school boards, university exam cells, test-series publishers; offline licence per exam body.</li></ul></div>

@@ -68,6 +68,8 @@ Stop: `docker compose down`
 | `INDICDOC_CORS_ORIGINS` | `http://localhost:5173` | Comma-separated websites allowed to call the API from a browser |
 | `INDICDOC_MAX_UPLOAD_MB` | `20` | Larger uploads get HTTP 413 |
 | `INDICDOC_MAX_MEGAPIXELS` | `40` | Images with more pixels get HTTP 413 (checked before decoding) |
+| `INDICDOC_MAX_VERIFY_MB` | `100` | Upload limit of `POST /verify` (a whole paper, possibly scanned) |
+| `INDICDOC_MAX_VERIFY_PAGES` | `60` | Pages per paper accepted by `POST /verify` |
 
 Host ports: `INDICDOC_APP_PORT` (default 8501) and `INDICDOC_API_PORT` (default 8000), e.g.
 `INDICDOC_API_PORT=8010 docker compose up -d` if port 8000 is already taken.

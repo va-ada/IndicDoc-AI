@@ -478,7 +478,7 @@ question paper verification, translation quality, examinations.</p>
       '<li><b>G4: Numbers are unreliable in Indic OCR.</b> Indic models misread Latin digits in mixed text [7]; a '
       'checker of numbers needs every digit right.</li></ol>')
     a('<p><b>Choice of problem.</b> We also examined court-filing scrutiny, where AI defect detection is already '
-      'deployed (the Supreme Court with IIT Madras, and a commercial tool in 16 High Courts [27]), and chose instead '
+      'deployed (the Supreme Court with IIT Madras; a commercial tool is reported in 16 High Courts [27]), and chose instead '
       'the problem that no tool addresses yet.</p>')
 
     # ------------------------------------------------------------------ 4. problem statement
@@ -644,7 +644,7 @@ html = to_html(report, {"paper": page_images})</pre></div>''')
     a('<h2>11. Experimental Setup and Training</h2>')
     a(N.table('Experimental setup', ['Experiment', 'Setting'], [
         ['E1 Layout', f'3 detectors on {pages["test"]} held-out IndicDLP pages ({A["num_ground_truth"]:,} boxes): COCO mAP, P / R / F1, per label'],
-        ['E2 Robustness of layout', 'blur, noise, JPEG, half resolution, faded print; Robustness Index = damaged / clean mAP@50'],
+        ['E2 Robustness of layout', 'blur, noise, JPEG, half resolution, faded print (as in RoDLA [14]); Robustness Index = damaged / clean mAP@50'],
         ['E3 Verification', f'{n_pairs} paper pairs; layout boxes from the renderer, real Tesseract OCR; an error is found '
          'only if a finding of the matching kind points at the right question (&plusmn;1) or, for paper-level errors, at the paper'],
         ['E4 Ablations', 'without the number pass; without layout-based option splitting; noisy layout (boxes shifted by '
@@ -793,7 +793,7 @@ html = to_html(report, {"paper": page_images})</pre></div>''')
         ['Dataset (CSV / image dataset)', '<span class="tt">dataset/, scripts/verify_bench/</span>',
          f'IndicDLP subset as CSV ({total_pages:,} pages, {total_boxes:,} boxes); generator of the verification benchmark'],
         ['Project code with complete implementation', '<span class="tt">ml/ app/ backend/ scripts/</span>',
-         'Training, evaluation, OCR, verification, web app, REST API, Docker'],
+         'Training, evaluation, OCR, verification, web app, REST API, Docker [28]'],
         ['GitHub repository with organized code and documentation', '<span class="tt">README.md, docs/</span>',
          'Product, dataset, architecture, evaluation and results documents; tests'],
         ['Presentation slides (Phase-1 and Phase-2)', '<span class="tt">docs/presentation/</span>', 'PDF and PPTX'],

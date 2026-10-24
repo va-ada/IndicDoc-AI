@@ -41,6 +41,8 @@ MAX_PIXELS = int(float(os.environ.get('INDICDOC_MAX_MEGAPIXELS', '40')) * 1_000_
 MODEL_LOCKS = {name: threading.Lock() for name in CHECKPOINTS}
 OCR_CODES = set(OCR_LANGUAGES.values())
 MAX_VERIFY_PAGES = int(os.environ.get('INDICDOC_MAX_VERIFY_PAGES', '60'))
+# A whole scanned paper is much larger than one page, so /verify has its own upload limit
+MAX_VERIFY_BYTES = int(float(os.environ.get('INDICDOC_MAX_VERIFY_MB', '100')) * 1024 * 1024)
 VERIFY_DPI = 200  # every digit must be read exactly, so papers are rendered finer than for layout analysis
 SCRIPTS = {'Latin', 'Devanagari', 'Bengali', 'Gurmukhi', 'Gujarati', 'Oriya', 'Tamil', 'Telugu', 'Kannada', 'Malayalam'}
 CORS_ORIGINS = [o.strip() for o in os.environ.get('INDICDOC_CORS_ORIGINS', 'http://localhost:5173').split(',') if o.strip()]
@@ -179,10 +181,10 @@ def get_metrics():
 
 
 # ---------------------------------------------------------------------------------------------- verification
-async def _read_upload(file: UploadFile) -> bytes:
-    contents = await file.read(MAX_UPLOAD_BYTES + 1)
-    if len(contents) > MAX_UPLOAD_BYTES:
-        raise HTTPException(status_code=413, detail=f"File larger than {MAX_UPLOAD_BYTES // (1024 * 1024)} MB")
+async def _read_upload(file: UploadFile, limit: int = MAX_VERIFY_BYTES) -> bytes:
+    contents = await file.read(limit + 1)
+    if len(contents) > limit:
+        raise HTTPException(status_code=413, detail=f"File larger than {limit // (1024 * 1024)} MB")
     return contents
 
 

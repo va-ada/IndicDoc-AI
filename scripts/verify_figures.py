@@ -59,7 +59,7 @@ def by_type(main):
 
 def ablation():
     runs = [('Full system', 'oracle'), ('No number pass', 'oracle_no_number_pass'),
-            ('No geometric options', 'oracle_no_geometry'), ('Noisy layout', 'noisy')]
+            ('No layout-based options', 'oracle_no_geometry'), ('Noisy layout', 'noisy')]
     found, alarms, names = [], [], []
     for label, name in runs:
         r = load(name)

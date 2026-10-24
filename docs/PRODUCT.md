@@ -31,7 +31,7 @@ Medical Dialogues (MBBS 2026). Links in the lab report references.
 | Answer-sheet evaluation | Eklavvya, GradeLab, E-Valuate | Grade the candidates' answers **after** the exam; never look at the paper |
 | Translation quality tools | LanguageCheck.ai; MT quality estimation such as CometKiwi | Work on plain sentences: no idea of question numbers, options, marks or figures; cloud services; not built for typeset or scanned Indic PDFs |
 | Question-bank / paper generators | various ed-tech tools | Create papers; do not compare the language versions that come back from translators |
-| Court e-filing defect detection | Supreme Court + IIT Madras tool; Nyaay.AI in 16 High Courts | Already deployed. We looked at it and **chose not to compete there** |
+| Court e-filing defect detection | Supreme Court + IIT Madras tool; Nyaay.AI (reported in 16 High Courts) | Already deployed. We looked at it and **chose not to compete there** |
 
 We found **no product** that reads a typeset or scanned paper in Indian languages, understands its structure
 (questions, sub-questions, options, marks, figures) and compares its language versions, offline.
@@ -61,8 +61,8 @@ text; a second **number pass** with the English model fixes the Latin digits tha
 reads "1947" as "947"). The parser builds the questions; the checks compare them. Translation parity needs **no
 translation**: numbers, option counts, marks and structure are the same in every language.
 
-**USP in one line:** the only offline tool that checks an Indian question paper and its translations question by
-question, in 12 languages, before it is printed.
+**USP in one line:** no tool we found checks an Indian question paper against its translations question by
+question; IndicDoc Verify does it offline, in 12 languages, before the paper is printed.
 
 ## 4. Who pays
 
