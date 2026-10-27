@@ -321,3 +321,42 @@ class TestVerifyEndpoint:
         assert client.post('/verify?lang=xyz', files={'file': page}).status_code == 400
         bad_bank = ('b.json', b'{"not": "a list"}', 'application/json')
         assert client.post('/verify', files={'file': page, 'bank': bad_bank}).status_code == 400
+
+
+class TestVerifyConsensus:
+    """POST /verify with both readers (their page readings stubbed): the response carries the consensus."""
+
+    def _setup(self, api, monkeypatch):
+        from ml.verify.reader import read_pages
+        from tests.test_consensus import EN_PAGE, _ocr_page_misreading_q2
+        client, main, tmp_path = api
+        ckpt = tmp_path / 'doclayout.pt'
+        ckpt.write_bytes(b'x')
+        monkeypatch.setitem(main.CHECKPOINTS, 'doclayout', ckpt)
+        monkeypatch.setattr(main, 'tesseract_available', lambda: True)
+        monkeypatch.setattr(main, '_read_paper', lambda images, lang: _ocr_page_misreading_q2())
+        monkeypatch.setattr(main, 'second_reading',
+                            lambda images, pages, pdf, dpi: read_pages([EN_PAGE], source='text-layer'))
+        monkeypatch.setattr(main, 'make_rereader', lambda images: None)
+        return client
+
+    def test_json_has_consensus(self, api, monkeypatch):
+        client = self._setup(api, monkeypatch)
+        page = ('p.png', _encode(np.full((60, 60, 3), 255, np.uint8)), 'image/png')
+        rep = client.post('/verify', files={'file': page}).json()
+        assert 'consensus' in rep and rep['consensus']['readers']['b'] == 'layout-free, PDF text layer'
+        assert not [i for i in rep['issues'] if i['code'] == 'NUMBER_GAP']        # reader A's misreading
+        assert any(d['code'] == 'NUMBER_GAP' for d in rep['consensus']['dismissed'])
+
+    def test_single_reader_on_request(self, api, monkeypatch):
+        client = self._setup(api, monkeypatch)
+        page = ('p.png', _encode(np.full((60, 60, 3), 255, np.uint8)), 'image/png')
+        rep = client.post('/verify?second_reader=false', files={'file': page}).json()
+        assert 'consensus' not in rep
+        assert any(i['code'] == 'NUMBER_GAP' for i in rep['issues'])
+
+    def test_html_report(self, api, monkeypatch):
+        client = self._setup(api, monkeypatch)
+        page = ('p.png', _encode(np.full((60, 60, 3), 255, np.uint8)), 'image/png')
+        r = client.post('/verify?output=html', files={'file': page})
+        assert r.status_code == 200 and 'Dual-reader consensus' in r.text

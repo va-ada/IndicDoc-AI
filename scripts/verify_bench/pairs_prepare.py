@@ -5,7 +5,7 @@ generate.py, render.js, degrade.py and ocr.js), so the dual-reader consensus can
     pdf/<paper>.pdf     each paper printed to PDF from its HTML (born-digital, with a text layer)
     textlayer.json      that text layer per page, in the page images' pixel coordinates (200 dpi)
     ocr_b.json          for the scan-degraded papers (no usable text layer): Tesseract words with reader B's own
-                        configuration (psm 6 on a binarised image), the page's Indic model and English
+                        configuration (psm 4, enlarged 1.5 times), the page's Indic model and English
 
 Reader A keeps the benchmark's existing OCR (tesseract.js, psm 3), so the two readers do not share an OCR engine build.
 
@@ -30,9 +30,10 @@ INDIC = {'hi': 'hin', 'ta': 'tam'}
 
 def ocr_task(task):
     from ml.ocr import read_words
+    from ml.verify.pipeline import SECOND_OCR
     path, lang, key = task
     img = np.asarray(Image.open(path).convert('RGB'))
-    return path.name, key, read_words(img, lang, psm=6, binarize=True, single_thread=True)
+    return path.name, key, read_words(img, lang, single_thread=True, **SECOND_OCR)
 
 
 def main():

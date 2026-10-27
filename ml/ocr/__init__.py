@@ -89,11 +89,12 @@ def _run_tesseract(image: np.ndarray, args: List[str], timeout: int = 180, singl
 
 
 def read_words(image: np.ndarray, languages: str, psm: int = 3, binarize: bool = False,
-               single_thread: bool = False) -> List[Dict]:
+               single_thread: bool = False, scale: Optional[float] = None) -> List[Dict]:
     """
     Every word Tesseract finds on the page, with its box (page pixels) and line identifiers.
-    psm / binarize: page segmentation mode and Otsu binarisation; the verification's second reader reads a page with
-    another configuration (psm 6 on a binarised image) so that its OCR errors are not the first reader's.
+    psm / binarize / scale: page segmentation mode, Otsu binarisation, enlargement factor (default: x2 below 1600 px);
+    the verification's second reader reads a scanned page with another configuration (psm 4, enlarged 1.5 times) so
+    that its OCR errors are not the first reader's.
     """
     if binarize:
         import cv2
@@ -102,9 +103,10 @@ def read_words(image: np.ndarray, languages: str, psm: int = 3, binarize: bool =
         image = cv2.cvtColor(bw, cv2.COLOR_GRAY2RGB)
     h, w = image.shape[:2]
     # Tesseract reads best around 300 dpi; small renders are upscaled and the boxes scaled back
-    scale = 2 if max(h, w) < 1600 else 1
-    if scale > 1:
-        image = np.array(Image.fromarray(image).resize((w * scale, h * scale), Image.LANCZOS))
+    if scale is None:
+        scale = 2 if max(h, w) < 1600 else 1
+    if scale != 1:
+        image = np.array(Image.fromarray(image).resize((int(w * scale), int(h * scale)), Image.LANCZOS))
     # -c tessedit_create_tsv=1 rather than the 'tsv' config file, which lives outside our tessdata folder
     tsv = _run_tesseract(image, ['-l', languages, '--psm', str(psm), '-c', 'tessedit_create_tsv=1'],
                          single_thread=single_thread)

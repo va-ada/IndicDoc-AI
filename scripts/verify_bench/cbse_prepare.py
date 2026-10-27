@@ -6,7 +6,7 @@ Inputs of both readers for the CBSE-format benchmark (after cbse.py and render.j
     pages/*.png         half of the papers degraded like scans (blur, noise, JPEG); those are "scanned PDFs":
                         reader B has no text layer for them and reads them with its own OCR configuration
     ocr.json            Tesseract words per page: 'hin' / 'eng' (psm 3, reader A and the number pass) and, for
-                        scanned papers, 'hin_b' / 'eng_b' (psm 6 on a binarised image, reader B)
+                        scanned papers, 'hin_b' / 'eng_b' (reader B's OCR configuration, ml/verify/pipeline.py SECOND_OCR)
 
 Usage: python scripts/verify_bench/cbse_prepare.py data/cbse_bench [--workers 4]
 """
@@ -73,6 +73,9 @@ def ocr_task(task):
     from ml.ocr import read_words
     path, lang, psm, binarize, key = task
     img = np.asarray(Image.open(path).convert('RGB'))
+    if key.endswith('_b'):   # reader B: the product's second OCR configuration (ml/verify/pipeline.py)
+        from ml.verify.pipeline import SECOND_OCR
+        return path.name, key, read_words(img, lang, single_thread=True, **SECOND_OCR)
     return path.name, key, read_words(img, lang, psm=psm, binarize=binarize, single_thread=True)
 
 
