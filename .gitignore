@@ -90,5 +90,6 @@ outputs/study/
 
 # Verification benchmark: generated pages and node packages
 data/verify_bench*/
+data/cbse_*/
 scripts/verify_bench/node_modules
 scripts/verify_bench/tessdata

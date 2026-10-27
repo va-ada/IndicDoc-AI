@@ -88,15 +88,26 @@ def _run_tesseract(image: np.ndarray, args: List[str], timeout: int = 180, singl
     return proc.stdout.decode('utf-8', errors='replace')
 
 
-def read_words(image: np.ndarray, languages: str) -> List[Dict]:
-    """Every word Tesseract finds on the page, with its box (page pixels) and line identifiers."""
+def read_words(image: np.ndarray, languages: str, psm: int = 3, binarize: bool = False,
+               single_thread: bool = False) -> List[Dict]:
+    """
+    Every word Tesseract finds on the page, with its box (page pixels) and line identifiers.
+    psm / binarize: page segmentation mode and Otsu binarisation; the verification's second reader reads a page with
+    another configuration (psm 6 on a binarised image) so that its OCR errors are not the first reader's.
+    """
+    if binarize:
+        import cv2
+        grey = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY) if image.ndim == 3 else image
+        _, bw = cv2.threshold(grey, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+        image = cv2.cvtColor(bw, cv2.COLOR_GRAY2RGB)
     h, w = image.shape[:2]
     # Tesseract reads best around 300 dpi; small renders are upscaled and the boxes scaled back
     scale = 2 if max(h, w) < 1600 else 1
     if scale > 1:
         image = np.array(Image.fromarray(image).resize((w * scale, h * scale), Image.LANCZOS))
     # -c tessedit_create_tsv=1 rather than the 'tsv' config file, which lives outside our tessdata folder
-    tsv = _run_tesseract(image, ['-l', languages, '--psm', '3', '-c', 'tessedit_create_tsv=1'])
+    tsv = _run_tesseract(image, ['-l', languages, '--psm', str(psm), '-c', 'tessedit_create_tsv=1'],
+                         single_thread=single_thread)
     rows = tsv.splitlines()
     header = rows[0].split('\t')
     words = []
@@ -124,6 +135,7 @@ _INDIC_DIGIT = re.compile(r'[\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AE
 _INDIC_LETTER = re.compile(r'[\u0900-\u0963\u0970-\u09E5\u09F0-\u0A65\u0A70-\u0AE5\u0AF0-\u0B65\u0B70-\u0BE5'
                            r'\u0BF0-\u0C65\u0C70-\u0CE5\u0CF0-\u0D65\u0D70-\u0D7F]')
 _LATIN_UNIT = re.compile(r'^[A-Za-z°/%.]{1,4}$')
+_DIGITS_THEN_UNIT = re.compile(r'^(\d{1,6})[.,]?[A-Z]$')   # '24.V', '5A': a number and a one-letter unit
 _BARE_NUMBER = re.compile(r'^[0-9][0-9.,]*$')  # Latin digits only ('\d' also matches Indian digits)
 _HAS_DIGIT = re.compile(r'[0-9\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF'
                         r'\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F]')
@@ -169,6 +181,11 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
         if _BARE_NUMBER.match(w['text']) and not any(_overlap(w, lw) > 0.3 and _digits(w['text']) in _digits(lw['text'])
                                                      for lw in with_digits):
             w['text'] = '·'
+        # On a page printed with Latin digits, an Indian digit in a word without Indic letters is the Indic model's
+        # reading of Latin text ('C(x)' -> '(७)'); unless the English reading has digits there, it is not a number
+        elif not indic_page and _INDIC_DIGIT.search(w['text']) and not _INDIC_LETTER.search(w['text']) \
+                and not any(_overlap(w, lw) > 0.3 for lw in with_digits):
+            w['text'] = _INDIC_DIGIT.sub('·', w['text'])
         # Latin units read by the Indic model as digits ('A' -> '८', '°C' -> '९६' or '“6'): a confident short Latin
         # reading without digits at the same place wins
         elif _HAS_DIGIT.search(w['text']) and not _BARE_NUMBER.match(w['text']) \
@@ -190,10 +207,25 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
             if ids is not None:
                 out.append({**lw, 'block_num': ids['block_num'], 'par_num': ids['par_num'], 'line_num': ids['line_num']})
             continue
+        if len(hits) > 1:
+            # The English token spans two Indic words ('में ।20' read as 'F120'): the one with digits (or without
+            # Indic letters) is the number
+            numeric = [h for h in hits if _HAS_DIGIT.search(h['text']) or not _INDIC_LETTER.search(h['text'])]
+            if len(numeric) == 1:
+                hits = numeric
         w = hits[0]
         # A word of the Indic reading without Indic letters (a number, '।' for '1', a stray symbol) takes the
         # English number; a word with Indic letters only when the English reading is confident or more confident
         letters = bool(_INDIC_LETTER.search(w['text']))
+        unit = _DIGITS_THEN_UNIT.match(lw['text'])
+        if len(hits) == 1 and letters and len(w['text']) == 1 and unit and not _HAS_DIGIT.search(w['text']) \
+                and not any(_digits(o['text']) == unit.group(1) and abs(o['top'] - w['top']) < w['height']
+                            and abs(w['left'] - (o['left'] + o['width'])) < 6 * w['height'] for o in out):
+            # '24 V' read by the Indic model as the single letter 'ए' (its reading of 'V'), by the English model as
+            # '24.V': the digits the Indic reading lost are put back before the unit
+            out.append({**w, 'text': unit.group(1), 'left': lw['left'],
+                        'width': max(1.0, w['left'] - lw['left'] - 2)})
+            continue
         if indic_page and _INDIC_DIGIT.search(w['text']):
             continue
         if len(hits) == 1 and (_HAS_DIGIT.search(w['text']) or not letters or len(w['text']) <= 2) \
@@ -202,7 +234,95 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
             # '(m2' (marker and number run together) + English '12' -> '(?) 12': the option marker survives
             w['text'] = ('(?) ' + lw['text']) if w['text'].startswith('(') and not lw['text'].startswith('(') \
                 else lw['text']
+    _fix_option_markers(out, latin_words)
     return out
+
+
+_INDIC_MARKER = re.compile(r'^[(\[{][^\s()\[\]{}]{0,3}[)\]}]')     # '(8)', '(0)', '(·)', '(()' at a word's start
+_LATIN_MARKER = re.compile(r'^\(([A-Da-d])\)')
+
+
+def _fix_option_markers(words: List[Dict], latin_words: List[Dict]) -> None:
+    """
+    Option markers printed in Latin letters on an Indic page ('(A)' - '(D)', as CBSE prints them) are read by the
+    Indic model as digits or symbols ('(8)', '(0)', '(·)'). Where the English reading has a clean marker at the same
+    place, the marker is taken from it (and the rest of the word, the option's value, is kept).
+    """
+    for w in words:
+        m = _INDIC_MARKER.match(w['text'])
+        if not m or _INDIC_LETTER.search(m.group(0)) or _LATIN_MARKER.match(w['text']):
+            continue
+        near = [lw for lw in latin_words if _overlap(w, lw) > 0.2 and _LATIN_MARKER.match(lw['text'])]
+        if near:
+            best = max(near, key=lambda lw: lw.get('conf', 0))
+            w['text'] = _LATIN_MARKER.match(best['text']).group(0) + w['text'][m.end():]
+
+
+_STARTS_NUMBERED = re.compile(r'^\s*(?:Q\.?\s*|प्रश्न\s*)?[(\[]?[0-9\u0966-\u096F]{1,3}\s*[.):।]')
+_MARGIN_NUMBER = re.compile(r'^\(?Q?\.?(\d{1,3})[.):]?$')
+
+
+def read_margin_numbers(image: np.ndarray, regions: List[Dict], labels=('first-level-question',)) -> None:
+    """
+    The number of a question the page OCR skipped. Exam papers print question numbers in a margin column ('12.'
+    hanging left of the text); Tesseract's page segmentation often drops such short isolated tokens. For a question
+    region whose text does not start with a number, the strip left of its first word is read alone (English model,
+    digits only, three times enlarged) and the number found is put in front of the region's text.
+    """
+    hgt, wid = image.shape[:2]
+    for r in regions:
+        if r['label'] not in labels or _STARTS_NUMBERED.match(r.get('text', '') or ''):
+            continue
+        words = r.get('words') or []
+        x1, y1 = r['box'][0], r['box'][1]
+        if words:
+            first_line = printed_lines(words)[0]
+            first = first_line[0]
+            lh, top, right = first['height'], first['top'], first['left']
+        else:
+            lh, top, right = 0.02 * hgt, y1, x1 + 0.06 * (r['box'][2] - x1)
+        cx1, cx2 = int(max(0, x1 - 0.03 * wid)), int(right - 2)
+        cy1, cy2 = int(max(0, top - 0.35 * lh)), int(min(hgt, top + 1.35 * lh))
+        if cx2 - cx1 < 8 or cy2 - cy1 < 8:
+            continue
+        crop = Image.fromarray(image[cy1:cy2, cx1:cx2]).convert('L')
+        crop = np.array(crop.resize((crop.width * 3, crop.height * 3), Image.LANCZOS).convert('RGB'))
+        try:
+            text = _run_tesseract(crop, ['-l', 'eng', '--psm', '7', '-c', 'tessedit_char_whitelist=0123456789.()Q'])
+        except (RuntimeError, subprocess.TimeoutExpired):
+            continue
+        m = _MARGIN_NUMBER.match(text.strip().replace(' ', ''))
+        if m:
+            text = r.get('text') or ''
+            first = text.split(maxsplit=1)
+            if first and re.fullmatch(r'[(\[]?[0-9\u0966-\u096F]{1,3}[^\w\s]?', first[0]):
+                text = first[1] if len(first) > 1 else ''      # the page OCR's garbled reading of the same number
+            r['text'] = f'{int(m.group(1))}. ' + text
+            if 'words' in r:
+                r['words'] = [{'text': f'{int(m.group(1))}.', 'left': float(cx1), 'top': float(top),
+                               'width': float(right - cx1 - 4), 'height': float(lh), 'conf': 80.0}] + list(words)
+
+
+def printed_lines(words: List[Dict]) -> List[List[Dict]]:
+    """
+    Words grouped into printed lines by their vertical overlap (top to bottom, each line left to right).
+    Tesseract's own line ids are not used: a hanging question number ('12.' in a margin column) is often a block of
+    its own, and ordering by block would put it after the first line of its question.
+    """
+    lines: List[List[Dict]] = []
+    for w in sorted(words, key=lambda w: w['top']):
+        cy = w['top'] + w['height'] / 2
+        for line in lines[-3:]:
+            ref = line[0]
+            if abs(cy - (ref['top'] + ref['height'] / 2)) < 0.5 * max(1.0, min(w['height'], ref['height'])):
+                line.append(w)
+                break
+        else:
+            lines.append([w])
+    for line in lines:
+        line.sort(key=lambda w: w['left'])
+    lines.sort(key=lambda ln: min(w['top'] for w in ln))
+    return lines
 
 
 def assign_words(regions: List[Dict], words: List[Dict], min_conf: float = 0.0,
@@ -225,11 +345,8 @@ def assign_words(regions: List[Dict], words: List[Dict], min_conf: float = 0.0,
 
     out = []
     for i, region in enumerate(regions):
-        lines = defaultdict(list)
-        for word in per_region[i]:
-            lines[(word['block_num'], word['par_num'], word['line_num'])].append(word)
-        ordered = sorted(lines.values(), key=lambda ws: np.mean([w['top'] for w in ws]))
-        text = '\n'.join(' '.join(w['text'] for w in sorted(ws, key=lambda w: w['left'])) for ws in ordered)
+        ordered = printed_lines(per_region[i])
+        text = '\n'.join(' '.join(w['text'] for w in ws) for ws in ordered)
         out.append({**region, 'text': text})
         if include_words:
             out[-1]['words'] = [{k: w[k] for k in ('text', 'left', 'top', 'width', 'height')} for w in per_region[i]]
@@ -333,6 +450,8 @@ def extract_document(image: np.ndarray, detections: Dict, languages: Optional[st
                for box, l, s in zip(detections['boxes'], detections['labels'], detections['scores'])]
     regions = [{**r, 'detected': True} if r['label'] not in _NO_TEXT else {**r, 'text': '', 'detected': True}
                for r in assign_words(regions, words, include_words=number_pass)]
+    if number_pass:
+        read_margin_numbers(image, regions)
     # Words in no detected box are kept as 'unlabelled-text' regions, so no text is silently lost
     regions += leftover_regions(regions, words)
     ordered = reading_order(regions)

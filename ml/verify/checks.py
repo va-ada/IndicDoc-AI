@@ -45,6 +45,8 @@ def _qid(q: Question) -> int:
 
 
 def _issue(code, severity, message, q: Optional[Question] = None, version='paper', **details) -> Issue:
+    if q is not None:
+        details = {'qindex': q.index, **details}
     return Issue(code, severity, message, question=_qid(q) if q else None, page=q.page if q else None,
                  box=q.box if q else None, version=version, details=details)
 
@@ -106,6 +108,14 @@ def check_paper(paper: Paper, version: str = 'paper') -> List[Issue]:
             if any(not normalized(o) for o in q.options):
                 issues.append(_issue('OPTION_EMPTY', WARNING, f'Question {_qid(q)} has an empty option.', q, version))
 
+    # Sub-part marks ('(i) ... [1]  (ii) ... [1]  (iii) ... [2]') should add up to the marks the question carries
+    for q in qs:
+        if q.sub_marks and q.marks is not None and q.marks_source != 'sub-questions' \
+                and abs(q.sub_marks - q.marks) > 1e-6:
+            issues.append(_issue('SUBMARKS_TOTAL', WARNING, f'Question {_qid(q)}: its parts carry {q.sub_marks:g} marks, '
+                                 f'but the question carries {q.marks:g}.', q, version, parts=q.sub_marks,
+                                 question_marks=q.marks))
+
     # Marks: printed per-question marks should add up to the printed maximum
     with_marks = [q for q in qs if q.marks is not None]
     if paper.declared_total is not None and with_marks:
@@ -121,12 +131,31 @@ def check_paper(paper: Paper, version: str = 'paper') -> List[Issue]:
                                 f'({", ".join(map(str, missing[:8]))}), so the total cannot be checked.',
                                 version=version, details={'questions': missing}))
 
-    # Page numbers: printed page numbers should run without gaps
-    printed = [(i, n) for i, n in enumerate(paper.page_numbers) if n is not None]
+    # Page numbers: printed page numbers should run without gaps ('Page 8 of 24' footers also give the page count)
+    sheets = paper.page_indices or list(range(len(paper.page_numbers)))
+    printed = [(sheets[i], n) for i, n in enumerate(paper.page_numbers) if n is not None]
     for (i, a), (j, b) in zip(printed, printed[1:]):
         if b - a != j - i:
             issues.append(Issue('PAGE_NUMBERS', WARNING, f'Printed page number goes from {a} to {b} between '
                                 f'sheets {i + 1} and {j + 1}.', page=j, version=version))
+    counts = Counter(pof[1] for pof in paper.page_of if pof)
+    if counts:
+        of, _ = counts.most_common(1)[0]
+        if len(counts) > 1:
+            issues.append(Issue('PAGE_COUNT', WARNING, f'Footers give different page counts ({", ".join(f"of {c}" for c in sorted(counts))}).',
+                                version=version, details={'counts': dict(counts)}))
+        if paper.declared_pages is not None and paper.declared_pages != of:
+            issues.append(Issue('PAGE_COUNT', WARNING, f'The note says the paper has {paper.declared_pages} printed pages; '
+                                f'the footers say {of}.', version=version,
+                                details={'declared': paper.declared_pages, 'footers': of}))
+
+    # The paper states how many questions it has ('This question paper contains 38 questions')
+    if paper.declared_questions is not None:
+        distinct = len({q.number for q in qs if q.number is not None})
+        if distinct != paper.declared_questions:
+            issues.append(Issue('QUESTION_COUNT_DECLARED', ERROR, f'The paper says it has {paper.declared_questions} '
+                                f'questions; {distinct} are printed.', version=version,
+                                details={'declared': paper.declared_questions, 'found': distinct}))
     return issues
 
 
@@ -215,6 +244,10 @@ def compare_versions(source: Paper, target: Paper,
             issues.append(_issue('OPTION_COUNT_MISMATCH', ERROR, f'Question {qn}: {len(s.options)} options in the '
                                  f'source, {len(t.options)} in the translation.', t, 'target',
                                  source=len(s.options), target=len(t.options)))
+        if s.choices != t.choices:
+            issues.append(_issue('CHOICE_MISMATCH', ERROR, f'Question {qn}: {s.choices + 1} internal-choice alternatives '
+                                 f'in the source, {t.choices + 1} in the translation.', t, 'target',
+                                 source=s.choices, target=t.choices))
         if s.sub_questions != t.sub_questions:
             issues.append(_issue('SUBQUESTION_MISMATCH', ERROR, f'Question {qn}: {s.sub_questions} sub-questions in '
                                  f'the source, {t.sub_questions} in the translation.', t, 'target'))

@@ -171,7 +171,10 @@ def main():
         'cases': per_case,
     }
     suffix = args.layout + ('_no_number_pass' if args.no_number_pass else '') + ('_no_geometry' if args.no_geometry else '')
-    out = Path(args.out or PROJECT_ROOT / 'outputs' / 'metrics' / f'verify_benchmark_{suffix}.json')
+    # Only the test set's results are published in outputs/metrics; other sets (development) keep theirs beside the data
+    default = (PROJECT_ROOT / 'outputs' / 'metrics' / f'verify_benchmark_{suffix}.json'
+               if root.resolve() == (PROJECT_ROOT / 'data' / 'verify_bench').resolve() else root / f'results_{suffix}.json')
+    out = Path(args.out or default)
     out.write_text(json.dumps(result, indent=1, ensure_ascii=False))
     o = result['overall']
     print(f"{args.layout}: {o['errors_injected']} injected errors, found {o['found']:.1%} "

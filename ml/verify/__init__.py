@@ -37,39 +37,128 @@ def split_bilingual(pages: List[Dict], scripts: Dict[str, str]) -> Dict[str, Lis
     return out
 
 
+def _checks(papers: Dict[str, Paper], profile=None, semantic=None) -> List[Dict]:
+    """Every check on one reading of the paper: per version, and between the versions when there are two."""
+    issues: List[Issue] = []
+    question_checks = profile is None or load_profile(profile).get('question_checks', False)
+    for version, paper in papers.items():
+        if question_checks:
+            issues += check_paper(paper, version=version)
+    if 'source' in papers and 'target' in papers:
+        issues += compare_versions(papers['source'], papers['target'], semantic=semantic)
+    return [i.to_dict() for i in issues]
+
+
+def _summary(issues: List[Dict], papers: Dict[str, Paper]) -> Dict:
+    main = papers.get('target') or papers.get('paper') or next(iter(papers.values()))
+    return {'questions': len(main.questions), 'errors': sum(i['severity'] == ERROR for i in issues),
+            'warnings': sum(i['severity'] == WARNING for i in issues), 'info': sum(i['severity'] == INFO for i in issues)}
+
+
 def verify(pages: List[Dict], source_pages: Optional[List[Dict]] = None, bank: Optional[Sequence[Dict]] = None,
            profile=None, split_scripts: Optional[Dict[str, str]] = None,
-           semantic: Optional[Callable[[str, str], float]] = None, meta: Optional[Dict] = None) -> Dict:
+           semantic: Optional[Callable[[str, str], float]] = None, meta: Optional[Dict] = None,
+           pages_b: Optional[List[Dict]] = None, source_pages_b: Optional[List[Dict]] = None,
+           rereader=None, bilingual: str = 'off', langs: Optional[Dict[str, str]] = None,
+           return_readers: bool = False) -> Dict:
     """
-    Run every applicable check and return {'summary', 'issues', 'paper', 'source', 'meta'} (JSON-serialisable).
-    With split_scripts, `pages` is one bilingual paper: the first script's stream is the source, the second the
-    translation.
+    Run every applicable check and return {'summary', 'issues', 'paper', 'source', 'meta', ...} (JSON-serialisable).
+
+    pages / source_pages: reader A (layout + OCR) pages of the paper and of its source version.
+    pages_b / source_pages_b: reader B (layout-free) pages of the same files; with them, every finding is the
+        consensus of the two readers (ml/verify/consensus.py) and carries a 'consensus' record.
+    rereader(sheet, box, lang) -> words: a third, higher-resolution reading of one question, used where the two
+        readers disagree; a dict {'source': ..., 'target': ...} when the versions are separate files.
+    bilingual: 'auto' finds the two language versions inside one file (page by page, as CBSE prints them, or line
+        by line) and checks them against each other; 'off' treats the file as one paper.
+    split_scripts: one bilingual paper with both languages on the same pages, scripts named explicitly
+        (the first script's stream is the source, the second the translation).
+    langs: OCR language of each version for the third reading, e.g. {'target': 'hin', 'source': 'eng'}.
     """
+    from ml.verify.consensus import combine, fuse
+    from ml.verify.versions import VERSION_NAMES, detect_versions, split_versions
+    meta = dict(meta or {})
+    readers = {'a': {'paper': pages}}
+    if pages_b is not None:
+        readers['b'] = {'paper': pages_b}
+    plan = None
     if split_scripts:
-        streams = split_bilingual(pages, split_scripts)
-        names = list(split_scripts.values())
-        source_pages, pages = streams[names[0]], streams[names[1]]
+        for r, pp in list(readers.items()):
+            streams = split_bilingual(pp['paper'], split_scripts)
+            names = list(split_scripts.values())
+            readers[r] = {'source': streams[names[0]], 'target': streams[names[1]]}
+    elif source_pages is not None:
+        readers['a'] = {'source': source_pages, 'target': pages}
+        if 'b' in readers:
+            readers['b'] = {'source': source_pages_b if source_pages_b is not None else source_pages,
+                            'target': pages_b}
+    elif bilingual == 'auto':
+        plan = detect_versions(pages_b if pages_b is not None else pages)
+        if plan['mode'] in ('pages', 'lines'):
+            src_script = plan['source']
+            tgt_script = next(s for s in plan['scripts'] if s != src_script)
+            for r, pp in list(readers.items()):
+                parts = split_versions(pp['paper'], plan)
+                readers[r] = {'source': parts[src_script], 'target': parts[tgt_script]}
+            meta.setdefault('Versions', f'{VERSION_NAMES.get(src_script, src_script)} (source) and '
+                                        f'{VERSION_NAMES.get(tgt_script, tgt_script)}, '
+                                        f'{"page by page" if plan["mode"] == "pages" else "line by line"} in one file')
+            langs = langs or {'source': _lang(src_script), 'target': _lang(tgt_script)}
 
-    paper = parse_paper(pages)
-    issues: List[Issue] = []
-    # Question-level checks run for question papers: no profile, or a profile that asks for them
-    if profile is None or load_profile(profile).get('question_checks', False):
-        issues += check_paper(paper, version='target' if source_pages else 'paper')
-    source = None
-    if source_pages is not None:
-        source = parse_paper(source_pages)
-        issues += check_paper(source, version='source')
-        issues += compare_versions(source, paper, semantic=semantic)
+    papers = {r: {v: parse_paper(pp) for v, pp in versions.items()} for r, versions in readers.items()}
+    issues_a = _checks(papers['a'], profile, semantic)
+    consensus = None
+    if 'b' in papers:
+        issues_b = _checks(papers['b'], profile, semantic)
+        fused, records = {}, {}
+        for v in papers['a']:
+            rr = rereader.get(v) if isinstance(rereader, dict) else rereader
+            fused[v], records[v] = fuse(papers['a'][v], papers['b'][v], rr, (langs or {}).get(v))
+        issues_f = _checks(fused, profile, semantic)
+        layer = {v: 'text-layer' for v, pb in papers['b'].items()
+                 if pb.questions and all(q.source == 'text-layer' for q in pb.questions)}
+        issues, dismissed, stats = combine(issues_a, issues_b, issues_f, records, layer)
+        final_papers = fused
+        consensus = {'stats': stats, 'dismissed': dismissed,
+                     'readers': {'a': 'deep-learning layout + OCR',
+                                 'b': _reader_b_source(pages_b)}}
+    else:
+        issues, final_papers = issues_a, papers['a']
+    main_version = 'target' if 'target' in final_papers else 'paper'
+    extra: List[Issue] = []
     if bank:
-        issues += find_repeats(paper, bank)
+        extra += find_repeats(final_papers[main_version], bank)
     if profile is not None:
-        issues += check_format(pages, profile)
+        extra += check_format(readers['a'].get(main_version) or pages, profile)
+    issues = issues + [i.to_dict() for i in extra]
+    paper = final_papers[main_version]
+    source = final_papers.get('source')
+    out = {'summary': _summary(issues, final_papers), 'issues': issues, 'paper': paper.to_dict(),
+           'source': source.to_dict() if source else None, 'meta': meta}
+    if plan is not None:
+        out['versions'] = plan
+    if return_readers:
+        out['reader_issues'] = {'a': issues_a, **({'b': issues_b} if 'b' in papers else {})}
+    if consensus is not None:
+        out['consensus'] = consensus
+        out['summary']['confirmed'] = sum(i.get('consensus', {}).get('status') == 'confirmed' for i in issues)
+        out['summary']['review'] = sum(i.get('consensus', {}).get('status') == 'review' for i in issues)
+        out['summary']['dismissed'] = len(consensus['dismissed'])
+    return out
 
-    out = [i.to_dict() for i in issues]
-    summary = {'questions': len(paper.questions), 'errors': sum(i['severity'] == ERROR for i in out),
-               'warnings': sum(i['severity'] == WARNING for i in out), 'info': sum(i['severity'] == INFO for i in out)}
-    return {'summary': summary, 'issues': out, 'paper': paper.to_dict(),
-            'source': source.to_dict() if source else None, 'meta': meta or {}}
+
+def _lang(script: str) -> str:
+    from ml.ocr import languages_for_script
+    return languages_for_script(script)
+
+
+def _reader_b_source(pages_b) -> str:
+    sources = {p.get('source', 'ocr') for p in pages_b or []}
+    if sources == {'text-layer'}:
+        return 'layout-free, PDF text layer'
+    if 'text-layer' in sources:
+        return 'layout-free, PDF text layer and second OCR pass'
+    return 'layout-free, second OCR pass'
 
 
 __all__ = ['verify', 'parse_paper', 'check_paper', 'compare_versions', 'find_repeats', 'check_format',

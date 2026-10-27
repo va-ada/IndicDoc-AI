@@ -722,7 +722,10 @@ with tab_verify:
                 "from earlier papers and, against the source version, every number, option and mark that differs in "
                 "the translation. Each finding points to the question and page for the vetter to confirm.")
     v_mode = st.radio("What to check", ["One paper", "Translation against its source", "One bilingual paper"],
-                      horizontal=True)
+                      horizontal=True,
+                      help="One paper: a paper printed in two languages page by page (CBSE: a Hindi page, then the "
+                           "English page) is recognised by itself and its versions are checked against each other. "
+                           "One bilingual paper: both languages on the same pages, scripts chosen below.")
     lang_names = ["Auto-detect"] + list(OCR_LANGUAGES)
 
     def _codes(choice):
@@ -745,6 +748,11 @@ with tab_verify:
             s1 = st.selectbox("Source script", scripts, index=0)
             s2 = st.selectbox("Translation script", scripts, index=1)
             v_split = {s1: s1.lower(), s2: s2.lower()} if s1 != s2 else None
+    v_dual = st.checkbox("Dual-reader consensus (recommended)", value=True,
+                         help="The file is read twice, independently: by the deep-learning layout model with OCR, and "
+                              "without the layout model from the PDF's own text (or a second OCR pass). A finding is "
+                              "confirmed only when both readings support it; where they disagree the question is read "
+                              "a third time, and anything still unsettled is marked for a human look.")
     with st.expander("More checks"):
         v_bank = st.file_uploader("Question bank of earlier papers (JSON list of {text, source})", type=["json"])
         profiles = list_profiles()
@@ -766,9 +774,26 @@ with tab_verify:
         bar = st.progress(0.0, text="Reading pages")
         pages = _read_paper(images, _codes(v_lang), bar, 0, total)
         src_pages = _read_paper(src_images, v_src_lang, bar, len(images), total) if src_images else None
+        kwargs = {}
+        if v_dual:
+            from ml.verify.consensus import make_rereader
+            from ml.verify.pipeline import second_reading, version_langs
+
+            def _second(imgs, pgs, upload):
+                data = upload.getvalue()
+                return second_reading(imgs, pgs, data if upload.name.lower().endswith(".pdf") else None, 200,
+                                      progress=lambda k, n: bar.progress(k / n, text=f"Second reading: page {k} of {n}"))
+            kwargs = {"pages_b": _second(images, pages, v_file), "rereader": make_rereader(images),
+                      "langs": {"target": version_langs(pages)}}
+            if src_images:
+                kwargs["source_pages_b"] = _second(src_images, src_pages, v_src)
+                kwargs["rereader"] = {"target": make_rereader(images), "source": make_rereader(src_images)}
+                kwargs["langs"]["source"] = version_langs(src_pages)
+        bar.progress(1.0, text="Checking")
         report = verify(pages, source_pages=src_pages, bank=bank, split_scripts=v_split,
                         profile=None if v_profile == "None" else v_profile,
-                        meta={"File": v_file.name, "Pages": len(images)})
+                        meta={"File": v_file.name, "Pages": len(images)},
+                        bilingual="auto" if v_mode == "One paper" else "off", **kwargs)
         st.session_state["verify"] = (report, images, src_images)
         bar.empty()
 
@@ -786,15 +811,46 @@ with tab_verify:
             st.warning("Check before printing: see the warnings below.")
         else:
             st.success("No problems found by the automatic checks.")
+        if report.get("versions", {}).get("mode") in ("pages", "lines"):
+            st.info(f"Bilingual paper: {report['meta'].get('Versions', '')}. The two versions were checked against "
+                    "each other.")
+        cons = report.get("consensus")
+        if cons:
+            stats = cons["stats"]
+            agree = [v["field_agreement"] for v in stats.values() if v.get("field_agreement") is not None]
+            ca = [v["mean_confidence_a"] for v in stats.values() if v.get("mean_confidence_a") is not None]
+            cb = [v["mean_confidence_b"] for v in stats.values() if v.get("mean_confidence_b") is not None]
+            st.markdown(
+                f"**Dual-reader consensus.** Reader A ({cons['readers']['a']}) and reader B ({cons['readers']['b']}) "
+                f"agreed on {100 * sum(agree) / len(agree):.0f}% of what they read" if agree else "**Dual-reader consensus.**")
+            c1, c2, c3, c4 = st.columns(4)
+            c1.metric("Confirmed by both", s.get("confirmed", 0))
+            c2.metric("Need a human look", s.get("review", 0))
+            c3.metric("Dismissed as misreadings", s.get("dismissed", 0))
+            c4.metric("Mean confidence A / B", f"{sum(ca) / len(ca):.2f} / {sum(cb) / len(cb):.2f}" if ca and cb else "-")
         if report["issues"]:
             import pandas as pd
-            st.dataframe(pd.DataFrame([{"severity": i["severity"], "check": i["code"].replace("_", " ").lower(),
-                                        "question": i["question"], "page": None if i["page"] is None else i["page"] + 1,
-                                        "version": i["version"], "finding": i["message"]} for i in report["issues"]]),
-                         hide_index=True, width="stretch")
+
+            def _row(i):
+                c = i.get("consensus") or {}
+                row = {"severity": i["severity"], "check": i["code"].replace("_", " ").lower(),
+                       "question": i["question"], "page": None if i["page"] is None else i["page"] + 1,
+                       "version": i["version"], "finding": i["message"]}
+                if c:
+                    row.update({"consensus": c.get("status"), "conf. A": c.get("confidence_a"),
+                                "conf. B": c.get("confidence_b")})
+                return row
+            st.dataframe(pd.DataFrame([_row(i) for i in report["issues"]]), hide_index=True, width="stretch")
+        if cons and cons["dismissed"]:
+            with st.expander(f"{len(cons['dismissed'])} single-reader finding(s) dismissed by the consensus"):
+                st.dataframe(pd.DataFrame([{"reader": i["raised_by"].upper(), "check": i["code"].replace("_", " ").lower(),
+                                            "question": i["question"], "finding": i["message"]}
+                                           for i in cons["dismissed"]]), hide_index=True, width="stretch")
         numbered = list(enumerate(report["issues"], 1))
+        same_file = src_images is None
         for p, image_rgb in enumerate(images):
-            on_page = [(n, i) for n, i in numbered if i.get("page") == p and i["version"] in ("paper", "target")]
+            on_page = [(n, i) for n, i in numbered if i.get("page") == p
+                       and (same_file or i["version"] in ("paper", "target"))]
             if on_page:
                 st.image(annotate(image_rgb, on_page), caption=f"Page {p + 1}: {len(on_page)} finding(s) marked",
                          width="stretch")

@@ -17,6 +17,11 @@ def no_models(tmp_path, monkeypatch):
     monkeypatch.setattr(config, 'AUTHORS_CHECKPOINT', tmp_path / 'missing_authors.pt')
 
 
+def _sample_checkbox(at):
+    """The Analyze tab's 'use a sample page' checkbox (the Verify tab has checkboxes of its own)."""
+    return next(c for c in at.checkbox if c.label.startswith('Use a sample page'))
+
+
 class TestStreamlitApp:
     def test_app_renders_all_tabs(self, no_models):
         from streamlit.testing.v1 import AppTest
@@ -28,7 +33,7 @@ class TestStreamlitApp:
         """The detected-elements list must show on the same click, not one interaction later."""
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
-        at.checkbox[0].check().run()  # use a bundled sample image
+        _sample_checkbox(at).check().run()  # use a bundled sample image
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()
         assert not at.exception
         n_detected = len(at.session_state['last_results']['boxes'])
@@ -77,7 +82,7 @@ class TestStreamlitApp:
 
         at = AppTest.from_file(APP, default_timeout=180).run()
         assert at.sidebar.selectbox[0].options == ['Faster R-CNN (Baseline)']
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()
         assert not at.exception and not at.warning
         assert at.session_state['last_results'].get('is_demo', False) is False
@@ -105,7 +110,7 @@ class TestStreamlitApp:
     def test_samples_are_real_indicdlp_pages(self, no_models):
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         options = [s for s in at.selectbox if any(o.endswith('.png') for o in s.options)][0].options
         assert 'hindi_newspapers.png' in options and not any(o.startswith('sample_') for o in options)
 
@@ -113,7 +118,7 @@ class TestStreamlitApp:
         """Boxes found on one page must not be drawn on the next page before it is analysed."""
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         sample_box = [s for s in at.selectbox if 'hindi_newspapers.png' in s.options][0]
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()
         assert [m.value for m in at.markdown if m.value.startswith('`')]   # results shown for page 1
@@ -125,7 +130,7 @@ class TestStreamlitApp:
     def test_reset_shows_the_page_again(self, no_models):
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()
         [b for b in at.button if b.label == 'Reset'][0].click().run()
         assert not at.exception
@@ -148,7 +153,7 @@ class TestStreamlitApp:
         """Lowering the threshold after analysis must show more boxes immediately."""
         from streamlit.testing.v1 import AppTest
         at = AppTest.from_file(APP, default_timeout=120).run()
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()
         scores = at.session_state['last_results']['scores']
         at.sidebar.slider[0].set_value(0.95).run()
@@ -164,7 +169,7 @@ class TestStreamlitApp:
         if not tesseract_available():
             pytest.skip('tesseract or OCR models missing')
         at = AppTest.from_file(APP, default_timeout=300).run()
-        at.checkbox[0].check().run()
+        _sample_checkbox(at).check().run()
         sample = [s for s in at.selectbox if 'english_research_papers.png' in s.options][0]
         sample.select('english_research_papers.png').run()
         [b for b in at.button if b.label == 'Analyze Document'][0].click().run()

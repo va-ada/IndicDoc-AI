@@ -12,8 +12,9 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from ml.verify.text import (declared_total, marks_each, marks_in, numerals, question_number, split_options,
-                            stem_before_options, strip_marks)
+from ml.verify.text import (declared_pages, declared_questions, declared_total, is_choice_line, is_instruction,
+                            marks_each, marks_in, marks_schedule, numerals, option_family, page_of, question_number,
+                            section_key, split_options, stem_before_options, strip_marks)
 
 QUESTION = {'first-level-question'}
 SUB_QUESTION = {'second-level-question', 'third-level-question'}
@@ -40,6 +41,10 @@ class Question:
     formulas: int = 0
     section: str = ''
     boxes: List[Dict] = field(default_factory=list)  # every region of the question: {'page', 'box', 'label'}
+    choices: int = 0                 # internal-choice alternatives ('OR' / 'अथवा') beyond the first
+    marks_source: str = ''           # 'printed', 'sub-questions', 'instructions' or 'each'
+    confidence: Optional[float] = None  # how sure the reader is of what it read (0-1), from OCR and layout scores
+    source: Optional[str] = None     # where the reader got the text: 'text-layer', 'ocr', 're-read' (None: layout + OCR)
 
     @property
     def text(self) -> str:
@@ -52,7 +57,9 @@ class Question:
     def to_dict(self) -> Dict:
         return {'index': self.index, 'number': self.number, 'page': self.page, 'box': self.box, 'stem': self.stem,
                 'options': self.options, 'sub_questions': self.sub_questions, 'marks': self.marks,
-                'figures': self.figures, 'tables': self.tables, 'formulas': self.formulas, 'section': self.section}
+                'figures': self.figures, 'tables': self.tables, 'formulas': self.formulas, 'section': self.section,
+                'choices': self.choices, 'marks_source': self.marks_source, 'confidence': self.confidence,
+                'sub_marks': self.sub_marks}
 
 
 @dataclass
@@ -63,14 +70,21 @@ class Paper:
     page_numbers: List[Optional[int]]
     pages: int
     script: Optional[str] = None
+    page_of: List[Optional[List[int]]] = field(default_factory=list)  # printed 'Page X of Y' per sheet
+    declared_questions: Optional[int] = None   # 'This question paper contains 38 questions'
+    declared_pages: Optional[int] = None       # 'contains 23 printed pages'
+    page_indices: List[int] = field(default_factory=list)  # sheet of the original file for each page here
 
     def to_dict(self) -> Dict:
         return {'questions': [q.to_dict() for q in self.questions], 'declared_total': self.declared_total,
                 'marks_each': self.marks_each, 'page_numbers': self.page_numbers, 'pages': self.pages,
-                'script': self.script}
+                'script': self.script, 'page_of': self.page_of, 'declared_questions': self.declared_questions,
+                'declared_pages': self.declared_pages}
 
 
 def _starts_question(region: Dict) -> bool:
+    if is_instruction(region.get('text', '') or ''):
+        return False
     if region['label'] in QUESTION:
         return True
     # The detector missed it, but the text starts like a question ('12.', 'Q.12', 'प्रश्न 12')
@@ -83,30 +97,46 @@ def parse_paper(pages: List[Dict]) -> Paper:
     'text'). Returns the questions with their numbers, options, marks and attached figures/tables/formulas.
     """
     questions: List[Question] = []
-    header_text, page_numbers, section = [], [], ''
+    header_text, page_numbers, page_ofs, section = [], [], [], ''
     current: Optional[Question] = None
+    repeated = _repeated_numbers(pages)
 
-    for p, page in enumerate(pages):
-        page_no = None
+    for k, page in enumerate(pages):
+        p = page.get('sheet', k)     # sheet of the original file (a bilingual paper's version holds every other sheet)
+        page_no, pof = None, None
         for region in page['regions']:
             label, text = region['label'], region.get('text', '') or ''
             ref = {'page': p, 'box': region['box'], 'label': label}
+            found = page_of(text)
+            if found and len(text) < 80:
+                pof = found
+                continue
             if label == 'page-number':
-                n = numerals(text)
-                page_no = int(float(next(iter(n)))) if len(n) == 1 else page_no
+                n = [v for v in numerals(text) if v not in repeated]
+                page_no = int(float(n[0])) if len(n) == 1 else page_no
                 continue
             if label in FURNITURE:
                 header_text.append(text)
                 continue
-            if label in ('section-title', 'sub-section-title', 'headline', 'chapter-title'):
-                section = ' '.join(text.split())
+            key = section_key(text)
+            if key and (label in ('section-title', 'sub-section-title', 'headline', 'chapter-title')
+                        or len(text.split()) <= 4 or is_instruction(text.split('\n', 1)[-1])):
+                section = key
                 header_text.append(text)
+                current = None
+                continue
+            if label in ('section-title', 'sub-section-title', 'headline', 'chapter-title'):
+                header_text.append(text)
+                continue
+            if is_instruction(text):
+                header_text.append(text)  # instructions between sections end the question before them
+                current = None
                 continue
             if _starts_question(region):
                 # Right-aligned marks ('[2 marks]') are often read as the region's first line: drop them first
                 number, rest = question_number(strip_marks(text))
                 current = Question(index=len(questions), number=number, page=p, box=region['box'], section=section,
-                                   boxes=[ref], marks=marks_in(text))
+                                   boxes=[ref], marks=marks_in(text), source=page.get('source'))
                 questions.append(current)
                 _absorb_text(current, rest)
                 continue
@@ -114,6 +144,9 @@ def parse_paper(pages: List[Dict]) -> Paper:
                 header_text.append(text)  # instructions, title, maximum marks ... before question 1
                 continue
             current.boxes.append(ref)
+            if is_choice_line(text):
+                current.choices += 1
+                continue
             if label in SUB_QUESTION:
                 current.sub_questions += 1
                 _absorb_text(current, text, sub=True)
@@ -123,22 +156,85 @@ def parse_paper(pages: List[Dict]) -> Paper:
                 setattr(current, VISUALS[label], getattr(current, VISUALS[label]) + 1)
             else:
                 _absorb_text(current, text)
-        page_numbers.append(page_no)
+        page_numbers.append(pof[0] if pof else page_no)
+        page_ofs.append(list(pof) if pof else None)
 
     _split_merged_numbers(questions)
+    _unify_option_family(questions)
     head = '\n'.join(header_text)
     each = marks_each(head)
+    per_q, per_section = marks_schedule(head)
     for q in questions:
-        if q.marks is None and q.sub_marks:
-            q.marks = q.sub_marks
-        if q.marks is None and each is not None:
-            q.marks = each
+        if q.marks is not None:
+            q.marks_source = q.marks_source or 'printed'
+        elif q.number is not None and q.number in per_q:
+            q.marks, q.marks_source = per_q[q.number], 'instructions'
+        elif q.section and q.section in per_section:
+            q.marks, q.marks_source = per_section[q.section], 'instructions'
+        elif q.sub_marks:
+            q.marks, q.marks_source = q.sub_marks, 'sub-questions'
+        elif each is not None:
+            q.marks, q.marks_source = each, 'each'
+        q.confidence = _confidence(q, {pg.get('sheet', k): pg for k, pg in enumerate(pages)})
     script = next((pg.get('script') for pg in pages if pg.get('script')), None)
     return Paper(questions=questions, declared_total=declared_total(head), marks_each=each,
-                 page_numbers=page_numbers, pages=len(pages), script=script)
+                 page_numbers=page_numbers, pages=len(pages), script=script, page_of=page_ofs,
+                 declared_questions=declared_questions(head), declared_pages=declared_pages(head),
+                 page_indices=[pg.get('sheet', k) for k, pg in enumerate(pages)])
+
+
+def _repeated_numbers(pages: List[Dict]) -> set:
+    """Numbers printed in the page furniture of most sheets (a paper code such as '465'), which are not page numbers."""
+    counts = Counter()
+    for page in pages:
+        seen = set()
+        for region in page['regions']:
+            if region['label'] in FURNITURE:
+                seen |= set(numerals(region.get('text', '') or ''))
+        counts.update(seen)
+    return {n for n, c in counts.items() if len(pages) >= 3 and c >= 0.6 * len(pages)}
+
+
+def _confidence(q: Question, pages: Dict[int, Dict]) -> Optional[float]:
+    """Mean OCR confidence of the question's words (0-1), times the layout score of its regions when known."""
+    confs, scores = [], []
+    for ref in q.boxes:
+        for region in pages[ref['page']]['regions']:
+            if region['box'] == ref['box'] and region['label'] == ref['label']:
+                confs += [float(w.get('conf', 0)) for w in region.get('words', []) or [] if float(w.get('conf', -1)) >= 0]
+                if region.get('score') is not None and region.get('detected', True):
+                    scores.append(float(region['score']))
+                break
+    if not confs:
+        return None
+    c = sum(confs) / len(confs) / 100.0
+    if q.source == 'text-layer':
+        return 0.99   # the PDF's own text: nothing was recognised, so nothing can be misread
+    if scores:
+        c *= min(1.0, sum(scores) / len(scores) + 0.25)  # a detector score of 0.75 or more does not lower it
+    return round(c, 3)
+
+
+def _unify_option_family(questions: List[Question]) -> None:
+    """
+    A paper prints its MCQ options with one marker family ('(A)'-'(D)'). Sub-parts and internal-choice alternatives
+    use another ('(a) ... OR (b) ...', '(i) (ii) (iii)' in case studies); those are not options, so they are moved to
+    the question's text and counted as sub-questions.
+    """
+    fams = Counter(option_family(q.option_markers) for q in questions if option_family(q.option_markers))
+    if not fams:
+        return
+    main, _ = fams.most_common(1)[0]
+    for q in questions:
+        fam = option_family(q.option_markers)
+        if fam and fam != main:
+            q.stem = ' '.join([q.stem] + [f'({m}) {t}' for m, t in zip(q.option_markers, q.options)])
+            q.sub_questions += len(q.options)
+            q.options, q.option_markers = [], []
 
 
 _MERGED = re.compile(r'^(\d{1,3})\.(\d+)\b\s*(.*)$', re.DOTALL)
+_BARE_START = re.compile(r'^(\d{1,3})\s+(\D.*)$', re.DOTALL)
 
 
 def _split_merged_numbers(questions: List[Question]) -> None:
@@ -151,13 +247,23 @@ def _split_merged_numbers(questions: List[Question]) -> None:
     for q in questions:
         if q.number is None and prev is not None:
             m = _MERGED.match(q.stem)
+            bare = _BARE_START.match(q.stem)
             if m and int(m.group(1)) == prev + 1:
                 q.number, q.stem = int(m.group(1)), f'{m.group(2)} {m.group(3)}'.strip()
+            elif bare and int(bare.group(1)) == prev + 1:
+                # '14 यदि ...': the full stop after the number was lost, but it is exactly the next number
+                q.number, q.stem = int(bare.group(1)), bare.group(2).strip()
         prev = q.number if q.number is not None else (prev + 1 if prev is not None else None)
+
+
+_LEADING_MARKER = re.compile(r'^\s*[(\[{][^\s()\[\]{}]{0,4}[)\]}]\s*')
 
 
 def _absorb_text(q: Question, text: str, sub: bool = False) -> None:
     """Add question text; options printed inside the same region are split off, marks recorded."""
+    if sub:
+        # '(ii) How many ...': the sub-part's marker is not part of its text (OCR reads '(ii)' as '(7)' or '(॥)')
+        text = '\n'.join(_LEADING_MARKER.sub('', ln, count=1) for ln in text.splitlines())
     m = marks_in(text)
     if m is not None:
         if sub:

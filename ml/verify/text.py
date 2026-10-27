@@ -71,12 +71,15 @@ def numerals(text: str) -> Counter:
 # ------------------------------------------------------------------------------------- question numbers
 # 'Q.12', 'Q 12', 'Question 12', '12.', '12)', 'प्रश्न 12', 'प्र. 12', 'கேள்வி 12', 'প্রশ্ন 12' at the start of a region
 _Q_WORDS = r'(?:Q(?:ue(?:stion)?)?\s*(?:No\.?)?|प्रश्न\s*(?:सं(?:ख्या)?\.?)?|प्र\.|கேள்வி|வினா|প্রশ্ন|પ્રશ્ન|ਪ੍ਰਸ਼ਨ|ପ୍ରଶ୍ନ|ప్రశ్న|ಪ್ರಶ್ನೆ|ചോദ്യം)'
-_QNUM = re.compile(rf'^\s*(?:{_Q_WORDS}\s*[.:\-]?\s*(\d{{1,3}})\b\s*[.):\-]?|(\d{{1,3}})\s*[.):](?!\d))', re.IGNORECASE)
+_QNUM = re.compile(rf'^\s*(?:{_Q_WORDS}\s*[.:\-]?\s*(\d{{1,3}})\b\s*[.):\-।]?|(\d{{1,3}})\s*[.):।](?!\d))', re.IGNORECASE)
 
 
 def question_number(text: str) -> Tuple[Optional[int], str]:
-    """Number at the start of a question and the text after it: '12. Find x' -> (12, 'Find x')."""
+    """Number at the start of a question and the text after it: '12. Find x' -> (12, 'Find x').
+    An instruction that starts with question numbers ('Questions number 19 and 20 are ...') is not a question."""
     t = normalize_digits(text)
+    if is_instruction(t):
+        return None, t.strip()
     m = _QNUM.match(t)
     if not m:
         return None, t.strip()
@@ -89,7 +92,8 @@ _MARK_WORDS = r'(?:marks?|mks?|अंक|गुण|மதிப்பெண்[\
 # A number followed by 'marks' in the middle of a sentence ('she scored 45 marks in ...') is part of the question.
 _MARKS_BRACKETED = re.compile(rf'[\[(]\s*(\d{{1,2}}(?:\.5)?)\s*(?:{_MARK_WORDS}|M)\s*[\])]', re.IGNORECASE)
 _MARKS_EOL = re.compile(rf'(\d{{1,2}}(?:\.5)?)\s*{_MARK_WORDS}\s*[.)]?\s*$', re.IGNORECASE | re.MULTILINE)
-_MARKS_BRACKET_EOL = re.compile(r'\[\s*(\d{1,2}(?:\.5)?)\s*\]\s*$', re.MULTILINE)
+# '[2]' at the end of a line; OCR reads the brackets as '{1]' or '[1}' too (never '(1)': that can be maths, f(2))
+_MARKS_BRACKET_EOL = re.compile(r'[\[{]\s*(\d{1,2}(?:\.5)?)\s*[\]}]\s*$', re.MULTILINE)
 _TOTAL = re.compile(rf'(?:max(?:imum)?\.?\s*marks?|total\s*marks?|full\s*marks?|पूर्णा[ंँ]?क|अधिकतम\s*अंक|कुल\s*अंक|'
                     rf'மொத்த\s*மதிப்பெண்[\w\u0900-\u0DFF]*|அதிகபட்ச\s*மதிப்பெண்[\w\u0900-\u0DFF]*|পূর্ণমান|মোট\s*নম্বর|કુલ\s*ગુણ|ਕੁੱਲ\s*ਅੰਕ|'
                     rf'ମୋଟ\s*ନମ୍ବର|మొత్తం\s*మార్కులు|ಒಟ್ಟು\s*ಅಂಕ[\w\u0900-\u0DFF]*|ആകെ\s*മാർക്ക്[\w\u0900-\u0DFF]*)\s*[:\-–]?\s*(\d{{1,4}})',
@@ -224,3 +228,147 @@ def split_lines_by_script(text: str, keep: Dict[str, str]) -> Dict[str, str]:
         elif s in keep:
             out[keep[s]].append(line)
     return {name: '\n'.join(lines) for name, lines in out.items()}
+
+
+# -------------------------------------------------------------------------- paper structure and furniture
+# 'Page 8 of 24', 'पृष्ठ 8 / 24': the printed page number with the page count
+_PAGE_OF = re.compile(r'(?:page|pg\.?|पृष्ठ|पेज|பக்கம்|পৃষ্ঠা|পৃষ্ঠা|પૃષ્ઠ|ਪੰਨਾ|ପୃଷ୍ଠା|పేజీ|ಪುಟ|പേജ്)\s*(?:no\.?)?\s*'
+                      r'(\d{1,3})\s*(?:of|/|का|में\s*से|का\s*कुल)\s*(\d{1,3})', re.IGNORECASE)
+
+
+def page_of(text: str) -> Optional[Tuple[int, int]]:
+    """'Page 8 of 24' -> (8, 24); None if the text has no such footer."""
+    m = _PAGE_OF.search(normalize_digits(text))
+    return (int(m.group(1)), int(m.group(2))) if m else None
+
+
+# Section headings: 'SECTION – A', 'Section B', 'खण्ड – क', 'भाग 2', 'பகுதி அ'. Letters of every script map to one key,
+# so the Hindi and the English version of a paper share section keys.
+_SECTION_WORDS = (r'(?:SECTION|Section|PART|Part|खण्ड|खंड|भाग|பகுதி|বিভাগ|খণ্ড|વિભાગ|ਭਾਗ|ਖੰਡ|ବିଭାଗ|విభాగం|ವಿಭಾಗ|'
+                  r'വിഭാഗം)')
+_SECTION = re.compile(rf'^\s*{_SECTION_WORDS}\s*[–—\-:.]?\s*([A-Za-z]\b|[IVX]{{1,4}}\b|\d{{1,2}}\b|[\u0900-\u0DFF]{{1,2}})')
+_SECTION_LETTERS = {**{c: chr(ord('A') + k) for k, c in enumerate('कखगघङचछ')},
+                    **{c: chr(ord('A') + k) for k, c in enumerate('அஆஇஈஉஊ')},
+                    **{c: chr(ord('A') + k) for k, c in enumerate('কখগঘঙ')},
+                    **{c: chr(ord('A') + k) for k, c in enumerate('કખગઘ')}}
+_ROMAN = {'I': 'A', 'II': 'B', 'III': 'C', 'IV': 'D', 'V': 'E', 'VI': 'F'}
+
+
+def section_key(text: str) -> Optional[str]:
+    """'SECTION – B' / 'खण्ड – ख' / 'Part II' -> 'B'; None if the text is not a section heading."""
+    t = normalize_digits(text)
+    first = t.strip().splitlines()[0] if t.strip() else ''
+    if len(first) > 40:
+        return None
+    m = _SECTION.match(first)
+    if not m:
+        return None
+    k = m.group(1).strip()
+    if k[0] in _SECTION_LETTERS:
+        return _SECTION_LETTERS[k[0]]
+    if k.upper() in _ROMAN and not k.isdigit():
+        return _ROMAN[k.upper()]
+    if k.isdigit():
+        return chr(ord('A') + int(k) - 1) if 0 < int(k) < 27 else None
+    return k.upper() if k.isascii() else None
+
+
+# Instructions, not questions: they end the question before them and feed the marks rules
+_INSTRUCTION = re.compile(
+    r'^\s*(?:\(?[ivx]{1,5}\)\s*)?(?:'
+    r'(?:Questions?|प्रश्न)\s*(?:numbers?|nos?\.?|संख्या|सं\.?)?\s*\d{1,3}\s*(?:and|to|&|-|–|से|तथा|और|एवं|व)\s*\d{1,3}'
+    r'|This\s+section\s+(?:comprises|consists|contains|has)|This\s+question\s+paper\s+(?:contains|has|is)'
+    r'|इस\s+(?:खण्ड|खंड|प्रश्न[-\s]*पत्र)|General\s+Instructions|सामान्य\s+निर्देश|Read\s+the\s+following\s+instructions'
+    r'|निम्नलिखित\s+निर्देशों|Please\s+check\s+that|कृपया\s+जाँच'
+    r'|In\s+Section\s*[–\-]?\s*[A-E]\b|खण्ड\s*[–\-]?\s*[कखगघङ]\s+में)', re.IGNORECASE)
+
+
+def is_instruction(text: str) -> bool:
+    return bool(_INSTRUCTION.match(normalize_digits(text)))
+
+
+# Internal choice between two alternatives of one question
+_CHOICE = re.compile(r'^\s*(?:OR|Or|अथवा|या|அல்லது|অথবা|અથવા|ਜਾਂ|ଅଥବା|లేదా|ಅಥವಾ|അല്ലെങ്കിൽ)\s*$')
+
+
+def is_choice_line(text: str) -> bool:
+    return bool(_CHOICE.match(text))
+
+
+_MARK_VALUE = re.compile(rf'(\d{{1,2}}(?:\.5)?)\s*(?:{_MARK_WORDS}|अंकों|अंको)', re.IGNORECASE)
+_RANGE = re.compile(r'(\d{1,3})\s*(?:to|–|-|से)\s*(\d{1,3})')
+_PAIR = re.compile(r'(\d{1,3})\s*(?:&|and|एवं|और|तथा|व)\s*(\d{1,3})(?!\s*(?:to|–|-|से))')
+_SECTION_IN = re.compile(rf'(?:In\s+)?{_SECTION_WORDS}\s*[–—\-]?\s*([A-Za-z]|[क-ङ])\b', re.IGNORECASE)
+
+
+def _sentences(text: str) -> List[str]:
+    t = ' '.join(normalize_digits(text).split())
+    return [p for p in re.split(r'(?<=[।.;])\s+|\s(?=\((?:[ivx]{1,5})\)\s)', t) if p.strip()]
+
+
+def marks_schedule(text: str) -> Tuple[Dict[int, float], Dict[str, float]]:
+    """
+    Marks the instructions give to questions and sections, as ({question: marks}, {section key: marks}):
+    'Questions Number 21 to 25 are ... carrying 2 marks each' -> {21: 2, ..., 25: 2};
+    'This section comprises 5 ... questions of 2 marks each' (under 'SECTION - B') -> {'B': 2}.
+    """
+    per_q: Dict[int, float] = {}
+    per_section: Dict[str, float] = {}
+    section = None
+    for sent in _sentences(text):
+        key = section_key(sent)
+        if key:
+            section = key
+        if _TOTAL.search(sent):
+            continue
+        values = {float(m.group(1)) for m in _MARK_VALUE.finditer(sent)}
+        if len(values) != 1:
+            continue
+        value = values.pop()
+        numbers = []
+        for m in _RANGE.finditer(sent):
+            lo, hi = int(m.group(1)), int(m.group(2))
+            if 0 < lo <= hi <= lo + 60:
+                numbers += range(lo, hi + 1)
+        for m in _PAIR.finditer(sent):
+            numbers += [int(m.group(1)), int(m.group(2))]
+        numbers = [n for n in numbers if n != value or len(numbers) > 1]
+        if numbers:
+            for n in numbers:
+                per_q.setdefault(n, value)
+            continue
+        m = _SECTION_IN.search(sent)
+        sec = section_key(f'SECTION {m.group(1)}') if m else None
+        if sec or (section and re.search(r'this\s+section|इस\s+(?:खण्ड|खंड)', sent, re.IGNORECASE)):
+            per_section.setdefault(sec or section, value)
+    return per_q, per_section
+
+
+_DECLARED_QUESTIONS = re.compile(r'(?:contains|has|consists\s+of|comprises)\s+(\d{1,3})\s+questions'
+                                 r'|में\s+(\d{1,3})\s+प्रश्न\s+हैं|(\d{1,3})\s+प्रश्न\s+हैं', re.IGNORECASE)
+_DECLARED_PAGES = re.compile(r'(?:contains|has)\s+(\d{1,3})\s+printed\s+pages|(\d{1,3})\s+(?:मुद्रित\s+)?पृष्ठ\s+हैं',
+                             re.IGNORECASE)
+
+
+def declared_questions(text: str) -> Optional[int]:
+    """'This question paper contains 38 questions' / 'इस प्रश्न-पत्र में 38 प्रश्न हैं' -> 38."""
+    for m in _DECLARED_QUESTIONS.finditer(normalize_digits(text)):
+        return int(next(g for g in m.groups() if g))
+    return None
+
+
+def declared_pages(text: str) -> Optional[int]:
+    """'Please check that this question paper contains 23 printed pages' -> 23."""
+    for m in _DECLARED_PAGES.finditer(normalize_digits(text)):
+        return int(next(g for g in m.groups() if g))
+    return None
+
+
+def option_family(markers: List[str]) -> Optional[str]:
+    """The marker family of a question's options ('A','B','C' -> 'upper'); None if unknown or mixed."""
+    if len(markers) < 2:
+        return None
+    for name, fam in OPTION_FAMILIES.items():
+        if all(m in fam for m in markers) and name != 'digit':
+            return name
+    return None

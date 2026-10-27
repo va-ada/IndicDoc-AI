@@ -25,6 +25,8 @@ from ml.inference.predict import dedupe_boxes, demo_inference, load_model, predi
 from ml.preprocessing.preprocess import decode_image, pdf_page_count, render_pdf_page
 from ml.ocr import OCR_LANGUAGES, extract_document, tesseract_available
 from ml.verify import list_profiles, verify
+from ml.verify.consensus import make_rereader
+from ml.verify.pipeline import second_reading, version_langs
 from ml.verify.report import to_html as verify_report_html
 from ml.inference.predict import disable_runtime_installs
 
@@ -233,6 +235,8 @@ async def verify_paper(
     bilingual: Optional[str] = Query(None, description="One bilingual paper: its two scripts, e.g. 'Latin,Devanagari'"),
     profile: Optional[str] = Query(None, description="Format profile id from GET /verify/profiles"),
     output: Literal['json', 'html'] = Query('json'),
+    second_reader: bool = Query(True, description="Dual-reader consensus: read the file a second time without the "
+                                                  "layout model and report only what both readings support"),
 ):
     """
     Pre-print verification of a question paper: numbering, options, marks, duplicates; with `source`, parity with the
@@ -259,14 +263,29 @@ async def verify_paper(
         except (ValueError, AssertionError):
             raise HTTPException(status_code=400, detail="bank must be a JSON list of {'text', 'source'} objects")
 
-    images = _pages_rgb(await _read_upload(file))
-    src_images = _pages_rgb(await _read_upload(source)) if source is not None else None
+    contents = await _read_upload(file)
+    src_contents = await _read_upload(source) if source is not None else None
+    images = _pages_rgb(contents)
+    src_images = _pages_rgb(src_contents) if src_contents is not None else None
     pages = await run_in_threadpool(_read_paper, images, lang)
     src_pages = await run_in_threadpool(_read_paper, src_images, source_lang) if src_images else None
     meta = {'File': file.filename or 'paper', 'Pages': len(images)}
     if source is not None:
         meta['Checked against'] = source.filename or 'source'
-    report = verify(pages, source_pages=src_pages, bank=bank_items, profile=profile, split_scripts=split, meta=meta)
+    kwargs = {}
+    if second_reader:
+        # Reader B: the PDF text layer (born-digital) or a second OCR pass, parsed without the layout model; the
+        # findings are the consensus of both readers, with a third reading of the questions they disagree on
+        is_pdf = contents[:5] == b'%PDF-'
+        pages_b = await run_in_threadpool(second_reading, images, pages, contents if is_pdf else None, VERIFY_DPI)
+        kwargs.update(pages_b=pages_b, rereader=make_rereader(images), langs={'target': version_langs(pages)})
+        if src_images:
+            src_pdf = src_contents if src_contents[:5] == b'%PDF-' else None
+            kwargs['source_pages_b'] = await run_in_threadpool(second_reading, src_images, src_pages, src_pdf, VERIFY_DPI)
+            kwargs['rereader'] = {'target': make_rereader(images), 'source': make_rereader(src_images)}
+            kwargs['langs']['source'] = version_langs(src_pages)
+    report = verify(pages, source_pages=src_pages, bank=bank_items, profile=profile, split_scripts=split, meta=meta,
+                    bilingual='auto' if (src_pages is None and split is None) else 'off', **kwargs)
     if output == 'html':
         imgs = {'paper': images, **({'source': src_images} if src_images else {})}
         return HTMLResponse(verify_report_html(report, imgs, title='IndicDoc Verify: pre-print report'))
