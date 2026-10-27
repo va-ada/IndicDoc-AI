@@ -195,3 +195,19 @@ class TestConsensus:
         mism = [i for i in rep['issues'] if i['code'] == 'NUMBER_MISMATCH']
         # The readers read the translation differently and nothing re-read it: a warning for the vetter, not an error
         assert all(i['severity'] == 'warning' and i['consensus']['status'] == 'review' for i in mism)
+
+
+def test_reader_numbered_options_and_questions_at_the_top_edge():
+    """Options numbered '(1)'-'(4)' are not questions, and a tight page's first question is not a header."""
+    p1 = page([('1. Which gas do plants take in?', 300), ('(1) Nitrogen (2) Carbon dioxide', 350, 160, 30, 95.0, 2),
+               ('(3) Oxygen (4) Hydrogen', 400, 160, 30, 95.0, 2), ('2. Which is the largest organ?', 480),
+               ('(1) Lungs (2) Liver', 530, 160, 30, 95.0, 2), ('(3) Skin (4) Heart', 580, 160, 30, 95.0, 2)])
+    p2 = page([('3. How many days are there in a leap year?', 100), ('(1) 366 (2) 367', 160, 160, 30, 95.0, 2),
+               ('(3) 365 (4) 364', 210, 160, 30, 95.0, 2), ('4. Who wrote the national anthem?', 300),
+               ('(1) Naidu (2) Tagore', 350, 160, 30, 95.0, 2), ('(3) Chatterjee (4) Gandhi', 400, 160, 30, 95.0, 2)])
+    pages = read_pages([p1, p2], source='text-layer')
+    for k, p in enumerate(pages):
+        p['sheet'] = k
+    paper = parse_paper(pages)
+    assert [q.number for q in paper.questions] == [1, 2, 3, 4]
+    assert [len(q.options) for q in paper.questions] == [4, 4, 4, 4]

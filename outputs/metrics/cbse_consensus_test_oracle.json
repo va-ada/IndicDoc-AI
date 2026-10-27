@@ -1,0 +1,2937 @@
+{
+ "layout": "oracle",
+ "third_reading": true,
+ "papers": 38,
+ "overall": {
+  "a": {
+   "found": 1.0,
+   "errors_per_clean_paper": 8.62,
+   "warnings_per_clean_paper": 4.75
+  },
+  "b": {
+   "found": 1.0,
+   "errors_per_clean_paper": 2.12,
+   "warnings_per_clean_paper": 0.12
+  },
+  "consensus": {
+   "found": 1.0,
+   "errors_per_clean_paper": 0.25,
+   "warnings_per_clean_paper": 1.12
+  }
+ },
+ "born_digital": {
+  "a": {
+   "found": 1.0,
+   "errors_per_clean_paper": 5.0,
+   "warnings_per_clean_paper": 2.5
+  },
+  "b": {
+   "found": 1.0,
+   "errors_per_clean_paper": 0.0,
+   "warnings_per_clean_paper": 0.0
+  },
+  "consensus": {
+   "found": 1.0,
+   "errors_per_clean_paper": 0.0,
+   "warnings_per_clean_paper": 0.0
+  }
+ },
+ "scanned": {
+  "a": {
+   "found": 1.0,
+   "errors_per_clean_paper": 9.83,
+   "warnings_per_clean_paper": 5.5
+  },
+  "b": {
+   "found": 1.0,
+   "errors_per_clean_paper": 2.83,
+   "warnings_per_clean_paper": 0.17
+  },
+  "consensus": {
+   "found": 1.0,
+   "errors_per_clean_paper": 0.33,
+   "warnings_per_clean_paper": 1.5
+  }
+ },
+ "by_type": {
+  "choice_dropped": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "clean": {
+   "a": {
+    "found": null,
+    "errors_per_clean_paper": 8.62,
+    "warnings_per_clean_paper": 4.75
+   },
+   "b": {
+    "found": null,
+    "errors_per_clean_paper": 2.12,
+    "warnings_per_clean_paper": 0.12
+   },
+   "consensus": {
+    "found": null,
+    "errors_per_clean_paper": 0.25,
+    "warnings_per_clean_paper": 1.12
+   }
+  },
+  "marks_changed": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "number_changed": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "numbering_error": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "option_dropped": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "option_number_changed": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "question_dropped": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "question_duplicated": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "subpart_dropped": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  },
+  "total_wrong": {
+   "a": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "b": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   },
+   "consensus": {
+    "found": 1.0,
+    "errors_per_clean_paper": null,
+    "warnings_per_clean_paper": null
+   }
+  }
+ },
+ "rows": [
+  {
+   "id": "cbse_000_clean",
+   "type": "clean",
+   "degraded": false,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 8,
+    "b": 0,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 4,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 0,
+     "decided_by_text_layer": 8,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": []
+  },
+  {
+   "id": "cbse_001_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 8,
+    "b": 3,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.944
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.961,
+     "third_readings": 6,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.862
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_002_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 7,
+    "b": 1,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 6,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.944
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.867
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_003_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 7,
+    "b": 2,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 4,
+    "b": 1,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.948
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.858
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_004_clean",
+   "type": "clean",
+   "degraded": false,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 2,
+    "b": 0,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.987,
+     "third_readings": 0,
+     "decided_by_text_layer": 2,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": []
+  },
+  {
+   "id": "cbse_005_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 18,
+    "b": 0,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 5,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 4,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.948
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.954,
+     "third_readings": 6,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.842
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_006_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 9,
+    "b": 9,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 10,
+    "b": 0,
+    "consensus": 3
+   },
+   "review": 3,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 4,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.94
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.901,
+     "third_readings": 9,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 2,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.852
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "PAGE_NUMBERS",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_007_clean",
+   "type": "clean",
+   "degraded": true,
+   "found": {
+    "a": null,
+    "b": null,
+    "consensus": null
+   },
+   "errors": {
+    "a": 10,
+    "b": 2,
+    "consensus": 0
+   },
+   "warnings": {
+    "a": 6,
+    "b": 0,
+    "consensus": 2
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.942
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.954,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.863
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_008_number_changed",
+   "type": "number_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 8,
+    "b": 10,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 2,
+    "b": 1,
+    "consensus": 3
+   },
+   "review": 3,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.987,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.944
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.941,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 2,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.849
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_009_number_changed",
+   "type": "number_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 11,
+    "b": 4,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 3,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.952
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 6,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.861
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_010_number_changed",
+   "type": "number_changed",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 5,
+    "b": 1,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 0,
+     "decided_by_text_layer": 5,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_011_option_number_changed",
+   "type": "option_number_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 12,
+    "b": 6,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 3,
+    "b": 1,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.987,
+     "third_readings": 1,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.942
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.928,
+     "third_readings": 9,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.854
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_012_option_number_changed",
+   "type": "option_number_changed",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 2,
+    "b": 1,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 0,
+     "decided_by_text_layer": 1,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_013_option_number_changed",
+   "type": "option_number_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 9,
+    "b": 13,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 2
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 4,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.941
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.954,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 3,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.855
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_EMPTY",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_014_option_dropped",
+   "type": "option_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 10,
+    "b": 9,
+    "consensus": 4
+   },
+   "warnings": {
+    "a": 5,
+    "b": 0,
+    "consensus": 3
+   },
+   "review": 3,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 4,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.944
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.861
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_015_option_dropped",
+   "type": "option_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 8,
+    "b": 7,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 1,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.947
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.872
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "OPTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_016_option_dropped",
+   "type": "option_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 7,
+    "b": 13,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 3,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 36,
+     "only_a": 2,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.965,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.94
+    },
+    "target": {
+     "questions_both": 35,
+     "only_a": 3,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.943,
+     "third_readings": 10,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.852
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_017_question_dropped",
+   "type": "question_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 6,
+    "b": 5,
+    "consensus": 5
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": null,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 37,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 0,
+     "decided_by_text_layer": 1,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 37,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MISSING_IN_TRANSLATION",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_GAP",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_018_question_dropped",
+   "type": "question_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 19,
+    "b": 9,
+    "consensus": 7
+   },
+   "warnings": {
+    "a": 5,
+    "b": 0,
+    "consensus": 3
+   },
+   "review": 3,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.948
+    },
+    "target": {
+     "questions_both": 37,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.932,
+     "third_readings": 8,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 2,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.862
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 37,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MISSING_IN_TRANSLATION",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_GAP",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_019_question_dropped",
+   "type": "question_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 14,
+    "b": 10,
+    "consensus": 6
+   },
+   "warnings": {
+    "a": 4,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 1,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.946
+    },
+    "target": {
+     "questions_both": 37,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.939,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.857
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 37,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MISSING_IN_TRANSLATION",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_GAP",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_020_marks_changed",
+   "type": "marks_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 12,
+    "b": 9,
+    "consensus": 7
+   },
+   "warnings": {
+    "a": 3,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": null,
+     "mean_confidence_b": 0.949
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 8,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.864
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_021_marks_changed",
+   "type": "marks_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 15,
+    "b": 11,
+    "consensus": 9
+   },
+   "warnings": {
+    "a": 6,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.942
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.961,
+     "third_readings": 6,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.853
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_COUNT",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_022_marks_changed",
+   "type": "marks_changed",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 17,
+    "b": 17,
+    "consensus": 8
+   },
+   "warnings": {
+    "a": 6,
+    "b": 1,
+    "consensus": 5
+   },
+   "review": 4,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": null,
+     "mean_confidence_b": 0.943
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.928,
+     "third_readings": 10,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.859
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_EMPTY",
+     "warning",
+     "resolved"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_023_total_wrong",
+   "type": "total_wrong",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 7,
+    "b": 7,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 1,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": null,
+     "mean_confidence_b": 0.946
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.961,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.864
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_024_total_wrong",
+   "type": "total_wrong",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 5,
+    "b": 6,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 3,
+    "b": 0,
+    "consensus": 3
+   },
+   "review": 3,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.943
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.861
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "resolved"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_025_total_wrong",
+   "type": "total_wrong",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 6,
+    "b": 2,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 0,
+     "decided_by_text_layer": 5,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "MARKS_TOTAL",
+     "error",
+     "confirmed"
+    ],
+    [
+     "TOTAL_MISMATCH",
+     "error",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_026_numbering_error",
+   "type": "numbering_error",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 14,
+    "b": 13,
+    "consensus": 4
+   },
+   "warnings": {
+    "a": 4,
+    "b": 0,
+    "consensus": 2
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.967,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.943
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 6,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 2,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.873
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_GAP",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "NUMBER_ORDER",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_REPEATED",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_027_numbering_error",
+   "type": "numbering_error",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 12,
+    "b": 7,
+    "consensus": 4
+   },
+   "warnings": {
+    "a": 5,
+    "b": 0,
+    "consensus": 2
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.949
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.928,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.859
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_GAP",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_ORDER",
+     "error",
+     "resolved"
+    ],
+    [
+     "NUMBER_REPEATED",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "review"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_028_numbering_error",
+   "type": "numbering_error",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 9,
+    "b": 9,
+    "consensus": 5
+   },
+   "warnings": {
+    "a": 3,
+    "b": 0,
+    "consensus": 2
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 2,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.945
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.961,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.868
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_ORDER",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_REPEATED",
+     "error",
+     "confirmed"
+    ],
+    [
+     "OPTION_COUNT",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "QUESTION_COUNT_DECLARED",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_029_question_duplicated",
+   "type": "question_duplicated",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 14,
+    "b": 3,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 7,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.961,
+     "third_readings": 3,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.947
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.856
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "DUPLICATE_QUESTION",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_030_question_duplicated",
+   "type": "question_duplicated",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 6,
+    "b": 2,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 0,
+     "decided_by_text_layer": 1,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 0,
+     "decided_by_text_layer": 3,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "DUPLICATE_QUESTION",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_031_question_duplicated",
+   "type": "question_duplicated",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 7,
+    "b": 8,
+    "consensus": 4
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 3
+   },
+   "review": 2,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.987,
+     "third_readings": 1,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.945
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.941,
+     "third_readings": 5,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 1,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.852
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "DUPLICATE_QUESTION",
+     "error",
+     "confirmed"
+    ],
+    [
+     "DUPLICATE_QUESTION",
+     "error",
+     "resolved"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_COUNT",
+     "error",
+     "resolved"
+    ],
+    [
+     "OPTION_COUNT_MISMATCH",
+     "warning",
+     "review"
+    ],
+    [
+     "OPTION_NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_032_subpart_dropped",
+   "type": "subpart_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 3,
+    "b": 2,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 2,
+    "b": 1,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 0,
+     "decided_by_text_layer": 1,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "confirmed"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_033_subpart_dropped",
+   "type": "subpart_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 5,
+    "b": 2,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 2,
+    "b": 1,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 0,
+     "decided_by_text_layer": 3,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "confirmed"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_034_subpart_dropped",
+   "type": "subpart_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 5,
+    "b": 1,
+    "consensus": 1
+   },
+   "warnings": {
+    "a": 3,
+    "b": 1,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.974,
+     "third_readings": 0,
+     "decided_by_text_layer": 4,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "confirmed"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_035_choice_dropped",
+   "type": "choice_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 5,
+    "b": 3,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 1,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.987,
+     "third_readings": 0,
+     "decided_by_text_layer": 2,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "CHOICE_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_036_choice_dropped",
+   "type": "choice_dropped",
+   "degraded": true,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 12,
+    "b": 3,
+    "consensus": 2
+   },
+   "warnings": {
+    "a": 4,
+    "b": 0,
+    "consensus": 1
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.993,
+     "third_readings": 1,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.949
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.947,
+     "third_readings": 7,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.852
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "CHOICE_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBMARKS_TOTAL",
+     "warning",
+     "resolved"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  },
+  {
+   "id": "cbse_037_choice_dropped",
+   "type": "choice_dropped",
+   "degraded": false,
+   "found": {
+    "a": true,
+    "b": true,
+    "consensus": true
+   },
+   "errors": {
+    "a": 6,
+    "b": 3,
+    "consensus": 3
+   },
+   "warnings": {
+    "a": 2,
+    "b": 0,
+    "consensus": 0
+   },
+   "review": 0,
+   "stats": {
+    "source": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 1.0,
+     "third_readings": 0,
+     "decided_by_text_layer": 0,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    },
+    "target": {
+     "questions_both": 38,
+     "only_a": 0,
+     "only_b": 0,
+     "dropped_fragments": 0,
+     "field_agreement": 0.98,
+     "third_readings": 0,
+     "decided_by_text_layer": 3,
+     "uncertain_questions": 0,
+     "mean_confidence_a": 0.8,
+     "mean_confidence_b": 0.99
+    }
+   },
+   "versions": "pages",
+   "questions": {
+    "target": 38,
+    "source": 38
+   },
+   "codes": [
+    [
+     "CHOICE_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "NUMBER_MISMATCH",
+     "error",
+     "confirmed"
+    ],
+    [
+     "SUBQUESTION_MISMATCH",
+     "error",
+     "confirmed"
+    ]
+   ]
+  }
+ ]
+}

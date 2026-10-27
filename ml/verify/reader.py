@@ -116,6 +116,13 @@ def _skeleton(text: str) -> str:
     return re.sub(r'\s+', ' ', re.sub(r'[0-9\u0966-\u096F]+', '#', normalize_digits(text))).strip().lower()
 
 
+def _wordy(skeleton: str) -> bool:
+    """A repeated edge line is furniture only if it has words: '(क) # (ख) #' (options with their values removed)
+    repeats on every page too."""
+    letters = re.sub(r'\([^)\s]{1,4}\)|[^\w]|[#_\d]', '', skeleton)
+    return len(letters) >= 3
+
+
 def split_columns(words: List[Dict], width: float) -> List[List[Dict]]:
     """
     The words of a page in reading order of its columns: [left, right] for a two-column paper (NEET, JEE and many
@@ -177,7 +184,7 @@ def read_pages(pages: List[Dict], source: str = 'ocr') -> List[Dict]:
         seen = {_skeleton(_text(ln)) for ln in lines
                 if ln[0]['top'] < EDGE * height or ln[0]['top'] > (1 - EDGE) * height}
         edge.update(seen)
-    repeated = {k for k, c in edge.items() if c >= max(2, 0.3 * len(pages)) and k}
+    repeated = {k for k, c in edge.items() if c >= max(2, 0.3 * len(pages)) and _wordy(k)}
     out, expected = [], None
     for p, lines in zip(pages, all_lines):
         page, expected = _read_lines(lines, p['size'], repeated, expected, source)
@@ -201,7 +208,10 @@ def _read_lines(lines, size, repeated, expected, source):
         if page_of(text):
             return 'page-number'
         near_edge = top < EDGE * height or top > (1 - EDGE) * height
-        if near_edge and (_skeleton(text) in repeated or top < TOP_BAND * height or top > BOTTOM_BAND * height):
+        # a numbered question or an option line is content, however close to the edge a tight page prints it
+        content = question_number(text)[0] is not None or bool(_MARKER.match(text))
+        if near_edge and not content and (_skeleton(text) in repeated or top < TOP_BAND * height
+                                          or top > BOTTOM_BAND * height):
             return 'header' if top < height / 2 else 'footer'
         return None
 
@@ -240,7 +250,9 @@ def _read_lines(lines, size, repeated, expected, source):
         number, _ = question_number(strip_marks(text))
         if number is None and expected is not None:
             m = _LOOSE_NUMBER.match(normalize_digits(text))
-            if m and int(m.group(1)) == expected:
+            # '(3) Oxygen (4) Hydrogen' under a question whose options are numbered: options, not question 3
+            bracketed_option = open_q and normalize_digits(text).lstrip().startswith('(') and _is_option_line(line, h)
+            if m and int(m.group(1)) == expected and not bracketed_option:
                 number = expected
                 # '14,' (a comma read for the full stop): written back as '14.' so the parser reads the same number
                 if re.fullmatch(r'[(\[]?\d{1,3}\s*[.,)\]।:]', normalize_digits(line[0]['text'])):
