@@ -78,6 +78,8 @@ Test set: 682 pages, 12 languages. DocLayout-YOLO: trained by the IndicDLP autho
 Full results, per-class and per-language tables are in [docs/RESULTS.md](docs/RESULTS.md). There is also
 a plain-language project report: [docs/report/IndicDoc_AI_Project_Report.pdf](docs/report/IndicDoc_AI_Project_Report.pdf), and the
 Expt.-11 lab report: [docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf](docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf).
+Everything in one print-ready A4 PDF (dataset, code, repository, both decks, paper; each part starts on a new sheet):
+[docs/print/IndicDoc_AI_Complete_Submission.pdf](docs/print/IndicDoc_AI_Complete_Submission.pdf), built by `python scripts/build_print_bundle.py`.
 
 ## Quick start (Docker)
 
