@@ -31,6 +31,22 @@ def annotate(image: np.ndarray, numbered_issues: List) -> Image.Image:
     return img
 
 
+def mark_questions(image: np.ndarray, questions: List[Dict], page: int) -> np.ndarray:
+    """Page image with every detected question on this page outlined in blue and labelled 'Q<number>'."""
+    img = Image.fromarray(image).convert('RGB')
+    draw = ImageDraw.Draw(img)
+    width = max(2, img.width // 500)
+    for q in questions:
+        if q.get('page') != page or not q.get('box'):
+            continue
+        x1, y1, x2, y2 = q['box']
+        draw.rectangle([x1 - 2, y1 - 2, x2 + 2, y2 + 2], outline=(37, 99, 235), width=width)
+        tag = f" Q{q['number'] if q.get('number') is not None else '?'} "
+        draw.rectangle([x1 - 2, y1 - 2 - 12 * width // 2, x1 - 2 + 7 * width * len(tag) // 2, y1 - 2], fill=(37, 99, 235))
+        draw.text((x1, y1 - 2 - 11 * width // 2), tag, fill=(255, 255, 255))
+    return np.asarray(img)
+
+
 def _png(img: Image.Image, max_width: int = 900) -> str:
     if img.width > max_width:
         img = img.resize((max_width, int(img.height * max_width / img.width)))

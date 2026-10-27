@@ -814,6 +814,15 @@ A finding that only one reader produced, because it misread something, is <b>dis
         v_mode = "Translation against its source" if source_path else "One paper"
         v_lang, v_src_lang, v_split = "Auto-detect", "auto", None
         st.caption(f"Example: {v_file.name}" + (f" checked against {v_src.name}" if v_src else ""))
+    if v_file is not None and v_mode != "Several papers":
+        with st.expander("Preview of the paper", expanded=True):
+            try:
+                _prev = _pages_from_bytes(v_file.getvalue(), v_file.name)
+                cols = st.columns(4)
+                for k, pg in enumerate(_prev):
+                    cols[k % 4].image(pg, caption=f"Page {k + 1}", width="stretch")
+            except Exception as e:  # a preview must never block the check
+                st.caption(f"No preview: {e}")
     v_dual = st.checkbox("Dual-reader consensus (recommended)", value=True,
                          help="The file is read twice, independently: by the deep-learning layout model with OCR, and "
                               "without the layout model from the PDF's own text (or a second OCR pass). A finding is "
@@ -970,12 +979,17 @@ A finding that only one reader produced, because it misread something, is <b>dis
                                            for i in cons["dismissed"]]), hide_index=True, width="stretch")
         numbered = list(enumerate(report["issues"], 1))
         same_file = src_images is None
+        from ml.verify.report import mark_questions
+        detected = (report.get("paper") or {}).get("questions", []) + ((report.get("source") or {}).get("questions", [])
+                                                                      if same_file else [])
+        st.markdown("**The paper as read:** blue boxes are the detected questions; numbered red/orange boxes are findings.")
         for p, image_rgb in enumerate(images):
             on_page = [(n, i) for n, i in numbered if i.get("page") == p
                        and (same_file or i["version"] in ("paper", "target"))]
-            if on_page:
-                st.image(annotate(image_rgb, on_page), caption=f"Page {p + 1}: {len(on_page)} finding(s) marked",
-                         width="stretch")
+            marked = mark_questions(image_rgb, detected, p)
+            st.image(annotate(marked, on_page), caption=f"Page {p + 1}: "
+                     f"{sum(q.get('page') == p for q in detected)} question(s) detected, {len(on_page)} finding(s)",
+                     width="stretch")
         d1, d2 = st.columns(2)
         imgs = {"paper": images, **({"source": src_images} if src_images else {})}
         d1.download_button("Download report (HTML)", data=verify_html(report, imgs).encode("utf-8"),
