@@ -713,6 +713,31 @@ def _read_paper(images, languages, progress, offset, total):
     return pages
 
 
+class _ExampleFile:
+    """A bundled example paper with the interface of an uploaded file (name, getvalue)."""
+    def __init__(self, path):
+        self.path, self.name = path, path.name
+
+    def getvalue(self):
+        return self.path.read_bytes()
+
+
+TEST_PAPERS = PROJECT_ROOT / "docs" / "test_papers"
+# label -> (paper, source version or None); answer key: docs/test_papers/ANSWER_KEY.md
+VERIFY_EXAMPLES = {
+    "CBSE bilingual paper (one PDF): no error": ("13_cbse_bilingual/no_error.pdf", None),
+    "CBSE bilingual paper (one PDF): a number changed in Hindi Q9": ("13_cbse_bilingual/number_changed.pdf", None),
+    "CBSE bilingual paper (one PDF): internal choice missing in Hindi Q33":
+        ("13_cbse_bilingual/internal_choice_missing.pdf", None),
+    "Hindi translation vs English: a number changed in Q15":
+        ("02_hindi_number_changed/hindi_version.pdf", "02_hindi_number_changed/english_source.pdf"),
+    "Hindi translation vs English: no error":
+        ("01_hindi_no_error/hindi_version.pdf", "01_hindi_no_error/english_source.pdf"),
+    "Tamil translation vs English: an option missing in Q9":
+        ("08_tamil_option_missing/tamil_version.pdf", "08_tamil_option_missing/english_source.pdf"),
+    "Tamil paper: question 13 printed twice": ("09_tamil_question_printed_twice/tamil_version.pdf", None),
+}
+
 with tab_verify:
     from ml.verify import list_profiles, verify
     from ml.verify.report import annotate, to_html as verify_html
@@ -748,6 +773,16 @@ with tab_verify:
             s1 = st.selectbox("Source script", scripts, index=0)
             s2 = st.selectbox("Translation script", scripts, index=1)
             v_split = {s1: s1.lower(), s2: s2.lower()} if s1 != s2 else None
+    examples = {k: v for k, v in VERIFY_EXAMPLES.items() if (TEST_PAPERS / v[0]).exists()}
+    v_example = st.selectbox("Or try an example paper (answer key: docs/test_papers/ANSWER_KEY.md)",
+                             ["None"] + list(examples)) if examples else "None"
+    if v_example != "None":
+        paper_path, source_path = examples[v_example]
+        v_file = _ExampleFile(TEST_PAPERS / paper_path)
+        v_src = _ExampleFile(TEST_PAPERS / source_path) if source_path else None
+        v_mode = "Translation against its source" if source_path else "One paper"
+        v_lang, v_src_lang, v_split = "Auto-detect", "auto", None
+        st.caption(f"Example: {v_file.name}" + (f" checked against {v_src.name}" if v_src else ""))
     v_dual = st.checkbox("Dual-reader consensus (recommended)", value=True,
                          help="The file is read twice, independently: by the deep-learning layout model with OCR, and "
                               "without the layout model from the PDF's own text (or a second OCR pass). A finding is "

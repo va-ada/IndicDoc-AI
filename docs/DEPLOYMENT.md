@@ -61,6 +61,40 @@ region with its `text` in reading order, and the page as `markdown`. `ocr_lang` 
 
 Stop: `docker compose down`
 
+## One command on a laptop
+
+`bash start.sh` checks Docker (on macOS it installs Docker Desktop with Homebrew if needed), downloads the models
+once, builds the image, starts the app and the API, waits until the app answers and opens http://localhost:8501.
+
+## A public website (Hugging Face Spaces)
+
+The app runs as a free Hugging Face Space (Docker SDK, CPU). `deploy/huggingface/Dockerfile` is the project's image
+with two differences: the models are downloaded while the image is built, and Streamlit runs with XSRF protection and
+CORS off, which file uploads need behind the Spaces proxy.
+
+1. Create a Hugging Face account and an access token with **write** permission (huggingface.co/settings/tokens).
+2. From the repository folder, after `bash start.sh` has built the image once:
+
+   ```bash
+   docker run --rm -it -v "$PWD:/work" -w /work indicdoc-ai:latest python deploy/deploy_hf_space.py --user <hf-name>
+   ```
+
+   (or `pip install huggingface_hub && python deploy/deploy_hf_space.py --user <hf-name>`). Paste the token when asked.
+3. The Space builds for 5-10 minutes. The app is then at `https://<hf-name>-indicdoc-verify.hf.space`; the Verify Paper
+   tab has example papers to try. `--private` keeps the Space to your account.
+
+Only what the website needs is uploaded (app, API, `ml`, scripts, evaluation outputs, example papers). A Space is a
+public service: do not upload confidential pre-print papers to it; for real papers run the image on the exam body's
+own machine (`bash start.sh`), where nothing leaves it.
+
+## Dual-reader verification
+
+`POST /verify` reads every paper twice (`second_reader=true`, the default): reader A is the layout model with OCR,
+reader B reads the PDF's text layer (born-digital files) or a second OCR pass, without the layout model. Findings carry
+a `consensus` record (status, both readers' confidences); `consensus.dismissed` lists single-reader findings that the
+agreed reading does not reproduce. A second OCR pass costs about as much as the first on scanned papers; born-digital
+PDFs need none. `second_reader=false` gives the single-reader result.
+
 ## Configuration (environment variables of the `api` service)
 
 | Variable | Default | Meaning |

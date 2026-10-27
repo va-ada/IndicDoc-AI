@@ -61,8 +61,31 @@ text; a second **number pass** with the English model fixes the Latin digits tha
 reads "1947" as "947"). The parser builds the questions; the checks compare them. Translation parity needs **no
 translation**: numbers, option counts, marks and structure are the same in every language.
 
+**Two independent readers must agree (dual-reader consensus).** OCR on Indian-language pages misreads digits and
+markers, and a checker that trusts one reading turns every misreading into a false alarm (a real CBSE paper run
+through a single reader gave 39 "errors", none of them real). IndicDoc Verify therefore reads every paper twice,
+independently, like two vetters:
+
+| | Reader A | Reader B |
+|---|---|---|
+| Finds the structure with | the deep-learning layout model (DocLayout-YOLO) | the typography of exam papers (numbers in the margin, option markers, sections, instructions, 'OR' / 'अथवा') |
+| Reads the text from | OCR of the detected regions | the PDF's own text layer (born-digital), else a second OCR pass with another configuration |
+
+Each reader checks the paper on its own. Their questions are paired and compared field by field (number, options,
+the numbers in each question, marks). What both read alike is confirmed; where they disagree, that question alone is
+read a third time at higher resolution and the majority decides (a trustworthy text layer decides text by itself).
+Every finding carries its status (**confirmed** by both, **resolved** by the third reading or the text layer, or
+**review** for a human) and both readers' confidences; single-reader findings the agreed reading does not reproduce
+are listed as dismissed misreadings, never silently dropped.
+
+**Real exam formats.** Bilingual papers printed page by page (CBSE: a Hindi page, then the same questions in
+English) or line by line are recognised in one file and their versions checked against each other; marks are read
+from the instructions ("Questions 21 to 25 ... 2 marks each"), internal choices ('OR' / 'अथवा'), case-study parts,
+'Page X of Y' footers, two-column layouts and the declared question and page counts are understood.
+
 **USP in one line:** no tool we found checks an Indian question paper against its translations question by
-question; IndicDoc Verify does it offline, in 12 languages, before the paper is printed.
+question; IndicDoc Verify does it offline, in 12 languages, before the paper is printed, and reports only what two
+independent readings of the paper agree on.
 
 ## 4. Who pays
 

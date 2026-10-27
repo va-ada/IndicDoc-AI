@@ -29,3 +29,13 @@ curl -F file=@02_hindi_number_changed/hindi_version.pdf -F source=@02_hindi_numb
 ```
 
 Rebuild: `python scripts/verify_bench/export_test_papers.py` (needs `data/verify_bench`, made by the benchmark scripts).
+
+## CBSE-format bilingual papers (one PDF, Hindi and English page by page)
+
+Each file is one paper in the Central Board's layout: bilingual cover, instructions in both languages, sections A-E (38 questions, 80 marks), a Hindi page followed by the same questions in English. Upload the one PDF in **One paper** mode: the two versions are found and checked against each other.
+
+| File | Planted error (in the Hindi version) | Expected finding |
+|---|---|---|
+| `13_cbse_bilingual/no_error.pdf` | None: a correct paper. | none |
+| `13_cbse_bilingual/number_changed.pdf` | Q9: sp: 300 -> 164. | NUMBER_MISMATCH |
+| `13_cbse_bilingual/internal_choice_missing.pdf` | Q33: internal choice (b) missing (Hindi). | CHOICE_MISMATCH |

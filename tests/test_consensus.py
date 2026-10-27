@@ -5,7 +5,7 @@ reader B (layout-free reading), bilingual version detection, and the consensus o
 from ml.verify import verify
 from ml.verify.consensus import fuse, pair_questions
 from ml.verify.paper import parse_paper
-from ml.verify.reader import read_page, read_pages, text_layer_usable
+from ml.verify.reader import read_page, read_pages, split_columns, text_layer_usable
 from ml.verify.text import (declared_pages, declared_questions, is_choice_line, is_instruction, marks_schedule,
                             page_of, question_number, section_key)
 from ml.verify.versions import detect_versions, split_versions
@@ -105,6 +105,19 @@ class TestReaderB:
         pages = read_pages([a, b])
         nums = [q.number for q in parse_paper(pages).questions]
         assert nums == [1, 2]
+
+    def test_two_column_paper(self):
+        words = []
+        for k in range(3):
+            words += line(f'{k + 1}. Left column question number {k + 1} with some text here', 300 + k * 200, 100)
+            words += line('(1) 10 (2) 20', 350 + k * 200, 140, 30, 95.0, 2)
+            words += line(f'{k + 4}. Right column question {k + 4} with words', 300 + k * 200, 880)
+            words += line('(1) 30 (2) 40', 350 + k * 200, 920, 30, 95.0, 2)
+        paper = parse_paper(read_pages([{'words': words, 'size': (1650, 2330)}]))
+        assert [q.number for q in paper.questions] == [1, 2, 3, 4, 5, 6]
+        assert [len(q.options) for q in paper.questions] == [2] * 6
+        # One column with short stems and option grids is not mistaken for two
+        assert split_columns(EN_PAGE['words'], 1650) == [split_columns(EN_PAGE['words'], 1650)[0]]
 
     def test_text_layer_check(self):
         good = line('यह एक हिंदी प्रश्न है ' * 5, 100)

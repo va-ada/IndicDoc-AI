@@ -116,6 +116,39 @@ def _skeleton(text: str) -> str:
     return re.sub(r'\s+', ' ', re.sub(r'[0-9\u0966-\u096F]+', '#', normalize_digits(text))).strip().lower()
 
 
+def split_columns(words: List[Dict], width: float) -> List[List[Dict]]:
+    """
+    The words of a page in reading order of its columns: [left, right] for a two-column paper (NEET, JEE and many
+    state papers), [all] otherwise. Two columns are recognised by a vertical gutter in the middle third of the page
+    that no printed line crosses, with text on both sides of it.
+    """
+    ws = [_norm_word(w) for w in words if str(w.get('text', '')).strip()]
+    if len(ws) < 40:
+        return [ws]
+    lines = lines_of(ws)
+    bins = 60
+    lo, hi = int(bins / 3), int(2 * bins / 3)
+    crossing = [0] * bins
+    for line in lines:
+        for w in line:
+            a, b = int(w['left'] / width * bins), int((w['left'] + w['width']) / width * bins)
+            for k in range(max(0, a), min(bins, b + 1)):
+                crossing[k] += 1
+    centre = min(range(lo, hi), key=lambda k: crossing[k])
+    gutter = centre * width / bins
+    left = [w for w in ws if w['left'] + w['width'] / 2 < gutter]
+    right = [w for w in ws if w['left'] + w['width'] / 2 >= gutter]
+    if crossing[centre] > max(2, 0.03 * len(lines)) or min(len(left), len(right)) < 0.25 * len(ws):
+        return [ws]
+
+    def numbered(col):
+        return sum(question_number(strip_marks(_text(ln)))[0] is not None for ln in lines_of(col))
+    # Option grids leave a gap in the middle of a one-column page too; only a paper whose questions start in both
+    # halves has two columns
+    two = numbered(left) >= 1 and numbered(right) >= 1
+    return [left, right] if two else [ws]
+
+
 def read_pages(pages: List[Dict], source: str = 'ocr') -> List[Dict]:
     """
     Every page of a paper read without the layout model. pages: [{'words': [...], 'size': (w, h)}, ...] with the
@@ -123,7 +156,11 @@ def read_pages(pages: List[Dict], source: str = 'ocr') -> List[Dict]:
     Running headers and footers are lines near the top or bottom edge whose text (digits aside) repeats on other
     pages; question numbers are read with the number expected next in mind ('14,' is question 14 after 13).
     """
-    all_lines = [lines_of(p['words']) for p in pages]
+    all_lines = []
+    for p in pages:
+        cols = split_columns(p['words'], p['size'][0])
+        # left column, then the right one; each line remembers its column (question numbers sit at its left edge)
+        all_lines.append([[{**w, 'col': c} for w in ln] for c, col in enumerate(cols) for ln in lines_of(col)])
     edge = Counter()
     for p, lines in zip(pages, all_lines):
         height = p['size'][1]
@@ -159,7 +196,10 @@ def _read_lines(lines, size, repeated, expected, source):
         return None
 
     body = [ln for ln in lines if not furniture(ln)]
-    left = sorted(ln[0]['left'] for ln in body)[len(body) // 10] if body else 0.0
+    margins = {}
+    for c in {ln[0].get('col', 0) for ln in lines}:
+        col = [ln for ln in body if ln[0].get('col', 0) == c]
+        margins[c] = sorted(ln[0]['left'] for ln in col)[len(col) // 10] if col else 0.0
     regions: List[Dict] = []
     block: List[List[Dict]] = []
     kind = None                 # kind of the open text block: 'question', 'instruction' or 'text'
@@ -195,7 +235,7 @@ def _read_lines(lines, size, repeated, expected, source):
                 # '14,' (a comma read for the full stop): written back as '14.' so the parser reads the same number
                 if re.fullmatch(r'[(\[]?\d{1,3}\s*[.,)\]।:]', normalize_digits(line[0]['text'])):
                     line = [{**line[0], 'text': f'{number}.'}] + line[1:]
-        if number is not None and line[0]['left'] <= left + 2.5 * h and number <= 200 \
+        if number is not None and line[0]['left'] <= margins.get(line[0].get('col', 0), 0.0) + 2.5 * h and number <= 200 \
                 and (expected is None or 0 < number <= expected + 3 or number == 1):
             flush()
             block, kind, open_q = [line], 'question', True

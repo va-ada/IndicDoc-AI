@@ -10,6 +10,7 @@ Usage: python scripts/verify_bench/export_test_papers.py [data/verify_bench] [do
 """
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -37,6 +38,10 @@ TESTS = [
     ('11_tamil_numbering_error', 'ta_055_numbering_error', 'one'),
     ('12_tamil_scanned_number_changed', 'ta_012_number_changed', 'translation'),
 ]
+# CBSE-format bilingual papers from the development set (scripts/verify_bench/cbse.py, seed 7)
+CBSE_EXAMPLES = [('13_cbse_bilingual/no_error.pdf', 'cbse_000_clean'),
+                 ('13_cbse_bilingual/number_changed.pdf', 'cbse_002_number_changed'),
+                 ('13_cbse_bilingual/internal_choice_missing.pdf', 'cbse_011_choice_dropped')]
 LANG = {'hi': ('Hindi', 'hin'), 'ta': ('Tamil', 'tam')}
 HOW = {
     'translation': 'Verify Paper → "Translation against its source": paper = `{v}`, source = `english_source.pdf`',
@@ -126,6 +131,27 @@ def main():
            '     "http://localhost:8000/verify?lang=hin&source_lang=eng&output=html" > report.html', '```', '',
            'Rebuild: `python scripts/verify_bench/export_test_papers.py` (needs `data/verify_bench`, made by the benchmark '
            'scripts).', '']
+    cbse_root = ROOT / 'data' / 'cbse_dev'
+    if (cbse_root / 'cases.json').exists():
+        cbse_cases = {c['id']: c for c in json.loads((cbse_root / 'cases.json').read_text())}
+        md += ['## CBSE-format bilingual papers (one PDF, Hindi and English page by page)', '',
+               'Each file is one paper in the Central Board\'s layout: bilingual cover, instructions in both languages, '
+               'sections A-E (38 questions, 80 marks), a Hindi page followed by the same questions in English. Upload '
+               'the one PDF in **One paper** mode: the two versions are found and checked against each other.', '',
+               '| File | Planted error (in the Hindi version) | Expected finding |', '|---|---|---|']
+        for name, cid in CBSE_EXAMPLES:
+            case = cbse_cases.get(cid)
+            if case is None:
+                continue
+            (out / name).parent.mkdir(exist_ok=True)
+            shutil.copy(cbse_root / 'pdf' / f'{cid}.pdf', out / name)
+            gt = case['gt']
+            what = 'None: a correct paper.' if gt['type'] == 'clean' else f"Q{gt.get('question')}: {gt.get('detail', '')}."
+            exp = {'clean': 'none', 'number_changed': 'NUMBER_MISMATCH', 'choice_dropped': 'CHOICE_MISMATCH',
+                   'subpart_dropped': 'SUBQUESTION_MISMATCH'}.get(gt['type'], gt['type'])
+            md.append(f'| `{name}` | {what} | {exp} |')
+            print(name, '<-', cid)
+        md.append('')
     (out / 'ANSWER_KEY.md').write_text('\n'.join(md), encoding='utf-8')
     print('written to', out)
 

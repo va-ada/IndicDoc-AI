@@ -98,6 +98,9 @@ def main():
     ap.add_argument('--report_example', default=None, help='write the HTML report of this case id')
     ap.add_argument('--no_number_pass', action='store_true', help='ablation: Indic reading only, no English digits')
     ap.add_argument('--no_geometry', action='store_true', help='ablation: split options by their markers only')
+    ap.add_argument('--consensus', action='store_true',
+                    help='dual-reader consensus: reader B from the PDF text layer (born-digital papers) or its own OCR '
+                         'pass (scan-degraded), third reading of disagreements (needs pairs_prepare.py)')
     args = ap.parse_args()
     root = Path(args.bench)
     cases = json.loads((root / 'cases.json').read_text())
@@ -105,6 +108,34 @@ def main():
     ocr = json.loads((root / 'ocr.json').read_text())
     bank = json.loads((root / 'bank.json').read_text())
     rng = random.Random(0)
+    if args.consensus:
+        import numpy as np
+        from PIL import Image
+        from ml.verify.consensus import make_rereader
+        from ml.verify.reader import read_pages
+        textlayer = json.loads((root / 'textlayer.json').read_text())
+        ocr_b = json.loads((root / 'ocr_b.json').read_text()) if (root / 'ocr_b.json').exists() else {}
+        indic = {'hi': 'hin', 'ta': 'tam'}
+
+        def b_pages(name, case):
+            if not case['degraded']:
+                inp = [{'words': words, 'size': (1654, 2339)} for words in textlayer[name]]
+                pages = read_pages(inp, source='text-layer')
+            else:
+                inp = []
+                for pg in layout[name]:
+                    e = ocr_b.get(pg['image'], {})
+                    ind = e.get(indic[case['lang']])
+                    words = merge_number_reading(ind, e.get('eng', [])) if ind is not None and name.endswith('_tgt') \
+                        else e.get('eng', [])
+                    inp.append({'words': words, 'size': (1654, 2339)})
+                pages = read_pages(inp, source='ocr')
+            for k, p in enumerate(pages):
+                p['sheet'] = k
+            return pages
+
+        def images_of(name):
+            return {k: np.asarray(Image.open(root / 'pages' / pg['image']).convert('RGB')) for k, pg in enumerate(layout[name])}
 
     excluded = [c['id'] for c in cases if c['gt']['type'] == 'number_changed' and not printed_numbers_changed(root, c)]
     cases = [c for c in cases if c['id'] not in excluded]
@@ -113,7 +144,14 @@ def main():
         opts = dict(number_pass=not args.no_number_pass, geometry=not args.no_geometry)
         src = build_pages(f"{case['id']}_src", layout, ocr, args.layout, rng, **opts)
         tgt = build_pages(f"{case['id']}_tgt", layout, ocr, args.layout, rng, **opts)
-        report = verify(tgt, source_pages=src, bank=bank[case['lang']])
+        if args.consensus:
+            sid, tid = f"{case['id']}_src", f"{case['id']}_tgt"
+            report = verify(tgt, source_pages=src, bank=bank[case['lang']], pages_b=b_pages(tid, case),
+                            source_pages_b=b_pages(sid, case),
+                            rereader={'target': make_rereader(images_of(tid)), 'source': make_rereader(images_of(sid))},
+                            langs={'target': indic[case['lang']], 'source': 'eng'})
+        else:
+            report = verify(tgt, source_pages=src, bank=bank[case['lang']])
         issues = [i for i in report['issues'] if i['severity'] in (ERROR, WARNING)]
         gt = case['gt']
         row = {'id': case['id'], 'lang': case['lang'], 'type': gt['type'], 'degraded': case['degraded'],
@@ -170,7 +208,9 @@ def main():
         'labels': LABELS,
         'cases': per_case,
     }
-    suffix = args.layout + ('_no_number_pass' if args.no_number_pass else '') + ('_no_geometry' if args.no_geometry else '')
+    suffix = args.layout + ('_no_number_pass' if args.no_number_pass else '') + ('_no_geometry' if args.no_geometry else '') \
+        + ('_consensus' if args.consensus else '')
+    result['consensus'] = args.consensus
     # Only the test set's results are published in outputs/metrics; other sets (development) keep theirs beside the data
     default = (PROJECT_ROOT / 'outputs' / 'metrics' / f'verify_benchmark_{suffix}.json'
                if root.resolve() == (PROJECT_ROOT / 'data' / 'verify_bench').resolve() else root / f'results_{suffix}.json')
