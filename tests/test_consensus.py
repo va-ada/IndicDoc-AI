@@ -211,3 +211,38 @@ def test_reader_numbered_options_and_questions_at_the_top_edge():
     paper = parse_paper(pages)
     assert [q.number for q in paper.questions] == [1, 2, 3, 4]
     assert [len(q.options) for q in paper.questions] == [4, 4, 4, 4]
+
+
+def test_fragment_filling_a_numbering_gap_is_reinstated():
+    from ml.verify.consensus import _reinstate_gaps
+    from ml.verify.paper import Question
+    q = lambda n, i: Question(index=i, number=n, page=0, box=[0, 0, 1, 1], stem='a question')
+    fused = [q(2, 0), q(3, 1)]
+    records = [{'a': 0, 'b': None, 'dropped': True, '_candidate': (0, q(None, 0))},
+               {'a': 1, 'b': 0}, {'a': 2, 'b': 1}]
+    _reinstate_gaps(fused, records)
+    assert [x.number for x in fused] == [1, 2, 3] and not records[0]['dropped']
+    fused = [q(1, 0), q(2, 1)]                       # nothing missing: the fragment stays dropped
+    records = [{'a': 0, 'b': 0}, {'a': 1, 'b': None, 'dropped': True, '_candidate': (1, q(None, 0))}, {'a': 2, 'b': 1}]
+    _reinstate_gaps(fused, records)
+    assert [x.number for x in fused] == [1, 2] and records[1]['dropped']
+
+
+def test_number_mismatch_is_rechecked_by_the_english_reading():
+    from ml.verify.consensus import verify_numbers
+    from ml.verify.paper import Paper, Question
+
+    def paper(stem, source):
+        q = Question(index=0, number=1, page=0, box=[0, 0, 100, 40], stem=stem, source=source,
+                     boxes=[{'page': 0, 'box': [0, 0, 100, 40]}])
+        return Paper(questions=[q], declared_total=None, marks_each=None, page_numbers=[1], pages=1)
+    papers = {'source': paper('A 12 V battery', 'text-layer'), 'target': paper('12 · · की बैटरी 5', 'ocr')}
+    issue = {'code': 'NUMBER_MISMATCH', 'severity': 'error', 'version': 'target', 'message': '',
+             'details': {'qindex': 0, 'sindex': 0, 'source_only': [], 'target_only': ['5']}}
+    misread = lambda sheet, box, lang: [{'text': '12', 'left': 0, 'top': 0, 'width': 10, 'height': 10}]
+    kept, dismissed = verify_numbers([issue], papers, {'target': misread})
+    assert not kept and dismissed[0]['raised_by'] == 'consensus'
+    really_there = lambda sheet, box, lang: [{'text': t, 'left': 0, 'top': 0, 'width': 10, 'height': 10}
+                                             for t in ('12', '5')]
+    kept, dismissed = verify_numbers([issue], papers, {'target': really_there})
+    assert kept and not dismissed

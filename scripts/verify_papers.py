@@ -27,7 +27,7 @@ SUFFIXES = {'.pdf', '.png', '.jpg', '.jpeg', '.tif', '.tiff'}
 def verdict(summary) -> str:
     if summary['errors']:
         return 'do not print'
-    return 'check before printing' if summary['warnings'] else 'ready for printing'
+    return 'check before printing' if summary['warnings'] or summary.get('review') else 'ready for printing'
 
 
 def check_one(api, path: Path, source: Path, args, bank):

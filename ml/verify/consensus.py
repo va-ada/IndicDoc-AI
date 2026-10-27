@@ -128,6 +128,29 @@ def _vote(values: List, confs: List[Optional[float]]):
     return values[best], False
 
 
+def _reinstate_gaps(fused: List[Question], records: List[Dict]) -> None:
+    """
+    A question only one reader found, without a readable number, is dropped as a fragment, unless the agreed
+    numbering has exactly one number missing where it stood ('2, 3, ...' with the dropped region before 2): then it
+    is that question, whose number the readers could not read.
+    """
+    for rec in reversed([r for r in records if r.get('_candidate')]):
+        pos, only = rec.pop('_candidate')
+        before = next((q.number for q in reversed(fused[:pos]) if q.number is not None), 0)
+        after = next((q.number for q in fused[pos:] if q.number is not None), None)
+        if only.number is not None or after is None or after - before != 2 or not (only.stem or only.options):
+            continue
+        q = copy.deepcopy(only)
+        q.number = before + 1
+        fused.insert(pos, q)
+        rec['dropped'] = False
+        rec['uncertain'] = ['number']
+        rec['single'] = 'a' if rec['a'] is not None else 'b'
+        rec['reinstated'] = True
+    for rec in records:
+        rec.pop('_candidate', None)
+
+
 def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Optional[str] = None) -> Tuple[Paper, List[Dict]]:
     """
     The agreed paper and one record per question: which fields both readers read alike, which needed a third
@@ -151,6 +174,7 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
                 real = (third is not None and third.number is not None) if rereader else only.number is not None
             if not real:
                 rec['dropped'] = True
+                rec['_candidate'] = (len(fused), only)      # reinstated below if the numbering needs it
                 records.append(rec)
                 continue
             q = copy.deepcopy(third if third is not None and third.number is not None else only)
@@ -219,6 +243,7 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
             if (ca is not None or cb is not None) else None
         fused.append(q)
         records.append(rec)
+    _reinstate_gaps(fused, records)
     for k, q in enumerate(fused):
         q.index = k
     paper = copy.copy(pa)
@@ -297,9 +322,10 @@ def combine(issues_a: List[Dict], issues_b: List[Dict], issues_f: List[Dict],
             it['consensus'] = {'status': status, 'reader_a': in_a, 'reader_b': in_b,
                                'confidence_a': conf_a, 'confidence_b': conf_b,
                                'confidence': _final_conf(status, conf_a, conf_b), 'third_reading': third}
-            if status == 'review' and it['severity'] == 'error':
-                it['severity'] = 'warning'
-                it['message'] += ' (the two readers disagree here: please check by eye)'
+            if status == 'review' and it['severity'] in ('error', 'warning'):
+                # Not a finding: the readers could not agree on what is printed here. Listed for a look by eye.
+                it['severity'] = 'info'
+                it['message'] += ' (uncertain reading: the two readers disagree here, please check by eye)'
             final.append(it)
     dismissed = []
     for reader, keyed_issues in (('a', ka), ('b', kb)):
@@ -367,3 +393,52 @@ def make_rereader(images) -> Rereader:
             return []           # no third reading for this question: the disagreement stays for a human to review
         return [{**w, 'left': w['left'] + x1, 'top': w['top'] + y1} for w in words]
     return reread
+
+
+NUMBER_CODES = ('NUMBER_MISMATCH', 'OPTION_NUMBER_MISMATCH')
+
+
+def _reread_numerals(q: Question, rereader: Optional[Rereader]) -> Optional[Counter]:
+    """The numbers of a question as the English model reads its crop (exact text for a text-layer question)."""
+    if q.source == 'text-layer':
+        return numerals(' '.join([q.stem] + list(q.options)))
+    box = _union_box([q], q.page)
+    if rereader is None or box is None:
+        return None
+    pad = 0.15 * (box[3] - box[1]) + 12
+    words = rereader(q.page, [box[0] - 4 * pad, box[1] - pad, box[2] + pad, box[3] + pad], 'eng')
+    return numerals(' '.join(w['text'] for w in words)) if words else None
+
+
+def verify_numbers(issues: List[Dict], papers: Dict[str, Paper], rereaders: Dict[str, Optional[Rereader]]
+                   ) -> Tuple[List[Dict], List[Dict]]:
+    """
+    A number that differs between the versions is checked once more, with the model that reads digits best: both
+    questions are re-read by the English OCR model (Latin digits and units are printed the same in every version).
+    The finding stands unless both re-readings agree on every disputed number; then it was a misreading of the
+    Indic model (or of a scan) and goes to the dismissed list. Text-layer questions are their own re-reading.
+    """
+    kept, dismissed = [], []
+    for it in issues:
+        d = it.get('details', {})
+        if it['code'] not in NUMBER_CODES or it['severity'] != 'error' or 'sindex' not in d \
+                or 'source' not in papers or 'target' not in papers:
+            kept.append(it)
+            continue
+        s, t = papers['source'].questions[d['sindex']], papers['target'].questions[d['qindex']]
+        if s.source == 'text-layer' and t.source == 'text-layer':
+            kept.append(it)
+            continue
+        if it['code'] == 'NUMBER_MISMATCH':
+            disputed = set(d.get('source_only', [])) | set(d.get('target_only', []))
+        else:
+            disputed = {x for o in d.get('options', []) for x in o['source_only'] + o['target_only']}
+        rs, rt = _reread_numerals(s, rereaders.get('source')), _reread_numerals(t, rereaders.get('target'))
+        if not disputed or rs is None or rt is None or any((rs[x] > 0) != (rt[x] > 0) for x in disputed):
+            it = copy.deepcopy(it)
+            it.setdefault('consensus', {})['reread'] = 'confirms' if rs is not None and rt is not None else None
+            kept.append(it)
+        else:
+            dismissed.append({**it, 'raised_by': 'consensus', 'reason': 'the English re-reading of both versions '
+                              'agrees on these numbers'})
+    return kept, dismissed

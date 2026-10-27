@@ -47,9 +47,10 @@ def to_html(report: Dict, page_images: Optional[Dict[str, List[np.ndarray]]] = N
     issues = sorted(report['issues'], key=lambda i: (SEVERITY_ORDER[i['severity']], i.get('question') or 0))
     numbered = list(enumerate(issues, 1))
     s = report['summary']
-    verdict = ('Ready for printing: no problems found' if s['errors'] == 0 and s['warnings'] == 0 else
+    clear = s['errors'] == 0 and s['warnings'] == 0 and not s.get('review')
+    verdict = ('Ready for printing: no problems found' if clear else
                'Check before printing' if s['errors'] == 0 else 'Do not print: errors found')
-    colour = '#1B7F3B' if s['errors'] == 0 and s['warnings'] == 0 else '#B26A00' if s['errors'] == 0 else '#B3261E'
+    colour = '#1B7F3B' if clear else '#B26A00' if s['errors'] == 0 else '#B3261E'
     cons = report.get('consensus')
 
     def cons_cells(i):

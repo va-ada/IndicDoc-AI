@@ -259,7 +259,7 @@ def compare_versions(source: Paper, target: Paper,
             issues.append(_issue('NUMBER_MISMATCH', ERROR, f'Question {qn}: numbers differ - source has '
                                  f'{", ".join(only_s) or "nothing extra"}, translation has '
                                  f'{", ".join(only_t) or "nothing extra"}.', t, 'target',
-                                 source_only=only_s, target_only=only_t))
+                                 source_only=only_s, target_only=only_t, sindex=s.index))
         # One finding per question (the vetter checks the question once), listing every option that differs
         differing = []
         for k, (so, to) in enumerate(zip(s.options, t.options)):
@@ -270,7 +270,8 @@ def compare_versions(source: Paper, target: Paper,
             parts = '; '.join(f'option {d["option"]}: source {", ".join(d["source_only"]) or "-"}, translation '
                               f'{", ".join(d["target_only"]) or "-"}' for d in differing)
             issues.append(_issue('OPTION_NUMBER_MISMATCH', ERROR, f'Question {qn}: option numbers differ ({parts}); '
-                                 'the answer key may no longer hold.', t, 'target', options=differing))
+                                 'the answer key may no longer hold.', t, 'target', options=differing,
+                                 sindex=s.index))
         for attr in ('figures', 'tables', 'formulas'):
             if getattr(s, attr) != getattr(t, attr):
                 issues.append(_issue('VISUAL_MISMATCH', WARNING, f'Question {qn}: {getattr(s, attr)} {attr} in the '

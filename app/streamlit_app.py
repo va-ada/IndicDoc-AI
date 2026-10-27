@@ -837,7 +837,7 @@ with tab_verify:
     def _verdict(summary):
         if summary["errors"]:
             return "Do not print"
-        return "Check before printing" if summary["warnings"] else "Ready for printing"
+        return "Check before printing" if summary["warnings"] or summary.get("review") else "Ready for printing"
 
     try:
         v_bank_items = json.loads(v_bank.getvalue()) if v_bank is not None else None
@@ -895,6 +895,9 @@ with tab_verify:
             st.error("Do not print: errors found. Each one is listed below with its question and page.")
         elif s["warnings"]:
             st.warning("Check before printing: see the warnings below.")
+        elif s.get("review"):
+            st.warning(f"Check before printing: {s['review']} place(s) the two readers read differently are listed "
+                       "below as uncertain readings, for a look by eye.")
         else:
             st.success("No problems found by the automatic checks.")
         if report.get("versions", {}).get("mode") in ("pages", "lines"):

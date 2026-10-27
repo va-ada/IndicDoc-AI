@@ -75,7 +75,7 @@ def verify(pages: List[Dict], source_pages: Optional[List[Dict]] = None, bank: O
         (the first script's stream is the source, the second the translation).
     langs: OCR language of each version for the third reading, e.g. {'target': 'hin', 'source': 'eng'}.
     """
-    from ml.verify.consensus import combine, fuse
+    from ml.verify.consensus import combine, fuse, verify_numbers
     from ml.verify.versions import VERSION_NAMES, detect_versions, split_versions
     meta = dict(meta or {})
     readers = {'a': {'paper': pages}}
@@ -118,6 +118,10 @@ def verify(pages: List[Dict], source_pages: Optional[List[Dict]] = None, bank: O
         layer = {v: 'text-layer' for v, pb in papers['b'].items()
                  if pb.questions and all(q.source == 'text-layer' for q in pb.questions)}
         issues, dismissed, stats = combine(issues_a, issues_b, issues_f, records, layer)
+        if rereader is not None:
+            rr = rereader if isinstance(rereader, dict) else {v: rereader for v in fused}
+            issues, rejected = verify_numbers(issues, fused, rr)
+            dismissed += rejected
         final_papers = fused
         consensus = {'stats': stats, 'dismissed': dismissed,
                      'readers': {'a': 'deep-learning layout + OCR',
