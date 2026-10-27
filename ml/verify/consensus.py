@@ -27,7 +27,7 @@ from ml.verify.text import normalized, numerals, similarity
 
 # Two readers' confidences for the same question count as "similar" within this margin (0-1 scale)
 CONFIDENCE_MARGIN = 0.25
-FIELDS = ('number', 'options', 'numerals', 'marks')
+FIELDS = ('number', 'options', 'numerals', 'marks', 'parts')   # parts: sub-questions and internal-choice alternatives
 
 Rereader = Callable[[int, List[float], Optional[str]], List[Dict]]
 
@@ -83,6 +83,8 @@ def _field(q: Question, name: str):
         return tuple(sorted(_qnums(q).elements()))
     if name == 'marks':
         return q.marks
+    if name == 'parts':
+        return q.sub_questions, q.choices
     raise KeyError(name)
 
 
@@ -236,6 +238,9 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
                     q.options = list(winner.options)
             elif f == 'marks':
                 q.marks = value
+            elif f == 'parts':
+                q.sub_questions, q.choices = value
+                q.sub_marks = winner.sub_marks
         # B reads no figures or tables, so those come from the layout reader only
         q.figures, q.tables, q.formulas = qa.figures, qa.tables, qa.formulas
         ca, cb = qa.confidence, qb.confidence
@@ -405,9 +410,14 @@ def _reread_numerals(q: Question, rereader: Optional[Rereader]) -> Optional[Coun
     box = _union_box([q], q.page)
     if rereader is None or box is None:
         return None
+    # Two crops, the region as found and with a margin: OCR of one crop can drop a short token ('(D)5A') that the
+    # other reads; a number counts as read if either reading has it
     pad = 0.15 * (box[3] - box[1]) + 12
-    words = rereader(q.page, [box[0] - 4 * pad, box[1] - pad, box[2] + pad, box[3] + pad], 'eng')
-    return numerals(' '.join(w['text'] for w in words)) if words else None
+    found = Counter()
+    for crop in (box, [box[0] - 4 * pad, box[1] - pad, box[2] + pad, box[3] + pad]):
+        words = rereader(q.page, crop, 'eng')
+        found |= numerals(' '.join(w['text'] for w in words)) if words else Counter()
+    return found or None
 
 
 def verify_numbers(issues: List[Dict], papers: Dict[str, Paper], rereaders: Dict[str, Optional[Rereader]]
