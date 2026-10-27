@@ -41,9 +41,20 @@ when different), text similarity (character 3-grams, x2), the numbers in the que
   majority of the three readings decides each field; a tie goes to the more confident reading and the field is marked
   uncertain.
 - A question only one reader found is kept when the third reading (or the text layer) shows a real question start,
-  and dropped as a fragment otherwise.
+  or when it has no readable number and the agreed numbering has exactly that number missing; otherwise it is dropped
+  as a fragment.
 
 The checks then run once more on the agreed ("fused") paper.
+
+## Verifying number findings
+
+Both readers of a scanned Hindi or Tamil page use Tesseract's Indic model, which misreads Latin digits and units in
+the same way ('2 A' as '2 ·', '120 °C' as '1:20'): such slips survive the agreement of two readers. So every number
+that differs between two versions (NUMBER_MISMATCH, OPTION_NUMBER_MISMATCH) is checked once more by the model that
+reads digits best: the question is re-read in both versions by the English OCR model (digits and SI units are
+printed the same in every language). The finding stands unless both re-readings agree on every disputed number;
+then it is dismissed as a misreading. A text-layer question is its own re-reading. A real change (300 -> 164, a
+number added or removed) is read as such by the English model too, so it stands.
 
 ## Statuses
 
@@ -55,10 +66,11 @@ times the layout score for reader A; 0.99 for a text layer), `confidence`, `thir
 |---|---|---|
 | confirmed | both readers raised it independently, with confidences within 0.25 | as the check sets it |
 | resolved | the readers disagreed; the third reading or the text layer decided, and supports it | as the check sets it |
-| review | it rests on a value the readers could not agree on | an error becomes a warning: "please check by eye" |
+| review | it rests on a value the readers could not agree on, even after the third reading | not a finding: listed as an *uncertain reading* (severity info), for a look by eye; the verdict becomes "check before printing" |
 
 Findings that one reader raised and the fused paper does not reproduce are returned in `consensus.dismissed` with
-the reader that raised them, so nothing is hidden. `consensus.stats` gives, per version, the questions both read,
+the reader that raised them (and those the English re-reading disproved, `raised_by: consensus`), so nothing is
+hidden. `consensus.stats` gives, per version, the questions both read,
 those only one read, fragments dropped, the share of fields read alike, third readings, questions decided by the text
 layer, uncertain questions and each reader's mean confidence.
 
