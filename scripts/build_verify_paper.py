@@ -134,7 +134,8 @@ def build():
     body = f'''
 <div class="head">
 <h1>IndicDoc Verify: Layout-Aware Pre-Print Verification of Multilingual Indian Question Papers</h1>
-<div class="authors">Prashant Jha, Aditya Soni, Riddhi Patil, Mariam Badure and Joanne Gomes<br>
+<div class="authors">Prashant Jha, Aditya Soni, Riddhi Patil and Mariam Badure<br>
+<span class="guide">Project guide: Dr. Joanne Gomes</span><br>
 <i>Department of Artificial Intelligence and Machine Learning, St. Francis Institute of Technology (Autonomous), Mumbai, India</i></div>
 </div>
 <div class="cols">
@@ -274,6 +275,7 @@ body {{ margin: 0; }}
 .head {{ text-align: center; margin-bottom: 14pt; }}
 h1 {{ font-size: 22pt; font-weight: 400; line-height: 1.15; margin: 0 0 10pt; }}
 .authors {{ font-size: 11pt; line-height: 1.35; }}
+.authors .guide {{ font-size: 10pt; }}
 .cols {{ column-count: 2; column-gap: 0.25in; text-align: justify; }}
 p {{ margin: 0 0 5pt; text-indent: 1em; hyphens: auto; }}
 p.abs {{ text-indent: 0; font-size: 9pt; }} p.abs b {{ font-weight: 600; }}
