@@ -360,3 +360,26 @@ class TestVerifyConsensus:
         page = ('p.png', _encode(np.full((60, 60, 3), 255, np.uint8)), 'image/png')
         r = client.post('/verify?output=html', files={'file': page})
         assert r.status_code == 200 and 'Dual-reader consensus' in r.text
+
+
+class TestVerifyCLI:
+    """scripts/verify_papers.py on a folder, with the page readings stubbed as for the API."""
+
+    def test_folder_run(self, api, monkeypatch, tmp_path):
+        import importlib.util
+        import csv
+        spec = importlib.util.spec_from_file_location('verify_papers', 'scripts/verify_papers.py')
+        cli = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cli)
+        TestVerifyConsensus()._setup(api, monkeypatch)
+        papers = tmp_path / 'papers'
+        papers.mkdir()
+        (papers / 'a.png').write_bytes(_encode(np.full((60, 60, 3), 255, np.uint8)))
+        (papers / 'broken.png').write_bytes(b'not an image')
+        rows = cli.main([str(papers), '--out', str(tmp_path / 'reports')])
+        assert [r['file'] for r in rows] == ['a.png', 'broken.png']
+        assert rows[0]['verdict'] in ('ready for printing', 'check before printing', 'do not print')
+        assert rows[1]['verdict'].startswith('not checked')
+        assert (tmp_path / 'reports' / 'a_report.html').exists() and (tmp_path / 'reports' / 'a_report.json').exists()
+        with open(tmp_path / 'reports' / 'summary.csv') as fh:
+            assert len(list(csv.DictReader(fh))) == 2

@@ -54,6 +54,10 @@ def script_of(text: str) -> Optional[str]:
 _NUMBER = re.compile(r'(?<![\w.])(\d{1,3}(?:,\d{2,3})+|\d+)(?:\.(\d+))?(?!\d)')
 
 
+# OCR runs the article into a quantity: 'A24V battery' for 'A 24 V battery'
+_GLUED_ARTICLE = re.compile(r'(?<![\w.])A(\d{1,4}(?:\.\d+)?)(?=\s*(?:V|W|J|N|Hz|kg|km|cm|mm|m|s|g|L)\b)')
+
+
 def numerals(text: str) -> Counter:
     """
     Multiset of the numbers written in `text`, script-independent: '१,२०० kg and 2.50 m' -> {'1200': 1, '2.5': 1}.
@@ -61,7 +65,7 @@ def numerals(text: str) -> Counter:
     zeros removed, so typesetting differences between versions do not count as mismatches.
     """
     out = Counter()
-    for m in _NUMBER.finditer(normalize_digits(text)):
+    for m in _NUMBER.finditer(_GLUED_ARTICLE.sub(r'A \1', normalize_digits(text))):
         whole = m.group(1).replace(',', '').lstrip('0') or '0'
         frac = (m.group(2) or '').rstrip('0')
         out[f'{whole}.{frac}' if frac else whole] += 1
@@ -280,7 +284,10 @@ _INSTRUCTION = re.compile(
     r'|This\s+section\s+(?:comprises|consists|contains|has)|This\s+question\s+paper\s+(?:contains|has|is)'
     r'|इस\s+(?:खण्ड|खंड|प्रश्न[-\s]*पत्र)|General\s+Instructions|सामान्य\s+निर्देश|Read\s+the\s+following\s+instructions'
     r'|निम्नलिखित\s+निर्देशों|Please\s+check\s+that|कृपया\s+जाँच'
-    r'|In\s+Section\s*[–\-]?\s*[A-E]\b|खण्ड\s*[–\-]?\s*[कखगघङ]\s+में)', re.IGNORECASE)
+    r'|In\s+Section\s*[–\-]?\s*[A-E]\b|खण्ड\s*[–\-]?\s*[कखगघङ]\s+में'
+    # a section's own note under its heading, also when OCR garbled its first word ('इस' read as '3a')
+    r'|\S{0,3}\s*(?:खण्ड|खंड)\s+में\s+\d{1,2}\s.*प्रश्न\s+हैं|\S{0,3}\s*section\s+(?:comprises|consists\s+of|contains)\s+\d)',
+    re.IGNORECASE)
 
 
 def is_instruction(text: str) -> bool:
@@ -303,6 +310,7 @@ _SECTION_IN = re.compile(rf'(?:In\s+)?{_SECTION_WORDS}\s*[–—\-]?\s*([A-Za-z]
 
 def _sentences(text: str) -> List[str]:
     t = ' '.join(normalize_digits(text).split())
+    t = re.sub(r'(\d)\s*[।|]\s+(?=(?:से|to)\s*\d)', r'\1 ', t)   # '1 । से 18': a misread digit stroke, not a full stop
     return [p for p in re.split(r'(?<=[।.;])\s+|\s(?=\((?:[ivx]{1,5})\)\s)', t) if p.strip()]
 
 
@@ -314,11 +322,14 @@ def marks_schedule(text: str) -> Tuple[Dict[int, float], Dict[str, float]]:
     """
     per_q: Dict[int, float] = {}
     per_section: Dict[str, float] = {}
-    section = None
+    section, fresh = None, 0
     for sent in _sentences(text):
         key = section_key(sent)
         if key:
-            section = key
+            section, fresh = key, 2
+        fresh -= 1
+        if fresh <= 0:
+            section = None    # 'this section' refers to a heading just above it, never to one pages back
         if _TOTAL.search(sent):
             continue
         values = {float(m.group(1)) for m in _MARK_VALUE.finditer(sent)}

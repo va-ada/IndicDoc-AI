@@ -156,6 +156,16 @@ def _digits(text: str) -> str:
     return ''.join(ch for ch in text if ch.isascii() and ch.isdigit())
 
 
+KEEP_DIGIT_CONF = 90   # an Indic-model digit this confident stands unless the English model reads something sure there
+
+
+def _sure_digit(w: Dict, latin_words: List[Dict]) -> bool:
+    """A confidently read short number that the English reading does not contradict with a confident token."""
+    if w.get('conf', 0) < KEEP_DIGIT_CONF or len(_digits(w['text'])) > 2:
+        return False
+    return not any(_overlap(w, lw) > 0.3 and lw.get('conf', 0) >= 80 for lw in latin_words)
+
+
 def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dict]:
     """
     Fix the numbers of an Indic-language reading with a second reading by the English model.
@@ -181,7 +191,7 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
     with_digits = [lw for lw in latin_words if _digits(lw['text'])]
     for w in out:
         if _BARE_NUMBER.match(w['text']) and not any(_overlap(w, lw) > 0.3 and _digits(w['text']) in _digits(lw['text'])
-                                                     for lw in with_digits):
+                                                     for lw in with_digits) and not _sure_digit(w, latin_words):
             w['text'] = '·'
         # On a page printed with Latin digits, an Indian digit in a word without Indic letters is the Indic model's
         # reading of Latin text ('C(x)' -> '(७)'); unless the English reading has digits there, it is not a number

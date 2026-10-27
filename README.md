@@ -124,6 +124,14 @@ curl -F file=@paper_hi.pdf -F source=@paper_en.pdf "http://localhost:8000/verify
 curl -F file=@paper_hi.pdf -F source=@paper_en.pdf "http://localhost:8000/verify?lang=hin&source_lang=eng&output=html" > report.html
 ```
 
+A whole folder of papers from the command line (an HTML + JSON report per paper and a `summary.csv` of verdicts:
+ready for printing / check before printing / do not print):
+
+```bash
+docker compose run --rm -v "$PWD/papers:/papers" api python scripts/verify_papers.py /papers   # reports land in papers/
+python scripts/verify_papers.py paper_hi.pdf --source paper_en.pdf         # without Docker
+```
+
 Configuration, health checks and production notes: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
 
 ## Local setup
@@ -217,7 +225,9 @@ scripts/
   build_lab_report.py       Expt.-11 lab report (IEEE tables/figures/references)
   build_slides.py           Phase-2 deck (PDF); slides_to_pptx.py makes the PPTX
   build_verify_paper.py     IEEE research paper on IndicDoc Verify
+  verify_papers.py          IndicDoc Verify from the command line: one paper or a folder, reports + summary.csv
   evaluate_verify.py        verification benchmark: errors found, false alarms, ablations
+  evaluate_consensus.py     dual-reader consensus on the CBSE-format bilingual benchmark (reader A, B, consensus)
   verify_bench/             benchmark generator (questions in English/Hindi/Tamil), renderer, OCR
   run_sample_training.py    pipeline smoke run on synthetic pages
 outputs/                    trained models, metrics, plots, example predictions
@@ -233,6 +243,7 @@ Dockerfile, docker-compose.yml
 | Document | Contents |
 |---|---|
 | [docs/PRODUCT.md](docs/PRODUCT.md) | IndicDoc Verify: evidence of the problem, competitors, USP, customers |
+| [docs/CONSENSUS.md](docs/CONSENSUS.md) | Dual-reader consensus: the two readers, pairing, third reading, statuses |
 | [paper/IndicDoc_Verify_Research_Paper.pdf](paper/IndicDoc_Verify_Research_Paper.pdf) | IEEE paper on IndicDoc Verify |
 | [docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf](docs/report/IndicDoc_AI_Expt11_Lab_Report.pdf) | Expt.-11 lab report |
 | [docs/presentation/](docs/presentation/) | Phase-1 and Phase-2 slides (Phase-2 as PDF and PPTX) |

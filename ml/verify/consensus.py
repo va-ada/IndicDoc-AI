@@ -18,6 +18,7 @@ Findings that only one reader raised and the fused paper does not reproduce are 
 separately, so nothing is hidden). Confidence is reported for each reader and for the result.
 """
 import copy
+import subprocess
 from collections import Counter
 from typing import Callable, Dict, List, Optional, Sequence, Tuple
 
@@ -141,8 +142,13 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
                'conf_a': qa.confidence if qa else None, 'conf_b': qb.confidence if qb else None}
         if qa is None or qb is None:
             only = qa or qb
-            third = third_reading(qa, qb, rereader, lang)
-            real = (third is not None and third.number is not None) if rereader else only.number is not None
+            b_layer = any(q.source == 'text-layer' for q in pb.questions if q.page == only.page)
+            if b_layer:
+                # The page's own text decides: a question in it is real, one only the layout reader saw is a fragment
+                third, real = None, qb is not None and qb.number is not None
+            else:
+                third = third_reading(qa, qb, rereader, lang)
+                real = (third is not None and third.number is not None) if rereader else only.number is not None
             if not real:
                 rec['dropped'] = True
                 records.append(rec)
@@ -150,8 +156,10 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
             q = copy.deepcopy(third if third is not None and third.number is not None else only)
             q.boxes, q.page, q.section = only.boxes, only.page, only.section
             q.marks = only.marks if only.marks is not None else q.marks
-            rec['uncertain'] = [] if third is not None else list(FIELDS)
+            rec['uncertain'] = [] if third is not None or b_layer else list(FIELDS)
             rec['third'] = third is not None
+            if b_layer:
+                rec['authority'] = 'text-layer'
             rec['single'] = 'a' if qa else 'b'
             fused.append(q)
             records.append(rec)
@@ -347,9 +355,12 @@ def make_rereader(images) -> Rereader:
             return []
         crop = img[y1:y2, x1:x2]
         indic = '+'.join(c for c in (lang or 'eng').split('+') if c != 'eng')
-        if indic:
-            words = merge_number_reading(read_words(crop, indic, psm=6), read_words(crop, 'eng', psm=6))
-        else:
-            words = read_words(crop, 'eng', psm=6)
+        try:
+            if indic:
+                words = merge_number_reading(read_words(crop, indic, psm=6), read_words(crop, 'eng', psm=6))
+            else:
+                words = read_words(crop, 'eng', psm=6)
+        except (RuntimeError, subprocess.TimeoutExpired):
+            return []           # no third reading for this question: the disagreement stays for a human to review
         return [{**w, 'left': w['left'] + x1, 'top': w['top'] + y1} for w in words]
     return reread
