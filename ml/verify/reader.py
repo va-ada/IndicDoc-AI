@@ -140,6 +140,16 @@ def split_columns(words: List[Dict], width: float) -> List[List[Dict]]:
     right = [w for w in ws if w['left'] + w['width'] / 2 >= gutter]
     if crossing[centre] > max(2, 0.03 * len(lines)) or min(len(left), len(right)) < 0.25 * len(ws):
         return [ws]
+    # A line of one column runs across the gutter with ordinary word spacing; two columns leave a wide gap there
+    h = median(w['height'] for w in ws) or 1.0
+    spanning = 0
+    for line in lines:
+        before = [w for w in line if w['left'] + w['width'] <= gutter]
+        after = [w for w in line if w['left'] >= gutter]
+        if before and after and after[0]['left'] - (before[-1]['left'] + before[-1]['width']) < 2.0 * h:
+            spanning += 1
+    if spanning > max(1, 0.05 * len(lines)):
+        return [ws]
 
     def numbered(col):
         return sum(question_number(strip_marks(_text(ln)))[0] is not None for ln in lines_of(col))

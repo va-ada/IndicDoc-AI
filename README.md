@@ -16,10 +16,26 @@ re-exam; UGC-NET June 2026: three papers re-tested). IndicDoc Verify reads the p
 Each finding points to the question and page and is outlined on the page (HTML / JSON report). It runs in one Docker
 image with no internet access, because a pre-print paper must never leave the exam body.
 
-**How it works.** A deep-learning layout detector (DocLayout-YOLO, fine-tuned on IndicDLP by its authors) finds the
-questions, sub-questions, options and answers on each page; Tesseract reads the text, with an English *number pass*
-that must agree on every digit; the questions are built from the layout and checked. Three layout detectors are
-compared on the same IndicDLP test pages (DocLayout-YOLO, and a YOLOv8s and a Faster R-CNN we fine-tuned).
+**How it works: two independent readers must agree.** Every paper is read twice:
+
+- **Reader A**: a deep-learning layout detector (DocLayout-YOLO, fine-tuned on IndicDLP by its authors) finds the
+  questions, sub-questions, options and answers on each page; Tesseract reads them, with an English *number pass*
+  for the digits.
+- **Reader B**: no layout model. It reads the PDF's own text layer (born-digital papers), or the page again with a
+  different OCR configuration (scans), and finds the questions from the typography of exam papers alone.
+
+Each reader checks the paper on its own; the two readings are paired question by question and field by field. A
+finding is **confirmed** only when both readers raise it with similar confidence; where they disagree, that question
+is read a third time at higher resolution (**resolved**), and what is still unsettled is shown for a human
+(**review**) instead of as an error. Single-reader findings the agreed reading does not reproduce are listed as
+dismissed misreadings. Three layout detectors are compared on the same IndicDLP test pages (DocLayout-YOLO, and a
+YOLOv8s and a Faster R-CNN we fine-tuned).
+
+**Real exam formats.** A bilingual paper printed page by page (CBSE: a Hindi page, then the same questions in English)
+or line by line is recognised in one file and its versions are checked against each other. Marks are read from the
+instructions ("Questions 21 to 25 ... 2 marks each"); internal choice ('OR' / 'अथवा'), case-study parts, section
+headings in both languages, 'Page X of Y' footers, two-column layouts and the declared number of questions and pages
+are understood.
 
 Product, evidence and market: [docs/PRODUCT.md](docs/PRODUCT.md). Benchmark: [Verification results](#verification-results).
 

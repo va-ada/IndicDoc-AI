@@ -82,6 +82,16 @@ class Paper:
                 'declared_pages': self.declared_pages}
 
 
+def _in_sequence(region: Dict, questions: List['Question']) -> bool:
+    """A question the detector did not label (text that starts with a number) must continue the numbering: the next
+    few numbers, or 1 (a section that restarts). '42. If the number 54 ...' (a stem's wrapped line) is not question 42."""
+    if region['label'] in QUESTION:
+        return True
+    number, _ = question_number(strip_marks(region.get('text', '') or ''))
+    last = next((q.number for q in reversed(questions) if q.number is not None), None)
+    return number is None or last is None or number == 1 or last < number <= last + 3
+
+
 def _starts_question(region: Dict) -> bool:
     if is_instruction(region.get('text', '') or ''):
         return False
@@ -104,7 +114,7 @@ def parse_paper(pages: List[Dict]) -> Paper:
     for k, page in enumerate(pages):
         p = page.get('sheet', k)     # sheet of the original file (a bilingual paper's version holds every other sheet)
         page_no, pof = None, None
-        for region in page['regions']:
+        for region in _split_merged_questions(page['regions']):
             label, text = region['label'], region.get('text', '') or ''
             ref = {'page': p, 'box': region['box'], 'label': label}
             found = page_of(text)
@@ -132,7 +142,8 @@ def parse_paper(pages: List[Dict]) -> Paper:
                 header_text.append(text)  # instructions between sections end the question before them
                 current = None
                 continue
-            if _starts_question(region):
+            if _starts_question(region) and not (page.get('reader') == 'B' and region['label'] not in QUESTION) \
+                    and _in_sequence(region, questions):
                 # Right-aligned marks ('[2 marks]') are often read as the region's first line: drop them first
                 number, rest = question_number(strip_marks(text))
                 current = Question(index=len(questions), number=number, page=p, box=region['box'], section=section,
@@ -181,6 +192,38 @@ def parse_paper(pages: List[Dict]) -> Paper:
                  page_numbers=page_numbers, pages=len(pages), script=script, page_of=page_ofs,
                  declared_questions=declared_questions(head), declared_pages=declared_pages(head),
                  page_indices=[pg.get('sheet', k) for k, pg in enumerate(pages)])
+
+
+def _split_merged_questions(regions: List[Dict]) -> List[Dict]:
+    """
+    A layout model sometimes puts two neighbouring questions in one box. A question region whose later line starts
+    with exactly the next question number ('5. ...' then a line '6. ...') is split there, so both are counted.
+    """
+    out = []
+    for r in regions:
+        text = r.get('text', '') or ''
+        if r['label'] not in QUESTION | TEXT_FALLBACK or '\n' not in text:
+            out.append(r)
+            continue
+        lines = text.split('\n')
+        number, _ = question_number(strip_marks(lines[0]))
+        if number is None:
+            out.append(r)
+            continue
+        parts, start = [], 0
+        for i, ln in enumerate(lines[1:], 1):
+            n, _ = question_number(strip_marks(ln))
+            if n is not None and n == number + 1:
+                parts.append(lines[start:i])
+                start, number = i, n
+        parts.append(lines[start:])
+        if len(parts) == 1:
+            out.append(r)
+            continue
+        for k, part in enumerate(parts):
+            # The words stay with the first part (they place the options); later parts are text only
+            out.append({**r, 'text': '\n'.join(part), **({} if k == 0 else {'words': None})})
+    return out
 
 
 def _repeated_numbers(pages: List[Dict]) -> set:
