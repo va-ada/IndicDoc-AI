@@ -172,6 +172,8 @@ def parse_paper(pages: List[Dict]) -> Paper:
 
     _split_merged_numbers(questions)
     _unify_option_family(questions)
+    for q in questions:
+        q.options = fix_option_lookalikes(q.options)
     head = '\n'.join(header_text)
     each = marks_each(head)
     per_q, per_section = marks_schedule(head)
@@ -256,6 +258,33 @@ def _confidence(q: Question, pages: Dict[int, Dict]) -> Optional[float]:
     if scores:
         c *= min(1.0, sum(scores) / len(scores) + 0.25)  # a detector score of 0.75 or more does not lower it
     return round(c, 3)
+
+
+_LOOKALIKE = str.maketrans({'S': '5', 's': '5', 'O': '0', 'o': '0', 'l': '1', 'I': '1', '|': '1', 'B': '8', 'Z': '2',
+                            'G': '6', 'g': '9', 'q': '9'})
+_VALUE_UNIT = re.compile(r'^(\d{1,4}(?:\.\d+)?)\s*([^\d\s]{1,4})$')
+_GARBLED_VALUE = re.compile(r'^([\dSsOolIB|ZGgq]{1,4})\s*([^\d\s]{1,4})$')
+
+
+def fix_option_lookalikes(options: List[str]) -> List[str]:
+    """
+    Options that are all a number and the same unit ('7A', '2A', '8A') make a misread digit in one of them plain:
+    'SA' -> '5A', 'lO kg' -> '10 kg'. Changed only when at least two other options show the pattern.
+    """
+    if len(options) < 3:
+        return options
+    units = [m.group(2) for m in map(_VALUE_UNIT.match, options) if m]
+    if len(units) < 2:
+        return options
+    unit, n = Counter(units).most_common(1)[0]
+    out = []
+    for o in options:
+        m = _GARBLED_VALUE.match(o)
+        if m and n >= 2 and m.group(2) == unit and not _VALUE_UNIT.match(o) \
+                and (len(m.group(1)) <= 2 or any(ch.isdigit() for ch in m.group(1))):
+            o = m.group(1).translate(_LOOKALIKE) + o[len(m.group(1)):]
+        out.append(o)
+    return out
 
 
 def _unify_option_family(questions: List[Question]) -> None:

@@ -198,3 +198,24 @@ class TestNumberPass:
         hindi = [_w('पृष्ठ', 0), _w('120', 50), _w('2८0', 100), _w('45', 150)]  # '2A' read as '2८0'
         english = [_w('wa', 0), _w('120', 50), _w('2A', 100), _w('45', 150)]
         assert [w['text'] for w in merge_number_reading(hindi, english)] == ['पृष्ठ', '120', '2A', '45']
+
+    def test_confident_digit_stands_against_an_unsure_english_reading(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('को', 0), {**_w('9', 50), 'conf': 94.0}, _w('सेकंड', 100)]
+        english = [_w('at', 0), {**_w('O', 50), 'conf': 77.0}, _w('aes', 100)]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['को', '9', 'सेकंड']
+
+    def test_option_read_as_one_english_token(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('(0)', 0, width=40), _w('28', 77, width=23)]      # '(A) 1 A': marker and value both garbled
+        english = [{**_w('(A)1A', 0, width=100), 'conf': 29.0}]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['(A) 1A']
+        hindi = [_w('(०)52', 0, width=97)]
+        english = [_w('(C)SA', 0, width=97)]                           # 'S' for '5', confirmed by the Hindi digits
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['(C) 5A']
+
+    def test_unit_read_as_a_digit_is_dropped(self):
+        from ml.ocr import merge_number_reading
+        hindi = [_w('24', 0, width=34), _w('५', 43, width=21), _w('की', 72)]   # '24 V की'
+        english = [_w('24V', 2, width=60), _w('ht', 82)]
+        assert [w['text'] for w in merge_number_reading(hindi, english)] == ['24', 'की']

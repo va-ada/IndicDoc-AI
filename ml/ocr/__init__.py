@@ -18,7 +18,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageOps
 
 from ml.config import CLASS_NAMES, MODEL_DIR
 
@@ -130,6 +130,19 @@ def read_words(image: np.ndarray, languages: str, psm: int = 3, binarize: bool =
 # A token that is a number, possibly with brackets, punctuation and a short unit: '1947', '(1)', '24.', '8A', '120°C'
 _NUMERIC_TOKEN = re.compile(r'^[(\[]?[0-9][0-9.,:/%°\-]*[)\].,:;]?[A-Za-z°/]{0,4}[)\].,;]?$')
 NUMBER_PASS_MIN_CONF = 55
+_GLUED_OPTION = re.compile(r'^\(([A-Da-d])\)(\d{1,4}(?:\.\d+)?[A-Za-z]{0,3})$')
+_GLUED_LOOKALIKE = re.compile(r'^\(([A-Da-d])\)([SOlIBZ])([A-Z])$')     # '(C)SA' for '(C) 5 A'
+_LOOKALIKE_DIGIT = str.maketrans('SOlIBZ', '501182')
+
+
+def _glued_option(text: str):
+    """('C', '5A', lookalike) for an option read as one token, '(C)5A' or '(C)SA'; None otherwise. A lookalike
+    ('S' for '5') is used only where the Indic reading has digits at the same place."""
+    m = _GLUED_OPTION.match(text)
+    if m:
+        return m.group(1), m.group(2), False
+    m = _GLUED_LOOKALIKE.match(text)
+    return (m.group(1), m.group(2).translate(_LOOKALIKE_DIGIT) + m.group(3), True) if m else None
 _GLUED_MARKER = re.compile(r'^(?:\(?[^\s()0-9]{1,3}\)|\([0-9]\)|[A-Za-z])(?=[0-9])')
 _INDIC_DIGIT = re.compile(r'[\u0966-\u096F\u09E6-\u09EF\u0A66-\u0A6F\u0AE6-\u0AEF\u0B66-\u0B6F\u0BE6-\u0BEF'
                           r'\u0C66-\u0C6F\u0CE6-\u0CEF\u0D66-\u0D6F]')
@@ -180,8 +193,11 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
     """
     out = [dict(w) for w in words]
     # An option marker run into the value is not part of the number: '(3)6A' -> '6A', 'M2A' ('(1) 2A') -> '2A'
-    latin_words = [{**lw, 'text': _GLUED_MARKER.sub('', lw['text'])} for lw in latin_words]
-    numeric_latin = [lw for lw in latin_words if _NUMERIC_TOKEN.match(lw['text'])]
+    # A whole option read as one token ('(A)1A' for '(A) 1 A') is regular enough to trust at a low confidence: the
+    # English model gives such glued tokens low scores even when every character is right
+    latin_words = [{**lw, 'text': _GLUED_MARKER.sub('', lw['text']), 'option': _glued_option(lw['text'])}
+                   for lw in latin_words]
+    numeric_latin = [lw for lw in latin_words if _NUMERIC_TOKEN.match(lw['text']) or lw['option']]
     # Pages printed with Indian digits ('१२०') keep them: the English model cannot read them. On pages printed with
     # Latin digits, an Indian digit in the Indic reading is a misread ('1A' -> '८') and the English reading decides.
     indic_digits = sum(bool(_INDIC_DIGIT.search(w['text'])) for w in out)
@@ -208,7 +224,7 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
     # Only confident English readings may change the text: where the English model "reads" digits into Indic
     # letters its confidence is low (median 32 on the benchmark's development pages, against 93 for real digits)
     for lw in numeric_latin:
-        confident = lw.get('conf', 100) >= NUMBER_PASS_MIN_CONF
+        confident = lw.get('conf', 100) >= NUMBER_PASS_MIN_CONF or (lw['option'] and lw.get('conf', 0) >= 20)
         hits = [w for w in out if _overlap(w, lw) > 0.3]
         if not hits:
             if not confident:
@@ -219,6 +235,27 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
             if ids is not None:
                 out.append({**lw, 'block_num': ids['block_num'], 'par_num': ids['par_num'], 'line_num': ids['line_num']})
             continue
+        if lw['option'] and confident and not any(_INDIC_LETTER.search(h['text']) for h in hits) \
+                and (not lw['option'][2] or any(_HAS_DIGIT.search(h['text']) for h in hits)):
+            # '(0)' '28' for '(A) 1 A': the whole option, marker and value, from the English reading
+            m = lw['option']
+            first = min(hits, key=lambda h: h['left'])
+            for h in hits:
+                out.remove(h)
+            out.append({**first, 'text': f'({m[0]}) {m[1]}', 'left': lw['left'], 'width': lw['width']})
+            continue
+        unit = _DIGITS_THEN_UNIT.match(lw['text'])
+        if len(hits) > 1 and unit and lw.get('conf', 0) >= 20:
+            # '24 V' read by the Indic model as '24' '5' (the unit as a digit), by the English model as '24V': the
+            # number stays, the unit's false digits go
+            num = [h for h in hits if _digits(h['text']) == unit.group(1)]
+            if num:
+                for h in hits:
+                    garbled_unit = _BARE_NUMBER.match(h['text']) or (not indic_page and _INDIC_DIGIT.search(h['text'])
+                                                                     and not _INDIC_LETTER.search(h['text']))
+                    if h is not num[0] and garbled_unit and h['left'] > num[0]['left']:
+                        out.remove(h)
+                continue
         if len(hits) > 1:
             # The English token spans two Indic words ('में ।20' read as 'F120'): the one with digits (or without
             # Indic letters) is the number
@@ -279,7 +316,7 @@ def read_margin_numbers(image: np.ndarray, regions: List[Dict], labels=('first-l
     The number of a question the page OCR skipped. Exam papers print question numbers in a margin column ('12.'
     hanging left of the text); Tesseract's page segmentation often drops such short isolated tokens. For a question
     region whose text does not start with a number, the strip left of its first word is read alone (English model,
-    digits only, three times enlarged) and the number found is put in front of the region's text.
+    digits only, on a white border) and the number found is put in front of the region's text.
     """
     hgt, wid = image.shape[:2]
     for r in regions:
@@ -297,8 +334,10 @@ def read_margin_numbers(image: np.ndarray, regions: List[Dict], labels=('first-l
         cy1, cy2 = int(max(0, top - 0.35 * lh)), int(min(hgt, top + 1.35 * lh))
         if cx2 - cx1 < 8 or cy2 - cy1 < 8:
             continue
-        crop = Image.fromarray(image[cy1:cy2, cx1:cx2]).convert('L')
-        crop = np.array(crop.resize((crop.width * 3, crop.height * 3), Image.LANCZOS).convert('RGB'))
+        # At the rendered size on a white border: enlarging the crop turned '5.' into '3.' and '7.' into '73' on the
+        # development pages (152 of 152 numbers read right this way, 147 three times enlarged)
+        crop = ImageOps.expand(Image.fromarray(image[cy1:cy2, cx1:cx2]).convert('L'), border=20, fill=255)
+        crop = np.array(crop.convert('RGB'))
         try:
             text = _run_tesseract(crop, ['-l', 'eng', '--psm', '7', '-c', 'tessedit_char_whitelist=0123456789.()Q'])
         except (RuntimeError, subprocess.TimeoutExpired):
@@ -307,8 +346,10 @@ def read_margin_numbers(image: np.ndarray, regions: List[Dict], labels=('first-l
         if m:
             text = r.get('text') or ''
             first = text.split(maxsplit=1)
-            if first and re.fullmatch(r'[(\[]?[0-9\u0966-\u096F]{1,3}[^\w\s]?', first[0]):
-                text = first[1] if len(first) > 1 else ''      # the page OCR's garbled reading of the same number
+            # the page OCR's garbled reading of the same number ('4.' for '14.'), never a bare number of the stem
+            # ('18 V की बैटरी')
+            if first and re.fullmatch(r'[(\[][0-9\u0966-\u096F]{1,3}[^\w\s]?|[0-9\u0966-\u096F]{1,3}[.)।:]', first[0]):
+                text = first[1] if len(first) > 1 else ''
             r['text'] = f'{int(m.group(1))}. ' + text
             if 'words' in r:
                 r['words'] = [{'text': f'{int(m.group(1))}.', 'left': float(cx1), 'top': float(top),

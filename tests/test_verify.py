@@ -190,3 +190,20 @@ def test_markers_glued_to_values_are_removed():
     for raw, value in [('(3)12 m/s', '12 m/s'), ('2)8', '8'), ('(128', '28'), ('©2A', '2A'), ('M4A', '4A'),
                        ('(4) 18', '18'), ('226', '226')]:
         assert ' '.join(strip_marker(raw.split())) == value, raw
+
+
+def test_ocr_tolerant_marks_and_numbers():
+    from ml.verify.paper import fix_option_lookalikes
+    from ml.verify.text import is_instruction, marks_schedule
+    assert fix_option_lookalikes(['7A', '2A', 'SA', '8A']) == ['7A', '2A', '5A', '8A']
+    assert fix_option_lookalikes(['Jupiter', 'Venus', 'Saturn', 'Mars']) == ['Jupiter', 'Venus', 'Saturn', 'Mars']
+    assert numerals('A24V battery of 12 ohm') == numerals('A 24 V battery of 12 ohm')
+    assert numerals('तर्क (2) : 180 अंश') == numerals('Reason (R) : 180 degrees')
+    assert marks_in('What is the cost of the pens? (1]') == 1
+    per_q, _ = marks_schedule('खण्ड - क में प्रश्न संख्या 1 । से 18 तक बहुविकल्पीय प्रश्न 1 अंक के हैं।')
+    assert per_q.get(1) == 1 and per_q.get(18) == 1
+    # 'this section' is the heading just above, not one several sentences back
+    _, per_section = marks_schedule('SECTION - A\nThis section has 20 MCQs of 1 mark each.\nQ1. a\nQ2. b\nQ3. c\n'
+                                    'Q4. d\nइस खण्ड में 6 प्रश्न हैं, जिनमें प्रत्येक के 3 अंक हैं।')
+    assert per_section == {'A': 1}
+    assert is_instruction('3a खण्ड में 3 प्रकरण अध्ययन आधारित प्रश्न हैं, जिनमें प्रत्येक के 4 अंक हैं।')

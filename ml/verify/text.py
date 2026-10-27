@@ -58,6 +58,10 @@ _NUMBER = re.compile(r'(?<![\w.])(\d{1,3}(?:,\d{2,3})+|\d+)(?:\.(\d+))?(?!\d)')
 _GLUED_ARTICLE = re.compile(r'(?<![\w.])A(\d{1,4}(?:\.\d+)?)(?=\s*(?:V|W|J|N|Hz|kg|km|cm|mm|m|s|g|L)\b)')
 
 
+# A one-character label in brackets ('Reason (R)' read as '(2)', '(i)' as '(1)') is a label, not a quantity
+_BRACKET_LABEL = re.compile(r'(?<![\w)])\(\s*\d\s*\)')
+
+
 def numerals(text: str) -> Counter:
     """
     Multiset of the numbers written in `text`, script-independent: '१,२०० kg and 2.50 m' -> {'1200': 1, '2.5': 1}.
@@ -65,7 +69,8 @@ def numerals(text: str) -> Counter:
     zeros removed, so typesetting differences between versions do not count as mismatches.
     """
     out = Counter()
-    for m in _NUMBER.finditer(_GLUED_ARTICLE.sub(r'A \1', normalize_digits(text))):
+    t = _BRACKET_LABEL.sub(' ', _GLUED_ARTICLE.sub(r'A \1', normalize_digits(text)))
+    for m in _NUMBER.finditer(t):
         whole = m.group(1).replace(',', '').lstrip('0') or '0'
         frac = (m.group(2) or '').rstrip('0')
         out[f'{whole}.{frac}' if frac else whole] += 1
@@ -97,7 +102,8 @@ _MARK_WORDS = r'(?:marks?|mks?|अंक|गुण|மதிப்பெண்[\
 _MARKS_BRACKETED = re.compile(rf'[\[(]\s*(\d{{1,2}}(?:\.5)?)\s*(?:{_MARK_WORDS}|M)\s*[\])]', re.IGNORECASE)
 _MARKS_EOL = re.compile(rf'(\d{{1,2}}(?:\.5)?)\s*{_MARK_WORDS}\s*[.)]?\s*$', re.IGNORECASE | re.MULTILINE)
 # '[2]' at the end of a line; OCR reads the brackets as '{1]' or '[1}' too (never '(1)': that can be maths, f(2))
-_MARKS_BRACKET_EOL = re.compile(r'[\[{]\s*(\d{1,2}(?:\.5)?)\s*[\]}]\s*$', re.MULTILINE)
+# '[1]' at a line's end, also as OCR reads it: '{1]', '[1}', '(1]', '[1)'
+_MARKS_BRACKET_EOL = re.compile(r'(?:[\[{]\s*(\d{1,2}(?:\.5)?)\s*[\]})]|\(\s*(\d{1,2}(?:\.5)?)\s*[\]}])\s*$', re.MULTILINE)
 _TOTAL = re.compile(rf'(?:max(?:imum)?\.?\s*marks?|total\s*marks?|full\s*marks?|पूर्णा[ंँ]?क|अधिकतम\s*अंक|कुल\s*अंक|'
                     rf'மொத்த\s*மதிப்பெண்[\w\u0900-\u0DFF]*|அதிகபட்ச\s*மதிப்பெண்[\w\u0900-\u0DFF]*|পূর্ণমান|মোট\s*নম্বর|કુલ\s*ગુણ|ਕੁੱਲ\s*ਅੰਕ|'
                     rf'ମୋଟ\s*ନମ୍ବର|మొత్తం\s*మార్కులు|ಒಟ್ಟು\s*ಅಂಕ[\w\u0900-\u0DFF]*|ആകെ\s*മാർക്ക്[\w\u0900-\u0DFF]*)\s*[:\-–]?\s*(\d{{1,4}})',
@@ -110,7 +116,7 @@ def marks_in(text: str) -> Optional[float]:
     """Marks printed with a question ('(2 marks)', '[2 अंक]', '... [2]' at a line end), or None."""
     t = normalize_digits(text)
     m = _MARKS_BRACKETED.search(t) or _MARKS_EOL.search(t) or _MARKS_BRACKET_EOL.search(t)
-    return float(m.group(1)) if m else None
+    return float(next(g for g in m.groups() if g)) if m else None
 
 
 def strip_marks(text: str) -> str:
