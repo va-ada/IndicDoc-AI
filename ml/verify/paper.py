@@ -12,7 +12,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional
 
-from ml.verify.text import (declared_pages, declared_questions, declared_total, is_choice_line, is_instruction,
+from ml.verify.text import (choice_group, declared_pages, declared_questions, declared_total, is_choice_line, is_instruction,
                             marks_each, marks_in, marks_schedule, numerals, option_family, page_of, question_number,
                             section_key, split_options, stem_before_options, strip_marks)
 
@@ -45,6 +45,28 @@ class Question:
     marks_source: str = ''           # 'printed', 'sub-questions', 'instructions' or 'each'
     confidence: Optional[float] = None  # how sure the reader is of what it read (0-1), from OCR and layout scores
     source: Optional[str] = None     # where the reader got the text: 'text-layer', 'ocr', 're-read' (None: layout + OCR)
+    option_parts: List[int] = field(default_factory=list)  # index in options where each sub-question's options start
+    group: Optional[tuple] = None    # choice group ('answer any 4 of 6'): (first question's number, marks it adds)
+    answer_any: Optional[int] = None  # 'Answer any 4 out of 6 ... 4 × 1 = 4' printed as this question: answer 4 parts
+
+    @property
+    def option_groups(self) -> List[int]:
+        """Options per part: a question whose parts (i)-(vi) each have (A)-(D) gives [4, 4, ...], not [24]."""
+        starts = sorted({0, *(k for k in self.option_parts if 0 < k < len(self.options))})
+        bounds = starts + [len(self.options)]
+        groups = [b - a for a, b in zip(bounds, bounds[1:]) if b > a]
+        # Only a question with more options than one set holds (more than 6) is split into parts: on a scan an option
+        # line read as a sub-question must not split an ordinary MCQ's (A)-(D) into two groups
+        if len(self.options) <= 6 or len(groups) < 2 or min(groups) < 2:
+            return [len(self.options)] if self.options else []
+        return groups
+
+    def option_slices(self) -> List[List[str]]:
+        out, k = [], 0
+        for n in self.option_groups:
+            out.append(self.options[k:k + n])
+            k += n
+        return out
 
     @property
     def text(self) -> str:
@@ -59,7 +81,8 @@ class Question:
                 'options': self.options, 'sub_questions': self.sub_questions, 'marks': self.marks,
                 'figures': self.figures, 'tables': self.tables, 'formulas': self.formulas, 'section': self.section,
                 'choices': self.choices, 'marks_source': self.marks_source, 'confidence': self.confidence,
-                'sub_marks': self.sub_marks}
+                'sub_marks': self.sub_marks, 'option_groups': self.option_groups,
+                'group': list(self.group) if self.group else None, 'answer_any': self.answer_any}
 
 
 @dataclass
@@ -110,6 +133,7 @@ def parse_paper(pages: List[Dict]) -> Paper:
     header_text, page_numbers, page_ofs, section = [], [], [], ''
     current: Optional[Question] = None
     repeated = _repeated_numbers(pages)
+    pending = None   # an unnumbered choice-group line: [marks each, questions left (None: until the next heading), adds]
 
     for k, page in enumerate(pages):
         p = page.get('sheet', k)     # sheet of the original file (a bilingual paper's version holds every other sheet)
@@ -133,7 +157,7 @@ def parse_paper(pages: List[Dict]) -> Paper:
                         or len(text.split()) <= 4 or is_instruction(text.split('\n', 1)[-1])):
                 section = key
                 header_text.append(text)
-                current = None
+                current, pending = None, None
                 continue
             if label in ('section-title', 'sub-section-title', 'headline', 'chapter-title'):
                 header_text.append(text)
@@ -141,6 +165,12 @@ def parse_paper(pages: List[Dict]) -> Paper:
             if is_instruction(text):
                 header_text.append(text)  # instructions between sections end the question before them
                 current = None
+                group = choice_group(text)
+                if group:
+                    _, offered, each_marks, adds = group
+                    pending = [each_marks, offered, adds, None]
+                elif pending is not None:
+                    pending = None
                 continue
             if _starts_question(region) and not (page.get('reader') == 'B' and region['label'] not in QUESTION) \
                     and _in_sequence(region, questions):
@@ -149,6 +179,19 @@ def parse_paper(pages: List[Dict]) -> Paper:
                 current = Question(index=len(questions), number=number, page=p, box=region['box'], section=section,
                                    boxes=[ref], marks=marks_in(text), source=page.get('source'))
                 questions.append(current)
+                group = choice_group(text)
+                if group:   # '1. Answer any 4 out of 6 ... 4 × 1 = 4': this question carries the group's 4 marks
+                    current.answer_any, current.marks, current.marks_source = group[0], group[3], 'group'
+                elif pending is not None:
+                    if pending[3] is None:
+                        pending[3] = number if number is not None else f'#{current.index}'
+                    current.group = (pending[3], pending[2])
+                    if current.marks is None:
+                        current.marks, current.marks_source = pending[0], 'group'
+                    if pending[1] is not None:
+                        pending[1] -= 1
+                        if pending[1] <= 0:
+                            pending = None
                 _absorb_text(current, rest)
                 continue
             if current is None:
@@ -157,9 +200,11 @@ def parse_paper(pages: List[Dict]) -> Paper:
             current.boxes.append(ref)
             if is_choice_line(text):
                 current.choices += 1
+                current.option_parts.append(len(current.options))  # 'OR': the alternative has its own options
                 continue
             if label in SUB_QUESTION:
                 current.sub_questions += 1
+                current.option_parts.append(len(current.options))  # this part's own options start here
                 _absorb_text(current, text, sub=True)
             elif label in OPTIONS:
                 _absorb_options(current, text, region.get('words'))
@@ -174,6 +219,9 @@ def parse_paper(pages: List[Dict]) -> Paper:
     _unify_option_family(questions)
     for q in questions:
         q.options = fix_option_lookalikes(q.options)
+        if len(q.options) == 1:   # one 'option' is a line of the question that was boxed as options
+            q.stem = ' '.join([q.stem] + q.options)
+            q.options, q.option_markers, q.option_parts = [], [], []
     head = '\n'.join(header_text)
     each = marks_each(head)
     per_q, per_section = marks_schedule(head)
@@ -302,7 +350,7 @@ def _unify_option_family(questions: List[Question]) -> None:
         if fam and fam != main:
             q.stem = ' '.join([q.stem] + [f'({m}) {t}' for m, t in zip(q.option_markers, q.options)])
             q.sub_questions += len(q.options)
-            q.options, q.option_markers = [], []
+            q.options, q.option_markers, q.option_parts = [], [], []
 
 
 _MERGED = re.compile(r'^(\d{1,3})\.(\d+)\b\s*(.*)$', re.DOTALL)
@@ -344,7 +392,11 @@ def _absorb_text(q: Question, text: str, sub: bool = False) -> None:
             q.marks = m
     clean = strip_marks(text)
     opts = split_options(clean)
-    if opts and not q.options:
+    if opts and sub and len(opts) >= 3:   # a part's own (A)-(D); '(a) ... (b) ...' is an internal choice, not options
+        q.stem = ' '.join((q.stem + ' ' + stem_before_options(clean)).split())
+        q.option_markers += [m for m, _ in opts]
+        q.options += [t for _, t in opts]
+    elif opts and not q.options:
         q.stem = ' '.join((q.stem + ' ' + stem_before_options(clean)).split())
         q.option_markers = [m for m, _ in opts]
         q.options = [t for _, t in opts]
@@ -408,7 +460,8 @@ def strip_marker(tokens: List[str]) -> List[str]:
 def _cell_options(cell: List[Dict]) -> List[str]:
     """One cell's option text without its marker; a cell holding several marked options ('(a) x (b) y') is split."""
     text = ' '.join(w['text'] for w in cell)
-    inline = split_options(text, options_box=True)
+    # Only an in-order marker run splits a cell: '(A) Both (A) and (R) are true' is one option
+    inline = split_options(text)
     if len(inline) >= 2:
         return [t for _, t in inline]
     return [' '.join(strip_marker(text.split()))]

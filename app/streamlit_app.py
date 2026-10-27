@@ -746,6 +746,29 @@ with tab_verify:
                 "numbering gaps, repeated questions, missing options, marks that do not add up, questions repeated "
                 "from earlier papers and, against the source version, every number, option and mark that differs in "
                 "the translation. Each finding points to the question and page for the vetter to confirm.")
+    with st.expander("How it works: two readers, one verdict", expanded=False):
+        st.markdown("""
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 10px">
+ <div style="border-left:5px solid #14284B;background:#fff;border-radius:10px;padding:10px 14px">
+  <b>Reader A — deep learning</b><br>
+  <span style="font-size:0.92em">DocLayout-YOLO finds every question, option block, sub-part, figure and table on the
+  page image; OCR reads the text inside each box.</span></div>
+ <div style="border-left:5px solid #D9A441;background:#fff;border-radius:10px;padding:10px 14px">
+  <b>Reader B — independent</b><br>
+  <span style="font-size:0.92em">No layout model: it reads the PDF's own text layer (exact characters) or, for a
+  scanned page, a second OCR pass with different settings, and rebuilds questions from line positions.</span></div>
+</div>
+<div style="text-align:center;color:#D9A441;font-size:1.3em;line-height:1">▼ &nbsp; both readings are matched question by question &nbsp; ▼</div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;font-size:0.9em">
+ <div style="background:#E8F5E9;border-radius:8px;padding:8px"><b>Agree</b><br>number, options, numbers, marks and parts match → the reading is trusted</div>
+ <div style="background:#FFF8E1;border-radius:8px;padding:8px"><b>Disagree</b><br>the PDF's own text or the more confident reader decides</div>
+ <div style="background:#E3F2FD;border-radius:8px;padding:8px"><b>Still unsure</b><br>that question is read a third time (two crops, English re-reading for numbers)</div>
+ <div style="background:#FFEBEE;border-radius:8px;padding:8px"><b>Unsettled</b><br>shown as "needs a human look" — never reported as an error</div>
+</div>
+<p style="font-size:0.9em;margin-top:10px">A finding is <b>confirmed</b> only when the agreed reading still shows it.
+A finding that only one reader produced, because it misread something, is <b>dismissed</b>. After a check, the table
+"Reader A vs reader B" shows this for every question.</p>
+""", unsafe_allow_html=True)
     v_mode = st.radio("What to check", ["One paper", "Translation against its source", "One bilingual paper",
                                         "Several papers"],
                       horizontal=True,
@@ -930,6 +953,16 @@ with tab_verify:
                                 "conf. B": c.get("confidence_b")})
                 return row
             st.dataframe(pd.DataFrame([_row(i) for i in report["issues"]]), hide_index=True, width="stretch")
+        if cons and cons.get("comparison"):
+            import pandas as pd
+            comp = pd.DataFrame([{"version": r["version"], "reader A (layout + OCR)": r["reader_a"],
+                                  "reader B (independent)": r["reader_b"],
+                                  "agreed on": ", ".join(r["agree"]) or "-",
+                                  "differed on": ", ".join(r["disagree"]) or "-", "outcome": r["outcome"]}
+                                 for r in cons["comparison"]])
+            n_agree = int((comp["outcome"] == "both agree").sum())
+            with st.expander(f"Reader A vs reader B, question by question ({n_agree} of {len(comp)} agree fully)"):
+                st.dataframe(comp, hide_index=True, width="stretch")
         if cons and cons["dismissed"]:
             with st.expander(f"{len(cons['dismissed'])} single-reader finding(s) dismissed by the consensus"):
                 st.dataframe(pd.DataFrame([{"reader": i["raised_by"].upper(), "check": i["code"].replace("_", " ").lower(),

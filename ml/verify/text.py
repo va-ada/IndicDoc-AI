@@ -138,6 +138,36 @@ def marks_each(text: str) -> Optional[float]:
     return float(m.group(1)) if m else None
 
 
+
+# A choice group: 'Answer any 4 out of the given 6 questions ... 4 × 2 = 8' / 'दिए गए 6 प्रश्नों में से किन्हीं 4 ...'.
+# Each of the 6 questions carries 2 marks, and the group adds 8 (not 6 × 2) to the paper's total.
+_PRODUCT = re.compile(r'(?<![\d.])(\d{1,2})\s*[×xX*]\s*(\d{1,2}(?:\.5)?)\s*=\s*(\d{1,3}(?:\.5)?)(?![\d.])')
+_ANY_N = re.compile(r'(?:answer|attempt|do)\s+any\s+(\d{1,2})\s+(?:questions?\s+)?(?:out\s+)?of\s+(?:the\s+)?(?:given\s+)?(\d{1,2})'
+                    r'|(?:दिए\s+गए\s+)?(\d{1,2})\D{0,40}?में\s+से\s+(?:किन्हीं|कोई)\s+(\d{1,2})', re.IGNORECASE)
+
+
+def choice_group(text: str) -> Optional[Tuple[int, Optional[int], float, float]]:
+    """
+    'Answer any 4 out of the given 6 questions in 20-30 words each. 4 × 2 = 8' -> (4, 6, 2.0, 8.0):
+    (questions to answer, questions offered or None, marks each, marks the group adds). None unless the line prints
+    a consistent product 'a × b = c' (a × b really is c).
+    """
+    t = normalize_digits(text)
+    m = _PRODUCT.search(t)
+    if not m:
+        return None
+    a, b, c = int(m.group(1)), float(m.group(2)), float(m.group(3))
+    if abs(a * b - c) > 1e-6:
+        return None
+    n = _ANY_N.search(t)
+    if not n:
+        return None   # a product alone ('find 3 × 4 = 12') is maths, not a choice group
+    answer, offered = (int(n.group(1)), int(n.group(2))) if n.group(1) else (int(n.group(4)), int(n.group(3)))
+    if answer != a:
+        return None
+    return a, (offered if offered >= a else None), b, c
+
+
 # ---------------------------------------------------------------------------------------------- options
 # Families of option markers, each in printed order. A paper uses one family per question.
 OPTION_FAMILIES = {
@@ -164,7 +194,9 @@ def split_options(text: str, options_box: bool = False) -> List[Tuple[str, str]]
     if options_box:
         starts = [m.start() for m in _BRACKET_TOKEN.finditer(t)]
         family = split_options(text)
-        if len(starts) >= 2 and len(starts) > len(family):
+        # '(A) (i), (ii) and (iii)  (B) ...' / '(A) Both (A) and (R) are true': brackets inside an option are not
+        # options; when the marker sequence itself is complete (3 or more in order) it decides
+        if len(starts) >= 2 and len(starts) > len(family) and len(family) < 3:
             out = []
             for k, start in enumerate(starts):
                 chunk = t[start:starts[k + 1] if k + 1 < len(starts) else len(t)]
@@ -291,6 +323,7 @@ _INSTRUCTION = re.compile(
     r'|इस\s+(?:खण्ड|खंड|प्रश्न[-\s]*पत्र)|General\s+Instructions|सामान्य\s+निर्देश|Read\s+the\s+following\s+instructions'
     r'|निम्नलिखित\s+निर्देशों|Please\s+check\s+that|कृपया\s+जाँच'
     r'|In\s+Section\s*[–\-]?\s*[A-E]\b|खण्ड\s*[–\-]?\s*[कखगघङ]\s+में'
+    r'|(?:Answer|Attempt)\s+any\s+\d{1,2}\s|दिए\s+गए\s+\d{1,2}\D{0,40}?में\s+से\s+किन्हीं\s+\d'
     # a section's own note under its heading, also when OCR garbled its first word ('इस' read as '3a')
     r'|\S{0,3}\s*(?:खण्ड|खंड)\s+में\s+\d{1,2}\s.*प्रश्न\s+हैं|\S{0,3}\s*section\s+(?:comprises|consists\s+of|contains)\s+\d)',
     re.IGNORECASE)
@@ -320,6 +353,26 @@ def _sentences(text: str) -> List[str]:
     return [p for p in re.split(r'(?<=[।.;])\s+|\s(?=\((?:[ivx]{1,5})\)\s)', t) if p.strip()]
 
 
+def _ranges_with_values(sent: str) -> Dict[int, float]:
+    spans = []
+    for m in _RANGE.finditer(sent):
+        lo, hi = int(m.group(1)), int(m.group(2))
+        if 0 < lo <= hi <= lo + 60:
+            spans.append((m.start(), m.end(), list(range(lo, hi + 1))))
+    for m in _PAIR.finditer(sent):
+        spans.append((m.start(), m.end(), [int(m.group(1)), int(m.group(2))]))
+    spans.sort()
+    marks = [(m.start(), float(m.group(1))) for m in _MARK_VALUE.finditer(sent)]
+    out: Dict[int, float] = {}
+    for k, (start, end, numbers) in enumerate(spans):
+        stop = spans[k + 1][0] if k + 1 < len(spans) else len(sent)
+        after = [v for pos, v in marks if end <= pos < stop]
+        if after:
+            for n in numbers:
+                out.setdefault(n, after[0])
+    return out
+
+
 def marks_schedule(text: str) -> Tuple[Dict[int, float], Dict[str, float]]:
     """
     Marks the instructions give to questions and sections, as ({question: marks}, {section key: marks}):
@@ -339,6 +392,12 @@ def marks_schedule(text: str) -> Tuple[Dict[int, float], Dict[str, float]]:
         if _TOTAL.search(sent):
             continue
         values = {float(m.group(1)) for m in _MARK_VALUE.finditer(sent)}
+        if len(values) > 1:
+            # 'questions 19 to 25 of 2 marks each and questions 26 to 29 of 3 marks each': each range takes the
+            # marks value printed after it (before the next range)
+            for qn, v in _ranges_with_values(sent).items():
+                per_q.setdefault(qn, v)
+            continue
         if len(values) != 1:
             continue
         value = values.pop()
@@ -356,6 +415,9 @@ def marks_schedule(text: str) -> Tuple[Dict[int, float], Dict[str, float]]:
             continue
         m = _SECTION_IN.search(sent)
         sec = section_key(f'SECTION {m.group(1)}') if m else None
+        # 'Section A : Objective Type Questions (24 marks)' is the section's total, not each question's marks
+        if not re.search(r'\beach\b|प्रत्येक', sent, re.IGNORECASE):
+            continue
         if sec or (section and re.search(r'this\s+section|इस\s+(?:खण्ड|खंड)', sent, re.IGNORECASE)):
             per_section.setdefault(sec or section, value)
     return per_q, per_section

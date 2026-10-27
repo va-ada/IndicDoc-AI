@@ -207,3 +207,106 @@ def test_ocr_tolerant_marks_and_numbers():
                                     'Q4. d\nइस खण्ड में 6 प्रश्न हैं, जिनमें प्रत्येक के 3 अंक हैं।')
     assert per_section == {'A': 1}
     assert is_instruction('3a खण्ड में 3 प्रकरण अध्ययन आधारित प्रश्न हैं, जिनमें प्रत्येक के 4 अंक हैं।')
+
+
+# ---------------------------------------------------------------- real CBSE 2025 paper structures
+from ml.verify.checks import check_paper  # noqa: E402
+from ml.verify.reader import text_layer_usable  # noqa: E402
+from ml.verify.text import choice_group, is_instruction, marks_schedule  # noqa: E402
+
+
+def parts_question(n_parts=6, opts=4, no_options=(5,)):
+    """'1. Answer any 4 out of the given 6 questions ... 4×1=4' with parts (i)-(vi), each with its own (A)-(D)."""
+    regs = [region('paragraph', 'Maximum Marks : 4', 10),
+            region('first-level-question', '1. Answer any 4 out of the given 6 questions. 4×1=4', 50)]
+    y = 100
+    for k in range(1, n_parts + 1):
+        regs.append(region('second-level-question', f'({"i" * k if k < 4 else ["iv", "v", "vi"][k - 4]}) '
+                                                    f'Which value is correct for item {k}?', y)); y += 40
+        if k not in no_options:
+            regs.append(region('options', ' '.join(f'({m}) value {k}{m}' for m in 'ABCD'[:opts]), y)); y += 40
+    return [page(regs, 'Latin')]
+
+
+def test_choice_group_line_is_read():
+    line = 'Answer any 4 out of the given 6 questions in 20-30 words each. 4 × 2 = 8'
+    assert choice_group(line) == (4, 6, 2.0, 8.0)
+    assert is_instruction(line)
+    assert choice_group('दिए गए 6 प्रश्नों में से किन्हीं 4 प्रश्नों के उत्तर दीजिए। 4 × 2 = 8') == (4, 6, 2.0, 8.0)
+    assert choice_group('1. Answer any 4 out of 6 questions. 4×1=4') == (4, 6, 1.0, 4.0)
+    assert not is_instruction('1. Answer any 4 out of 6 questions. 4×1=4')   # numbered: it is a question
+    assert choice_group('If 3 x 4 = 13, find the error.') is None            # a wrong product is not a group
+
+
+def test_parts_with_their_own_options_are_checked_per_part():
+    paper = parse_paper(parts_question())
+    q = paper.questions[0]
+    assert q.option_groups == [4, 4, 4, 4, 4]
+    assert q.marks == 4 and q.answer_any == 4
+    codes_found = codes(check_paper(paper))
+    assert 'OPTION_COUNT' not in codes_found and 'OPTION_REPEATED' not in codes_found
+    assert 'MARKS_TOTAL' not in codes_found and 'SUBMARKS_TOTAL' not in codes_found
+
+
+def test_part_with_wrong_option_count_is_still_found():
+    regs = parts_question()[0]['regions']
+    regs[-1] = region('options', '(A) x (B) y (C) z', regs[-1]['box'][1])   # part (vi) lost option (D)
+    issues = check_paper(parse_paper([page(regs, 'Latin')]))
+    assert 'OPTION_COUNT' in codes(issues)
+
+
+def test_unnumbered_choice_group_sets_marks_and_total():
+    regs = [region('paragraph', 'Maximum Marks : 10', 10),
+            region('first-level-question', '10. Define a data set. [2]', 50),
+            region('paragraph', 'Answer any 4 out of the given 6 questions in 20-30 words each. 4 × 2 = 8', 90)]
+    y = 130
+    for n in range(11, 17):
+        regs.append(region('first-level-question', f'{n}. Explain term number {n}.', y)); y += 40
+    paper = parse_paper([page(regs, 'Latin')])
+    assert [q.number for q in paper.questions] == list(range(10, 17))   # the group line is not glued to Q10
+    assert all(q.marks == 2 for q in paper.questions[1:])
+    assert 'MARKS_TOTAL' not in codes(check_paper(paper))               # 2 + 8 = 10, not 2 + 6 × 2
+
+
+def test_section_total_is_not_each_questions_marks():
+    _, per_section = marks_schedule('SECTION A\nSection A : Objective Type Questions (24 marks)')
+    assert per_section == {}
+    _, per_section = marks_schedule('SECTION B\nThis section comprises 5 questions of 2 marks each.')
+    assert per_section == {'B': 2.0}
+
+
+def test_private_use_text_layer_goes_to_ocr():
+    words = [{'text': ''} for _ in range(30)]
+    assert not text_layer_usable(words, None)
+    assert text_layer_usable([{'text': 'question'} for _ in range(30)], 'Latin')
+
+
+def test_reader_comparison_rows_for_the_ui():
+    from ml.verify import _comparison
+    from ml.verify.consensus import fuse
+    pa, pb = parse_paper(english_paper()), parse_paper(english_paper())
+    _, records = fuse(pa, pb)
+    rows = _comparison({'a': {'paper': pa}, 'b': {'paper': pb}}, {'paper': records})
+    assert len(rows) == 5 and all(r['outcome'] == 'both agree' for r in rows)
+    assert rows[0]['reader_a'] == 'Q1 · 4 options · 4 marks' == rows[0]['reader_b']
+
+
+def test_page_check_survives_mismatched_page_lists():
+    paper = parse_paper(english_paper())
+    paper.page_numbers, paper.page_indices = [1, 2, 3], [0]   # reader B's page numbers, reader A's sheets
+    check_paper(paper)   # must not raise IndexError
+
+
+def test_two_ranges_in_one_sentence_get_their_own_marks():
+    per_q, _ = marks_schedule('खण्ड ग में प्रश्न संख्या 19 से 25 प्रत्येक 2 अंकों के तथा प्रश्न संख्या 26 से 29 प्रत्येक 3 अंकों के हैं ।')
+    assert per_q[19] == 2 and per_q[25] == 2 and per_q[26] == 3 and per_q[29] == 3
+    per_q, _ = marks_schedule('Section C has questions no. 19 to 25 of 2 marks each and questions no. 26 to 29 of 3 marks each.')
+    assert per_q[25] == 2 and per_q[26] == 3
+
+
+def test_brackets_inside_options_are_not_options():
+    opts = split_options('(A) Both (A) and (R) are true (B) Both are false (C) (A) is true, (R) is false '
+                         '(D) (A) is false, (R) is true', options_box=True)
+    assert [m for m, _ in opts] == ['A', 'B', 'C', 'D']
+    opts = split_options('(A) (i), (ii) and (iii) (B) (ii) and (iv) (C) (i) and (iv) (D) (iii) only', options_box=True)
+    assert len(opts) == 4

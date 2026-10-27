@@ -232,6 +232,7 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
                 q.number = value
             elif f == 'options':
                 q.options, q.option_markers = list(winner.options), list(winner.option_markers)
+                q.option_parts = list(winner.option_parts)
             elif f == 'numerals':
                 q.stem = winner.stem
                 if len(winner.options) == len(q.options):
@@ -259,10 +260,9 @@ def fuse(pa: Paper, pb: Paper, rereader: Optional[Rereader] = None, lang: Option
     for attr in ('declared_total', 'declared_questions', 'declared_pages', 'marks_each'):
         if (b_layer or getattr(paper, attr) is None) and getattr(pb, attr) is not None:
             setattr(paper, attr, getattr(pb, attr))
-    if b_layer:
-        paper.page_of, paper.page_numbers = pb.page_of, pb.page_numbers
-    if not any(paper.page_of) and any(pb.page_of):
-        paper.page_of, paper.page_numbers = pb.page_of, pb.page_numbers
+    # The page numbers and the sheets they belong to are taken together, so the two lists always line up
+    if b_layer or (not any(paper.page_of) and any(pb.page_of)):
+        paper.page_of, paper.page_numbers, paper.page_indices = pb.page_of, pb.page_numbers, pb.page_indices
     return paper, records
 
 

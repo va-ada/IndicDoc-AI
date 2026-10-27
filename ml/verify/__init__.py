@@ -125,7 +125,8 @@ def verify(pages: List[Dict], source_pages: Optional[List[Dict]] = None, bank: O
         final_papers = fused
         consensus = {'stats': stats, 'dismissed': dismissed,
                      'readers': {'a': 'deep-learning layout + OCR',
-                                 'b': _reader_b_source(pages_b)}}
+                                 'b': _reader_b_source(pages_b)},
+                     'comparison': _comparison(papers, records)}
     else:
         issues, final_papers = issues_a, papers['a']
     main_version = 'target' if 'target' in final_papers else 'paper'
@@ -167,3 +168,46 @@ def _reader_b_source(pages_b) -> str:
 
 __all__ = ['verify', 'parse_paper', 'check_paper', 'compare_versions', 'find_repeats', 'check_format',
            'list_profiles', 'load_profile', 'split_bilingual', 'align', 'Paper', 'Question', 'Issue']
+
+
+def _reading(q) -> str:
+    """What one reader read for a question, in a few words: 'Q12 · 4 options · 2 marks · 3 parts'."""
+    if q is None:
+        return 'not found'
+    bits = [f'Q{q.number}' if q.number is not None else 'Q?']
+    if q.options:
+        groups = q.option_groups
+        bits.append(f'{len(groups)}×{groups[0]} options' if len(groups) > 1 and len(set(groups)) == 1
+                    else f'{len(q.options)} options')
+    if q.marks is not None:
+        bits.append(f'{q.marks:g} marks')
+    if q.sub_questions or q.choices:
+        bits.append(f'{q.sub_questions} parts' + (f', {q.choices + 1} choices' if q.choices else ''))
+    return ' · '.join(bits)
+
+
+def _comparison(papers: Dict, records: Dict) -> List[Dict]:
+    """Question by question: what reader A and reader B read, the fields they agreed on, and how it was settled.
+    Shown in the app so the dual reading can be followed (and explained) question by question."""
+    rows = []
+    for v, recs in records.items():
+        qa_all, qb_all = papers['a'][v].questions, papers['b'][v].questions
+        for rec in recs:
+            qa = qa_all[rec['a']] if rec.get('a') is not None else None
+            qb = qb_all[rec['b']] if rec.get('b') is not None else None
+            if rec.get('dropped'):
+                outcome = 'dropped: a fragment only one reader saw'
+            elif rec.get('uncertain'):
+                outcome = 'needs a human look: ' + ', '.join(rec['uncertain'])
+            elif rec.get('third'):
+                outcome = 'settled by a third reading'
+            elif rec.get('disagree') and rec.get('authority') == 'text-layer':
+                outcome = "settled by the PDF's own text"
+            elif rec.get('disagree'):
+                outcome = 'settled by the more confident reader'
+            else:
+                outcome = 'both agree'
+            rows.append({'version': v, 'reader_a': _reading(qa), 'reader_b': _reading(qb),
+                         'agree': list(rec.get('agree', [])), 'disagree': list(rec.get('disagree', [])),
+                         'outcome': outcome})
+    return rows

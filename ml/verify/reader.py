@@ -298,5 +298,10 @@ def text_layer_usable(pdf_words: List[Dict], ocr_script: Optional[str]) -> bool:
     """
     if len(pdf_words) < 20:
         return False
+    # Fonts that store Hindi as private-use codes (U+E000-U+F8FF) give no readable text at all: OCR the page
+    chars = ''.join(str(w['text']) for w in pdf_words)
+    private = sum(1 for ch in chars if 0xE000 <= ord(ch) <= 0xF8FF)
+    if private > 0.05 * max(1, len(chars.replace(' ', ''))):
+        return False
     script = script_of(' '.join(str(w['text']) for w in pdf_words))
     return ocr_script is None or script == ocr_script

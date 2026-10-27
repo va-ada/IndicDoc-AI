@@ -91,26 +91,30 @@ def check_paper(paper: Paper, version: str = 'paper') -> List[Issue]:
                                      b, version, first=_qid(a), similarity=round(similarity(a.stem, b.stem), 3)))
 
     # Options: MCQs in one paper normally all have the same number of options
-    counts = Counter(len(q.options) for q in qs if q.options)
+    # A question whose parts (i)-(vi) each have their own (A)-(D) is checked part by part
+    counts = Counter(n for q in qs for n in q.option_groups)
     if counts:
         usual, n_usual = counts.most_common(1)[0]
         for q in qs:
-            if q.options and len(q.options) != usual and n_usual >= 3:
-                issues.append(_issue('OPTION_COUNT', ERROR, f'Question {_qid(q)} has {len(q.options)} options; the '
-                                     f'other questions have {usual}.', q, version, found=len(q.options),
-                                     expected=usual))
+            odd = [n for n in q.option_groups if n != usual]
+            if odd and n_usual >= 3:
+                where = f'Question {_qid(q)}' + (' has a part with' if len(q.option_groups) > 1 else ' has')
+                issues.append(_issue('OPTION_COUNT', ERROR, f'{where} {odd[0]} options; the other questions have '
+                                     f'{usual}.', q, version, found=odd[0], expected=usual))
         for q in qs:
-            texts = [normalized(o) for o in q.options if normalized(o)]
-            dup = [t for t, c in Counter(texts).items() if c > 1]
-            if dup:
-                issues.append(_issue('OPTION_REPEATED', ERROR, f'Question {_qid(q)} prints the same option twice '
-                                     f'("{dup[0][:40]}").', q, version))
+            for part in q.option_slices():
+                texts = [normalized(o) for o in part if normalized(o)]
+                dup = [t for t, c in Counter(texts).items() if c > 1]
+                if dup:
+                    issues.append(_issue('OPTION_REPEATED', ERROR, f'Question {_qid(q)} prints the same option twice '
+                                         f'("{dup[0][:40]}").', q, version))
+                    break
             if any(not normalized(o) for o in q.options):
                 issues.append(_issue('OPTION_EMPTY', WARNING, f'Question {_qid(q)} has an empty option.', q, version))
 
     # Sub-part marks ('(i) ... [1]  (ii) ... [1]  (iii) ... [2]') should add up to the marks the question carries
     for q in qs:
-        if q.sub_marks and q.marks is not None and q.marks_source != 'sub-questions' \
+        if q.sub_marks and q.marks is not None and q.marks_source != 'sub-questions' and not q.answer_any \
                 and abs(q.sub_marks - q.marks) > 1e-6:
             issues.append(_issue('SUBMARKS_TOTAL', WARNING, f'Question {_qid(q)}: its parts carry {q.sub_marks:g} marks, '
                                  f'but the question carries {q.marks:g}.', q, version, parts=q.sub_marks,
@@ -120,7 +124,9 @@ def check_paper(paper: Paper, version: str = 'paper') -> List[Issue]:
     with_marks = [q for q in qs if q.marks is not None]
     if paper.declared_total is not None and with_marks:
         if len(with_marks) == len(qs):
-            total = sum(q.marks for q in qs)
+            # A choice group ('answer any 4 of these 6, 4 × 2 = 8') adds its own total once, not each question's marks
+            groups = {q.group: q.group[1] for q in qs if q.group}
+            total = sum(q.marks for q in qs if not q.group) + sum(groups.values())
             if abs(total - paper.declared_total) > 1e-6:
                 issues.append(Issue('MARKS_TOTAL', ERROR, f'Question marks add up to {total:g}, but the paper says '
                                     f'maximum marks {paper.declared_total}.', version=version,
@@ -132,7 +138,8 @@ def check_paper(paper: Paper, version: str = 'paper') -> List[Issue]:
                                 version=version, details={'questions': missing}))
 
     # Page numbers: printed page numbers should run without gaps ('Page 8 of 24' footers also give the page count)
-    sheets = paper.page_indices or list(range(len(paper.page_numbers)))
+    sheets = paper.page_indices if len(paper.page_indices) == len(paper.page_numbers) \
+        else list(range(len(paper.page_numbers)))
     printed = [(sheets[i], n) for i, n in enumerate(paper.page_numbers) if n is not None]
     for (i, a), (j, b) in zip(printed, printed[1:]):
         if b - a != j - i:
@@ -240,10 +247,15 @@ def compare_versions(source: Paper, target: Paper,
             continue
         s, t = source.questions[i], target.questions[j]
         qn = _qid(s)
-        if len(s.options) != len(t.options):
+        if s.option_groups != t.option_groups and len(s.options) != len(t.options):
             issues.append(_issue('OPTION_COUNT_MISMATCH', ERROR, f'Question {qn}: {len(s.options)} options in the '
                                  f'source, {len(t.options)} in the translation.', t, 'target',
                                  source=len(s.options), target=len(t.options)))
+        elif s.option_groups != t.option_groups and len(s.option_groups) == len(t.option_groups):
+            k = next(i for i, (a, b) in enumerate(zip(s.option_groups, t.option_groups)) if a != b)
+            issues.append(_issue('OPTION_COUNT_MISMATCH', ERROR, f'Question {qn}, part {k + 1}: {s.option_groups[k]} '
+                                 f'options in the source, {t.option_groups[k]} in the translation.', t, 'target',
+                                 source=s.option_groups[k], target=t.option_groups[k]))
         if s.choices != t.choices:
             issues.append(_issue('CHOICE_MISMATCH', ERROR, f'Question {qn}: {s.choices + 1} internal-choice alternatives '
                                  f'in the source, {t.choices + 1} in the translation.', t, 'target',
