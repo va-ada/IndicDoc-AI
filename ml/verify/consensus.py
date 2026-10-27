@@ -356,10 +356,13 @@ def make_rereader(images) -> Rereader:
         crop = img[y1:y2, x1:x2]
         indic = '+'.join(c for c in (lang or 'eng').split('+') if c != 'eng')
         try:
+            # One thread: a crop is small, and OpenMP threads busy-waiting next to other OCR jobs made a crop take a
+            # minute instead of a second
             if indic:
-                words = merge_number_reading(read_words(crop, indic, psm=6), read_words(crop, 'eng', psm=6))
+                words = merge_number_reading(read_words(crop, indic, psm=6, single_thread=True),
+                                             read_words(crop, 'eng', psm=6, single_thread=True))
             else:
-                words = read_words(crop, 'eng', psm=6)
+                words = read_words(crop, 'eng', psm=6, single_thread=True)
         except (RuntimeError, subprocess.TimeoutExpired):
             return []           # no third reading for this question: the disagreement stays for a human to review
         return [{**w, 'left': w['left'] + x1, 'top': w['top'] + y1} for w in words]
