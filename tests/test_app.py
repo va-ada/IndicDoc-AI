@@ -29,6 +29,18 @@ class TestStreamlitApp:
         assert not at.exception
         assert [t.label for t in at.tabs] == ['Verify Paper', 'Analyze', 'Dashboard', 'Model Insights', 'Evaluation', 'About']
 
+    def test_verify_modes_render(self, no_models):
+        """Every Verify mode renders; 'Several papers' offers a batch button instead of the single one."""
+        from streamlit.testing.v1 import AppTest
+        at = AppTest.from_file(APP, default_timeout=120).run()
+        mode = next(r for r in at.radio if r.label == 'What to check')
+        for choice in mode.options:
+            mode.set_value(choice).run()
+            assert not at.exception, choice
+            labels = [b.label for b in at.button]
+            assert ('Verify all' in labels) == (choice == 'Several papers')
+            mode = next(r for r in at.radio if r.label == 'What to check')
+
     def test_results_list_appears_right_after_analyze(self, no_models):
         """The detected-elements list must show on the same click, not one interaction later."""
         from streamlit.testing.v1 import AppTest

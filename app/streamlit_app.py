@@ -746,11 +746,13 @@ with tab_verify:
                 "numbering gaps, repeated questions, missing options, marks that do not add up, questions repeated "
                 "from earlier papers and, against the source version, every number, option and mark that differs in "
                 "the translation. Each finding points to the question and page for the vetter to confirm.")
-    v_mode = st.radio("What to check", ["One paper", "Translation against its source", "One bilingual paper"],
+    v_mode = st.radio("What to check", ["One paper", "Translation against its source", "One bilingual paper",
+                                        "Several papers"],
                       horizontal=True,
                       help="One paper: a paper printed in two languages page by page (CBSE: a Hindi page, then the "
                            "English page) is recognised by itself and its versions are checked against each other. "
-                           "One bilingual paper: both languages on the same pages, scripts chosen below.")
+                           "One bilingual paper: both languages on the same pages, scripts chosen below. Several "
+                           "papers: a verdict for each and all reports in one ZIP.")
     lang_names = ["Auto-detect"] + list(OCR_LANGUAGES)
 
     def _codes(choice):
@@ -759,7 +761,13 @@ with tab_verify:
 
     c1, c2 = st.columns(2)
     with c1:
-        v_file = st.file_uploader("Paper to check", type=["pdf", "png", "jpg", "jpeg", "tiff"], key="verify_file")
+        v_files = []
+        if v_mode == "Several papers":
+            v_file = None
+            v_files = st.file_uploader("Papers to check", type=["pdf", "png", "jpg", "jpeg", "tiff"],
+                                       accept_multiple_files=True, key="verify_files")
+        else:
+            v_file = st.file_uploader("Paper to check", type=["pdf", "png", "jpg", "jpeg", "tiff"], key="verify_file")
         v_lang = st.selectbox("Language of this paper", lang_names, key="verify_lang")
     v_src, v_src_lang, v_split = None, "auto", None
     with c2:
@@ -775,7 +783,7 @@ with tab_verify:
             v_split = {s1: s1.lower(), s2: s2.lower()} if s1 != s2 else None
     examples = {k: v for k, v in VERIFY_EXAMPLES.items() if (TEST_PAPERS / v[0]).exists()}
     v_example = st.selectbox("Or try an example paper (answer key: docs/test_papers/ANSWER_KEY.md)",
-                             ["None"] + list(examples)) if examples else "None"
+                             ["None"] + list(examples)) if examples and v_mode != "Several papers" else "None"
     if v_example != "None":
         paper_path, source_path = examples[v_example]
         v_file = _ExampleFile(TEST_PAPERS / paper_path)
@@ -797,18 +805,13 @@ with tab_verify:
     ready = AUTHORS_CHECKPOINT.exists() and tesseract_available()
     if not ready:
         st.info("Verification needs the DocLayout-YOLO model and Tesseract (python scripts/download_models.py).")
-    if st.button("Verify", type="primary", disabled=not (ready and v_file is not None)):
-        try:
-            images = _pages_from_bytes(v_file.getvalue(), v_file.name)
-            src_images = _pages_from_bytes(v_src.getvalue(), v_src.name) if v_src is not None else None
-            bank = json.loads(v_bank.getvalue()) if v_bank is not None else None
-        except Exception as e:
-            st.error(f"Could not read the files: {e}")
-            st.stop()
+    def _check(paper, source, lang, src_lang, split, auto_bilingual, bar):
+        """Read and check one paper (and its source version): reader A, reader B when asked, then the checks."""
+        images = _pages_from_bytes(paper.getvalue(), paper.name)
+        src_images = _pages_from_bytes(source.getvalue(), source.name) if source is not None else None
         total = len(images) + len(src_images or [])
-        bar = st.progress(0.0, text="Reading pages")
-        pages = _read_paper(images, _codes(v_lang), bar, 0, total)
-        src_pages = _read_paper(src_images, v_src_lang, bar, len(images), total) if src_images else None
+        pages = _read_paper(images, lang, bar, 0, total)
+        src_pages = _read_paper(src_images, src_lang, bar, len(images), total) if src_images else None
         kwargs = {}
         if v_dual:
             from ml.verify.consensus import make_rereader
@@ -818,21 +821,69 @@ with tab_verify:
                 data = upload.getvalue()
                 return second_reading(imgs, pgs, data if upload.name.lower().endswith(".pdf") else None, 200,
                                       progress=lambda k, n: bar.progress(k / n, text=f"Second reading: page {k} of {n}"))
-            kwargs = {"pages_b": _second(images, pages, v_file), "rereader": make_rereader(images),
+            kwargs = {"pages_b": _second(images, pages, paper), "rereader": make_rereader(images),
                       "langs": {"target": version_langs(pages)}}
             if src_images:
-                kwargs["source_pages_b"] = _second(src_images, src_pages, v_src)
+                kwargs["source_pages_b"] = _second(src_images, src_pages, source)
                 kwargs["rereader"] = {"target": make_rereader(images), "source": make_rereader(src_images)}
                 kwargs["langs"]["source"] = version_langs(src_pages)
         bar.progress(1.0, text="Checking")
-        report = verify(pages, source_pages=src_pages, bank=bank, split_scripts=v_split,
+        report = verify(pages, source_pages=src_pages, bank=v_bank_items, split_scripts=split,
                         profile=None if v_profile == "None" else v_profile,
-                        meta={"File": v_file.name, "Pages": len(images)},
-                        bilingual="auto" if v_mode == "One paper" else "off", **kwargs)
-        st.session_state["verify"] = (report, images, src_images)
+                        meta={"File": paper.name, "Pages": len(images)},
+                        bilingual="auto" if auto_bilingual else "off", **kwargs)
+        return report, images, src_images
+
+    def _verdict(summary):
+        if summary["errors"]:
+            return "Do not print"
+        return "Check before printing" if summary["warnings"] else "Ready for printing"
+
+    try:
+        v_bank_items = json.loads(v_bank.getvalue()) if v_bank is not None else None
+    except Exception as e:
+        st.error(f"Could not read the question bank: {e}")
+        v_bank_items = None
+    if v_mode == "Several papers" and st.button("Verify all", type="primary", disabled=not (ready and v_files)):
+        import io
+        import zipfile
+        rows, archive = [], io.BytesIO()
+        with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as zf:
+            for n, f in enumerate(v_files, 1):
+                bar = st.progress(0.0, text=f"Paper {n} of {len(v_files)}: {f.name}")
+                try:
+                    report, images, _ = _check(f, None, _codes(v_lang), "auto", None, True, bar)
+                except Exception as e:
+                    rows.append({"paper": f.name, "verdict": f"Not checked: {e}"})
+                    bar.empty()
+                    continue
+                s = report["summary"]
+                rows.append({"paper": f.name, "verdict": _verdict(s), "questions": s["questions"],
+                             "errors": s["errors"], "warnings": s["warnings"],
+                             "versions": report["meta"].get("Versions", "")})
+                stem = f.name.rsplit(".", 1)[0]
+                zf.writestr(f"{stem}_report.html", verify_html(report, {"paper": images}))
+                zf.writestr(f"{stem}_report.json", json.dumps(report, ensure_ascii=False, indent=1))
+                bar.empty()
+        st.session_state["verify_batch"] = (rows, archive.getvalue())
+    if v_mode == "Several papers" and st.session_state.get("verify_batch"):
+        import pandas as pd
+        rows, archive = st.session_state["verify_batch"]
+        st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
+        st.download_button("Download all reports (ZIP)", data=archive, file_name="indicdoc_verify_reports.zip",
+                           mime="application/zip", width="stretch")
+
+    if v_mode != "Several papers" and st.button("Verify", type="primary", disabled=not (ready and v_file is not None)):
+        bar = st.progress(0.0, text="Reading pages")
+        try:
+            st.session_state["verify"] = _check(v_file, v_src, _codes(v_lang), v_src_lang, v_split,
+                                                v_mode == "One paper", bar)
+        except Exception as e:
+            st.error(f"Could not read the files: {e}")
+            st.stop()
         bar.empty()
 
-    if st.session_state.get("verify"):
+    if v_mode != "Several papers" and st.session_state.get("verify"):
         report, images, src_images = st.session_state["verify"]
         s = report["summary"]
         k1, k2, k3, k4 = st.columns(4)
