@@ -232,6 +232,9 @@ def merge_number_reading(words: List[Dict], latin_words: List[Dict]) -> List[Dic
             same_line = [w for w in out if abs((w['top'] + w['height'] / 2) - (lw['top'] + lw['height'] / 2))
                          < 0.6 * max(w['height'], lw['height'])]
             ids = min(same_line, key=lambda w: abs(w['left'] - lw['left'])) if same_line else None
+            if ids is not None and _digits(ids['text']) == _digits(lw['text']) \
+                    and abs(ids['left'] - lw['left']) < 2 * max(ids['height'], lw['height']):
+                continue        # the Indic reading has this number already, a little offset
             if ids is not None:
                 out.append({**lw, 'block_num': ids['block_num'], 'par_num': ids['par_num'], 'line_num': ids['line_num']})
             continue
