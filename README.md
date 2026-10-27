@@ -26,9 +26,12 @@ image with no internet access, because a pre-print paper must never leave the ex
 
 Each reader checks the paper on its own; the two readings are paired question by question and field by field. A
 finding is **confirmed** only when both readers raise it with similar confidence; where they disagree, that question
-is read a third time at higher resolution (**resolved**), and what is still unsettled is shown for a human
-(**review**) instead of as an error. Single-reader findings the agreed reading does not reproduce are listed as
-dismissed misreadings. Three layout detectors are compared on the same IndicDLP test pages (DocLayout-YOLO, and a
+is read a third time (**resolved**), and what is still unsettled is listed as an *uncertain reading* for a look by
+eye instead of as an error. Every number that differs between two versions is verified once more by an English-model
+re-reading of both questions, the model that reads digits and units best. Single-reader findings the agreed reading
+does not reproduce are listed as dismissed misreadings. On the CBSE-format test set this takes false errors per clean
+paper from 8.6 (one reader) to 0.12, with every planted error still found ([results](#verification-results),
+[how it works](docs/CONSENSUS.md)). Three layout detectors are compared on the same IndicDLP test pages (DocLayout-YOLO, and a
 YOLOv8s and a Faster R-CNN we fine-tuned).
 
 **Real exam formats.** A bilingual paper printed page by page (CBSE: a Hindi page, then the same questions in English)
@@ -42,25 +45,41 @@ Product, evidence and market: [docs/PRODUCT.md](docs/PRODUCT.md). Benchmark: [Ve
 <!-- VERIFY:START -->
 ## Verification results
 
-Measured by `scripts/evaluate_verify.py` on the benchmark's test set: 132 paper pairs (English source +
-Hindi or Tamil version, 18 questions each, rendered at 200 dpi), 108 with one injected error of 9
-kinds that have happened in real exams, 24 clean; half degraded like scans; read with Tesseract.
-An error counts as found only when a matching finding points at the right question. The parser was developed on a
-separate development set; the test set was run once.
+Two test sets, each run on code developed on separate development sets. An error counts as found only when a
+matching finding points at the right question; a false alarm is any error or warning on a clean paper.
 
-| | Errors found at the right question | False alarms per clean pair |
-|---|---|---|
-| Born-digital papers | 98% | 3.0 |
-| Scan-degraded papers | 98% | 5.5 |
-| **All** | **98%** | **4.5** |
-| Ablation: no number pass | 77% | 13.8 |
-| Ablation: options split by markers, not layout | 98% | 11.5 |
-| Noisy layout (boxes shifted, 10% of question/option labels wrong) | 98% | 7.5 |
+**CBSE-format bilingual papers** (`scripts/evaluate_consensus.py`): 38 papers of 31 pages (Hindi and English page by
+page, 38 questions, 80 marks, sections A-E, internal choice, case studies), 30 with one planted error of 10 kinds,
+8 clean; half degraded like scans.
 
-The two misses were Hindi maximum-marks lines read by OCR as "पूर्णाक"; after widening that pattern the same test set
-gives 100% and 4.4 false alarms per clean pair (post-hoc). Layout boxes come from the
-renderer; the layout model's AP@50 on question-paper labels (first-level question 0.85, options
-0.84, answer 0.81) is in the table below.
+| | Errors found | False errors per clean paper | False warnings per clean paper |
+|---|---|---|---|
+| Reader A alone (layout model + OCR) | 100% | 8.6 | 4.8 |
+| Reader B alone (layout-free; text layer or second OCR) | 100% | 2.1 | 0.1 |
+| **Dual-reader consensus** | **100%** | **0.12** | **0.12** |
+| Consensus, born-digital papers | 100% | 0 | 0 |
+| Consensus, scanned papers | 100% | 0.17 | 0.17 |
+| Consensus, noisy layout (boxes shifted, 10% of labels wrong, 5% of questions missed or merged) | 100% | 0.62 | 0.25 |
+| Reader A alone, noisy layout | 100% | 29.3 | 5.3 |
+
+**English source + Hindi/Tamil translation pairs** (`scripts/evaluate_verify.py`): 132 pairs of 18 questions, 108 with
+one error of 9 kinds, 24 clean; half degraded like scans.
+
+| | Errors found at the right question | False alarms per clean pair | Clean pairs with any alarm |
+|---|---|---|---|
+| One reader | 100% | 4.4 | 92% |
+| **Dual-reader consensus** | **100%** | **0.58** | **17%** |
+| Consensus, born-digital pairs | 100% | 0 | 0% |
+| Consensus, scan-degraded pairs | 100% | 1.0 | 29% |
+
+How these were reached, honestly: the first frozen run of the CBSE test set gave 0.25 (exact layout) and 2.38 (noisy
+layout) false errors per clean paper with 100% found (`outputs/metrics/cbse_consensus_test_*.json`). Its scanned
+papers showed a weakness the 12-paper development set could not (it had no clean scans), so a second development set
+of 20 papers was generated (`data/cbse_dev2`, seed 99), the consensus was improved on it (uncertain readings, the
+English re-reading of number findings, sub-questions as compared fields), and both test sets were run again: the
+figures above. Single-reader figures before this work were 98% found and 4.5 false alarms per clean pair. Layout
+boxes come from the renderer (or the noisy version of them); the layout model's AP@50 on question-paper labels
+(first-level question 0.85, options 0.84, answer 0.81) is in the table below.
 <!-- VERIFY:END -->
 
 ## Layout results

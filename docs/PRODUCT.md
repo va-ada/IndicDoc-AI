@@ -107,13 +107,20 @@ The comparison that matters to a buyer is not another tool but the cost of one r
 - It checks structure, numbers, marks and repeats. It does **not** decide whether a question is correct, and it
   catches a change of meaning only through the optional cross-lingual model; every finding goes to a human vetter.
 - Number words ("two" vs "three") and mathematics inside formulas are not compared yet.
-- OCR on badly scanned pages adds false alarms; born-digital PDFs (the normal pre-print case) work best.
+- OCR on badly scanned pages still adds some false alarms (about one per scanned paper with the consensus);
+  born-digital PDFs (the normal pre-print case) gave none.
 - Measured so far on a controlled benchmark (rendered papers with injected errors, real OCR, layout boxes from the
   renderer); a pilot with real pre-print papers of an exam body is the next step.
 
-## 6. Measured results (benchmark test set)
+## 6. Measured results (benchmark test sets)
 
-132 English-Hindi and English-Tamil paper pairs, 108 injected errors of 9 kinds, 24 clean pairs:
-**98% of errors found at the right question** (98% born-digital, 98% scan-degraded),
-**3.0 false alarms per clean pair** on born-digital papers (5.5 scan-degraded). Without the number pass:
-77% found and 13.8 false alarms. Details: README "Verification results", `outputs/metrics/verify_benchmark_*.json`.
+**CBSE-format bilingual papers** (38 papers of 31 pages, Hindi and English page by page, 30 with one planted error of
+10 kinds, 8 clean, half scan-degraded): with the dual-reader consensus **100% of errors found** and **0.12 false
+errors per clean paper** (0 on born-digital papers), against 8.6 for one reader; with a deliberately noisy layout
+model, 100% and 0.62 (one reader: 29.3).
+
+**English source + Hindi/Tamil translation pairs** (132 pairs, 108 injected errors of 9 kinds, 24 clean): with the
+consensus **100% found at the right question** and **0.58 false alarms per clean pair** (0 born-digital, 1.0
+scan-degraded); one reader: 100% and 4.4; before the number pass, 77% and 13.8.
+
+Details, and how the figures were reached: README "Verification results", `outputs/metrics/`.
