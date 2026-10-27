@@ -85,6 +85,14 @@ Test papers to try the checker (12 English-Hindi/Tamil pairs with planted errors
 
 ## Quick start (Docker)
 
+One command (installs Docker Desktop on macOS if needed, downloads the models once, builds, starts, opens the browser):
+
+```bash
+bash start.sh
+```
+
+Or step by step:
+
 ```bash
 docker compose up --build -d
 ```
